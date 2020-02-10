@@ -134,7 +134,7 @@ Internet-Draft               new-uuid-format               February 2020
    looking at them in a list.
 
    Seeing as the entire point of these last 64 bits is to ensure
-   uniqueness, this document proposes that the strict defintions of
+   uniqueness, this document proposes that the strict definitions of
    clock sequence and node be relaxed.  Instead implementations would be
    permitted to fill this section with random bytes and/or include an
    application defined value for uniqueness (such as a node number of a
