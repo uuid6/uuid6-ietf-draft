@@ -1,0 +1,280 @@
+
+
+
+
+dispatch                                                    BGP. Peabody
+Internet-Draft                                         February 10, 2020
+Updates: 4122 (if approved)
+Intended status: Standards Track
+Expires: August 13, 2020
+
+
+                           UUID Format Update
+               draft-peabody-dispatch-new-uuid-format-00
+
+Abstract
+
+   Pursuant to ... internet evolved ... this document presents a new
+   UUID format with improvements ... solving pain points for modern
+   applications with particular attention to using UUIDs as database
+   primary keys.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on August 13, 2020.
+
+Copyright Notice
+
+   Copyright (c) 2020 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (https://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+
+
+Peabody                  Expires August 13, 2020                [Page 1]
+
+Internet-Draft               new-uuid-format               February 2020
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Summary of Changes  . . . . . . . . . . . . . . . . . . . . .   2
+     2.1.  Version 6 . . . . . . . . . . . . . . . . . . . . . . . .   2
+     2.2.  Timestamp . . . . . . . . . . . . . . . . . . . . . . . .   2
+     2.3.  Clock Sequence and Node Parts . . . . . . . . . . . . . .   3
+     2.4.  Alternate Text Formats  . . . . . . . . . . . . . . . . .   3
+       2.4.1.  Base64 Text (Variant A) . . . . . . . . . . . . . . .   4
+       2.4.2.  Base32 Text . . . . . . . . . . . . . . . . . . . . .   4
+   3.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   5
+   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
+   6.  Normative References  . . . . . . . . . . . . . . . . . . . .   5
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   5
+
+1.  Introduction
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in [RFC2119].
+
+   This document is a proposal to update [RFC4122].
+
+2.  Summary of Changes
+
+   The following is a summary of proposed changes to the UUID
+   specification in [RFC4122].  Each is given as a statement of a
+   problem or limitation to which it is addressed, along with a
+   description of the proposed change.
+
+2.1.  Version 6
+
+   A common case for modern applications is to need to create a unique
+   identifier (to be used as a primary key in a database table) that is
+   ordered by creation time, difficult to guess and has a compact text
+   format.  None of the existing UUID versions address each of these
+   requirements.  Thus a new UUID version number 6 is proposed.
+
+2.2.  Timestamp
+
+   The timestamp value from [RFC4122] (60-bit number of 100- nanosecond
+   intervals since 00:00:00.00, 15 October 1582) is workable but the
+   sequence in which the bytes are encoded (the lowest bytes first)
+   results in unnecessary additional logic to sort correctly by
+   timestamp.  Ordering by timestamp is important for the use case of
+   UUIDs as primary keys in a database since it improves locality by
+
+
+
+
+Peabody                  Expires August 13, 2020                [Page 2]
+
+Internet-Draft               new-uuid-format               February 2020
+
+
+   grouping new records close to each other (this can have major
+   performance implications in large tables).
+
+   The proposed change is to encode the timestamp value into the same 60
+   bits as in [RFC4122] but in big-endian byte ordering.  This way an
+   application can sort by timestamp by simply treating the UUID as an
+   opaque bunch of bytes.
+
+2.3.  Clock Sequence and Node Parts
+
+   The latter 64 bits of a UUID per [RFC4122] are the clock sequence and
+   node fields.  The node field is problematic as it encourages
+   applications to use their MAC address which may present a security
+   problem (it is not always appropriate to reveal the network address
+   of a machine as it could make it the target of an attack).  A lesser
+   concern is that it also incidentally produces UUID with the same 6
+   bytes at the end and are visually more difficult to distinguish when
+   looking at them in a list.
+
+   Seeing as the entire point of these last 64 bits is to ensure
+   uniqueness, this document proposes that the strict defintions of
+   clock sequence and node be relaxed.  Instead implementations would be
+   permitted to fill this section with random bytes and/or include an
+   application defined value for uniqueness (such as a node number of a
+   machine in a cluster).
+
+   Note for discussion: Another point to consider is that there is no
+   known way to fully guarantee that that duplicate identifiers will not
+   be created unless some per-determined outside source of uniqueness is
+   employed.  (Such as for version 1 UUIDs the MAC address.)  However,
+   applications each have their own requirements for uniqueness.
+   Uniqueness within a single database cluster for example is acceptable
+   in many cases.  A specification that forces all UUIDs to be globally
+   unique when it is not needed might not be a good idea.  Identifiers
+   are only as universally unique as their input, so it might be better
+   to just clearly state this and say that it's fine if UUIDs are only
+   guaranteed to be unique within a specific context if it makes sense
+   for that application.
+
+2.4.  Alternate Text Formats
+
+   The existing UUID text format is hex encoded plus four hyphens.  For
+   many applications this is unnecessarily verbose.  The same
+   information can be encoded into significantly fewer bytes using a
+   base 64 or base 32 alphabet.
+
+
+
+
+
+
+Peabody                  Expires August 13, 2020                [Page 3]
+
+Internet-Draft               new-uuid-format               February 2020
+
+
+   Many applications have a need to use the unique identifier of a
+   database record in a URL (e.g. in an HTTP request either in the path
+   or a query parameter).  It can also be useful as a file name.
+
+   This document proposes alternate alphabets for encoding UUIDs which
+   are convenient for use in URLs and file names, and also sort
+   correctly when treated as raw bytes.  Some applications may not have
+   the ability (or want) to encode and decode UUIDs from text to binary
+   and thus having the text format also sort correctly as raw bytes is
+   useful.
+
+   The standard Base64 and Base32 specifications in [RFC4648] do not
+   have these properties, thus different alphabets are given for each.
+
+   Situations which require understanding the encoding should specify
+   which encoding is used.  For example, a database field which uses
+   UUID version 6 with "b64a" encoding (see below), could be specified
+   as type "UUID6B64A", which would result in binary storage according
+   to UUID version 6, and otherwise read and write the value to/from
+   applications in the b64a text format shown below.  Note also that the
+   length can be easily used to positively distinguish if a value is
+   text or binary form.  A 16-byte value will necessarily be raw
+   unencoded bytes whereas text forms will be longer.
+
+2.4.1.  Base64 Text (Variant A)
+
+   UUIDs encoded in this form use the "url-safe base64" alphabet: "A" to
+   "Z", "a" to "z", "0" to "9" and "-" and "_", but in ASCII value
+   sequence.  No padding characters are used.
+
+   The name "b64a" (not case sensitive) can be used by implementations
+   to refer to this encoding.
+
+   Note: It might be useful to add another variation ("b64b") with a
+   different alphabet.  Hyphen and underscore are useful in a lot of
+   places but there might be some others that are better for specific
+   cases.
+
+2.4.2.  Base32 Text
+
+   Base32 can be useful if case-insensitivity is required.
+
+   UUIDs encoded in this form use digits "2" through "7" followed by "A"
+   through "Z" (same alphabet as in [RFC4648] but in ASCII value
+   sequence).  Case is not sensitive.  Implementations choosing to
+   output lower case letters are also correct.  No padding characters
+   are used.
+
+
+
+
+Peabody                  Expires August 13, 2020                [Page 4]
+
+Internet-Draft               new-uuid-format               February 2020
+
+
+   The name "b32a" (not case sensitive) can be used by implementations
+   to refer to this encoding.
+
+3.  Acknowledgements
+
+   TBD
+
+4.  IANA Considerations
+
+   TBD
+
+5.  Security Considerations
+
+   TBD
+
+6.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC4122]  Leach, P., Mealling, M., and R. Salz, "A Universally
+              Unique IDentifier (UUID) URN Namespace", RFC 4122,
+              DOI 10.17487/RFC4122, July 2005,
+              <https://www.rfc-editor.org/info/rfc4122>.
+
+   [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
+              Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
+              <https://www.rfc-editor.org/info/rfc4648>.
+
+Author's Address
+
+   Brad G. Peabody
+
+   Email: brad@peabody.io
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Peabody                  Expires August 13, 2020                [Page 5]
