@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC4122 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4122.xml">
+<!ENTITY RFC4648 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4648.xml">
+]>
+<?xml-stylesheet type="text/xsl" href="rfc2629.xslt" ?> <!-- used by XSLT processors -->
+<!-- OPTIONS, known as processing instructions (PIs) go here. -->
+<!-- For a complete list and description of PIs,
+     please see http://xml.resource.org/authoring/README.html. -->
+<!-- Below are generally applicable PIs that most I-Ds might want to use. -->
+<?rfc strict="yes" ?> <!-- give errors regarding ID-nits and DTD validation -->
+<!-- control the table of contents (ToC): -->
+<?rfc toc="yes"?> <!-- generate a ToC -->
+<?rfc tocdepth="3"?> <!-- the number of levels of subsections in ToC. default: 3 -->
+<!-- control references: -->
+<?rfc symrefs="yes"?> <!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
+<?rfc sortrefs="yes" ?> <!-- sort the reference entries alphabetically -->
+<!-- control vertical white space: 
+     (using these PIs as follows is recommended by the RFC Editor) -->
+<?rfc compact="yes" ?> <!-- do not start each main section on a new page -->
+<?rfc subcompact="no" ?> <!-- keep one blank line between list items -->
+<!-- end of popular PIs -->
+<rfc  category="std" docName="draft-peabody-dispatch-new-uuid-format-00" ipr="trust200902" updates="4122">
+  <front>
+    <title abbrev="new-uuid-format">UUID Format Update</title>
+    <author fullname="Brad G. Peabody" initials="BGP" surname="Peabody">
+<!-- <organization/> -->
+      <address>
+        <!-- postal><street/><city/><region/><code/><country/></postal -->
+<!-- <phone/> -->
+<!-- <facsimile/> -->
+      <email>brad@peabody.io</email>
+<!-- <uri/> -->
+      </address>
+    </author>
+    <date year="2020" />
+      <area>ART</area>
+      <workgroup>dispatch</workgroup>
+      <keyword>uuid</keyword>
+<!-- <keyword/> -->
+<!-- <keyword/> -->
+<!-- <keyword/> -->
+    <abstract>
+      <t>
+Pursuant to ... internet evolved ... this document presents a new UUID format with improvements ... solving pain points for modern applications with particular attention to using UUIDs as database primary keys.
+      </t>
+    </abstract>
+  </front>
+  <middle>
+    <section title="Introduction">
+      <t>
+        The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+        "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in
+        this document are to be interpreted as described in
+        <xref target="RFC2119"/>.
+      </t>
+      <t>
+        This document is a proposal to update
+        <xref target="RFC4122"/>.
+      </t>
+    </section>
+    <section anchor="Changes" title="Summary of Changes">
+        <t>
+            The following is a summary of proposed changes to the UUID specification in <xref target="RFC4122"/>.  Each is given as a statement of a problem or limitation to which it is addressed, along with a description of the proposed change.
+        </t>
+        <!-- TODO: nest sections in here - date format byte order (explain sorting, index locality), random node part or specific known arbitrary node ids, text format (with names) -->
+        <section anchor="Version6" title="Version 6">
+            <t>
+                A common case for modern applications is to need to create a unique identifier
+                (to be used as a primary key in a database table)
+                that is ordered by creation time, difficult to guess and has a compact text format.
+                None of the existing UUID versions address each of these requirements.
+                Thus a new UUID version number 6 is proposed.
+            </t>
+        </section>
+        <section anchor="Timestamp" title="Timestamp">
+            <t>
+                The timestamp value from <xref target="RFC4122"/> (60-bit number of 100-
+                nanosecond intervals since 00:00:00.00, 15 October 1582) is workable but the sequence
+                in which the bytes are encoded (the lowest bytes first) results in unnecessary additional logic to sort 
+                correctly by timestamp.  Ordering by timestamp is important for the use case of UUIDs as primary keys 
+                in a database since it improves locality by grouping new records close to each other (this can have 
+                major performance implications in large tables).
+            </t>
+            <t>
+                The proposed change is to encode the timestamp value into the same 60 bits as in 
+                <xref target="RFC4122"/>
+                but in big-endian byte ordering.
+                This way an application can sort by timestamp by simply treating the UUID as an
+                opaque bunch of bytes.
+            </t>
+        </section>
+        <section anchor="CloseSeqNode" title="Clock Sequence and Node Parts">
+            <t>
+                The latter 64 bits of a UUID per <xref target="RFC4122"/>
+                are the clock sequence and node fields.
+                The node field is problematic as it encourages applications to
+                use their MAC address which may present a security problem 
+                (it is not always appropriate to reveal the network address of 
+                a machine as it could make it the target of an attack).
+                A lesser concern is that it also incidentally produces UUID with the
+                same 6 bytes at the end and are visually more difficult to distinguish
+                when looking at them in a list.
+            </t>
+            <t>
+                Seeing as the entire point of these last 64 bits is to ensure uniqueness,
+                this document proposes that the strict defintions of clock sequence and node 
+                be relaxed.  Instead implementations would be permitted to fill this section 
+                with random bytes and/or include an application defined value for uniqueness 
+                (such as a node number of a machine in a cluster).
+                <!--This would make it okay
+                for applications to produce UUIDs which have more limited uniqueness guarantees
+                that are yet appropriate for a specific applications (e.g. a database could
+                produce UUIDs that are guaranteed to be unique within a database cluster, 
+                but not globally unique, and that would be acceptable for that use case.)-->
+            </t>
+            <t>
+                Note for discussion:
+                Another point to consider is that there is no known way to fully guarantee that
+                that duplicate identifiers will not be created unless some per-determined
+                outside source of uniqueness is employed.  (Such as for version 1 UUIDs the MAC address.)
+                However, applications each have their own requirements for uniqueness.  Uniqueness
+                within a single database cluster for example is acceptable in many cases.
+                A specification that forces all UUIDs to be globally unique when it is not needed 
+                might not be a good idea.  Identifiers are only as universally unique as their input, 
+                so it might be better to just clearly state this and say that it's fine if UUIDs 
+                are only guaranteed to be unique within a specific context if it makes sense for that application.
+            </t>
+            <!--
+            <t>
+                More specific recommendations will be added here.  But they would simply be 
+                recommendations.  As long as implementations can guarantee uniqueness within
+                the context of a given application, it would still be a correct implementation.
+                For instance, it would be acceptable for a database to implement UUIDs that 
+                were guaranteed to be unique within a database cluster but not across 
+                multiple clusters, as long as this were documented.
+            </t>
+            -->
+        </section>
+        <section anchor="Text" title="Alternate Text Formats">
+            <t>
+                The existing UUID text format is hex encoded plus four hyphens.  
+                For many applications this is unnecessarily verbose.
+                The same information can be encoded into significantly fewer bytes using a base 64 or base 32 alphabet.
+            </t>
+            <t>
+                Many applications have a need to use the unique identifier of a database record in a URL (e.g. in an HTTP
+                request either in the path or a query parameter).  It can also be useful as a file name.                
+            </t>
+            <t>
+                This document proposes alternate alphabets for encoding UUIDs which are convenient for use in URLs 
+                and file names, and also sort correctly when treated as raw bytes.  Some applications may not have
+                the ability (or want) to encode and decode UUIDs from text to binary and thus having the text format also sort
+                correctly as raw bytes is useful.
+            </t>
+            <t>
+                The standard Base64 and Base32 specifications in <xref target="RFC4648"/> do not have these
+                properties, thus different alphabets are given for each.
+            </t>
+            <t>
+                Situations which require understanding the encoding should specify which encoding is used.  For example, a database 
+                field which uses UUID version 6 with "b64a" encoding (see below), could be specified as type "UUID6B64A", which 
+                would result in binary storage according to UUID version 6, and otherwise read and write the value to/from applications in the 
+                b64a text format shown below.  Note also that the length can be easily used to positively distinguish if a value
+                is text or binary form.  A 16-byte value will necessarily be raw unencoded bytes whereas text forms will be longer.
+            </t>
+
+            <section anchor="B64A" title="Base64 Text (Variant A)">
+                <t>
+                    UUIDs encoded in this form use the "url-safe base64" alphabet:
+                    "A" to "Z", "a" to "z", "0" to "9" and "-" and "_", but in ASCII value sequence.
+                    No padding characters are used.
+                </t>
+                <t>
+                    The name "b64a" (not case sensitive) can be used by implementations to refer to this encoding.
+                </t>
+                <t>
+                    Note: It might be useful to add another variation ("b64b") with a different alphabet.  Hyphen and underscore
+                    are useful in a lot of places but there might be some others that are better for specific cases.
+                </t>
+            </section>
+            <section anchor="B32A" title="Base32 Text">
+                <t>
+                    Base32 can be useful if case-insensitivity is required.
+                </t>
+                <t>
+                    UUIDs encoded in this form use digits "2" through "7" followed by "A" through "Z" (same alphabet as 
+                    in <xref target="RFC4648"/> but in ASCII value sequence).  Case is not sensitive. Implementations
+                    choosing to output lower case letters are also correct.
+                    No padding characters are used.
+                </t>
+                <t>
+                    The name "b32a" (not case sensitive) can be used by implementations to refer to this encoding.
+                </t>
+            </section>
+        </section>
+    </section>
+    <section anchor="Acknowledgements" title="Acknowledgements">
+        <t>TBD</t>
+    </section>
+    <section anchor="IANA" title="IANA Considerations">
+        <t>TBD</t>
+    </section>
+    <section anchor="Security" title="Security Considerations">
+        <t>TBD</t>
+    </section>
+  </middle>
+  <back>
+    <references title="Normative References">
+      &RFC2119;
+      &RFC4122;
+      &RFC4648;
+    </references>
+  </back>
+</rfc>
