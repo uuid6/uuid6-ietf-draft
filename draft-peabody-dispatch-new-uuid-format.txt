@@ -14,10 +14,10 @@ Expires: August 13, 2020
 
 Abstract
 
-   Pursuant to ... internet evolved ... this document presents a new
-   UUID format with improvements ... solving pain points for modern
-   applications with particular attention to using UUIDs as database
-   primary keys.
+   This document presents a new UUID format (version 6) which is suited
+   for use as a database key.
+
+   This document is a proposal to update [RFC4122].
 
 Status of This Memo
 
@@ -80,8 +80,6 @@ Table of Contents
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
    document are to be interpreted as described in [RFC2119].
 
-   This document is a proposal to update [RFC4122].
-
 2.  Summary of Changes
 
    The following is a summary of proposed changes to the UUID
@@ -105,6 +103,8 @@ Table of Contents
    results in unnecessary additional logic to sort correctly by
    timestamp.  Ordering by timestamp is important for the use case of
    UUIDs as primary keys in a database since it improves locality by
+   grouping new records close to each other (this can have major
+   performance implications in large tables).
 
 
 
@@ -113,9 +113,6 @@ Peabody                  Expires August 13, 2020                [Page 2]
 
 Internet-Draft               new-uuid-format               February 2020
 
-
-   grouping new records close to each other (this can have major
-   performance implications in large tables).
 
    The proposed change is to encode the timestamp value into the same 60
    bits as in [RFC4122] but in big-endian byte ordering.  This way an
@@ -160,6 +157,9 @@ Internet-Draft               new-uuid-format               February 2020
    information can be encoded into significantly fewer bytes using a
    base 64 or base 32 alphabet.
 
+   Many applications have a need to use the unique identifier of a
+   database record in a URL (e.g. in an HTTP request either in the path
+   or a query parameter).  It can also be useful as a file name.
 
 
 
@@ -169,10 +169,6 @@ Peabody                  Expires August 13, 2020                [Page 3]
 
 Internet-Draft               new-uuid-format               February 2020
 
-
-   Many applications have a need to use the unique identifier of a
-   database record in a URL (e.g. in an HTTP request either in the path
-   or a query parameter).  It can also be useful as a file name.
 
    This document proposes alternate alphabets for encoding UUIDs which
    are convenient for use in URLs and file names, and also sort
@@ -218,6 +214,10 @@ Internet-Draft               new-uuid-format               February 2020
    output lower case letters are also correct.  No padding characters
    are used.
 
+   The name "b32a" (not case sensitive) can be used by implementations
+   to refer to this encoding.
+
+
 
 
 
@@ -225,9 +225,6 @@ Peabody                  Expires August 13, 2020                [Page 4]
 
 Internet-Draft               new-uuid-format               February 2020
 
-
-   The name "b32a" (not case sensitive) can be used by implementations
-   to refer to this encoding.
 
 3.  Acknowledgements
 
@@ -262,6 +259,9 @@ Author's Address
    Brad G. Peabody
 
    Email: brad@peabody.io
+
+
+
 
 
 

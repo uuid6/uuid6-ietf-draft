@@ -43,7 +43,11 @@
 <!-- <keyword/> -->
     <abstract>
       <t>
-Pursuant to ... internet evolved ... this document presents a new UUID format with improvements ... solving pain points for modern applications with particular attention to using UUIDs as database primary keys.
+        This document presents a new UUID format (version 6) which is suited for use as a database key.
+      </t>
+      <t>
+        This document is a proposal to update
+        <xref target="RFC4122"/>.
       </t>
     </abstract>
   </front>
@@ -54,10 +58,6 @@ Pursuant to ... internet evolved ... this document presents a new UUID format wi
         "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in
         this document are to be interpreted as described in
         <xref target="RFC2119"/>.
-      </t>
-      <t>
-        This document is a proposal to update
-        <xref target="RFC4122"/>.
       </t>
     </section>
     <section anchor="Changes" title="Summary of Changes">
