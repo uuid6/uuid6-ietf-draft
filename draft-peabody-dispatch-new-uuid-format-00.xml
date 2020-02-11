@@ -146,7 +146,8 @@
             </t>
             <t>
                 Many applications have a need to use the unique identifier of a database record in a URL (e.g. in an HTTP
-                request either in the path or a query parameter).  It can also be useful as a file name.                
+                request either in the path or a query parameter).  It can also be useful as a file name.  Being able to 
+                use a UUID for thise purpose without having to escape certain characters it is a useful property.
             </t>
             <t>
                 This document proposes alternate alphabets for encoding UUIDs which are convenient for use in URLs 
@@ -159,7 +160,7 @@
                 properties, thus different alphabets are given for each.
             </t>
             <t>
-                Situations which require understanding the encoding should specify which encoding is used.  For example, a database 
+                Situations which require understanding the encoding SHOULD specify which encoding is used.  For example, a database 
                 field which uses UUID version 6 with "b64a" encoding (see below), could be specified as type "UUID6B64A", which 
                 would result in binary storage according to UUID version 6, and otherwise read and write the value to/from applications in the 
                 b64a text format shown below.  Note also that the length can be easily used to positively distinguish if a value
@@ -187,7 +188,8 @@
                 <t>
                     UUIDs encoded in this form use digits "2" through "7" followed by "A" through "Z" (same alphabet as 
                     in <xref target="RFC4648"/> but in ASCII value sequence).  Case is not sensitive. Implementations
-                    choosing to output lower case letters are also correct.
+                    MAY choose to output lower case letters and doing so is also correct.  Implementions which parse
+                    UUIDs encoded in this way MUST be case insensitive.
                     No padding characters are used.
                 </t>
                 <t>
