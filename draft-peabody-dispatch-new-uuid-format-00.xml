@@ -129,10 +129,15 @@
             make it harder/take longer to do so).  While 
             applications should of course be using proper security measures, and relying solely on the unguessability 
             of an identifier for security purposes is ill-advised, it is certainly not wrong to use this property 
-            as an additional layer of security.
+            as an additional layer of security.  Examples of measures used to increase unguessability would be
+            using cryptographically secure random data in the node and/or clock sequence fields (latter 64 bits),
+            or using such random data in the subsecond portion of the timestamp (if subsecond time ordering is 
+            less important than unguessability for the application in question).
+            The specification should indicate that such variations are acceptable as they do not change the format
+            in an incompatible way.
         </t>
         <t>
-            Using a UUID as a database key requires communicating that UUID to other
+            Using a UUID as a database key generally requires communicating that UUID to other
             applications.  The database server will store the value internally.  It may be referenced in a 
             query language (e.g. SQL), and/or transmitted in some database driver protocol.  Other software,
             often written in another language, frequently then needs to store this identifier in its own memory
