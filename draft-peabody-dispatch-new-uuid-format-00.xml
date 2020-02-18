@@ -74,7 +74,7 @@
             The motivation for using UUIDs as database keys stems primarily from the fact that applications
             are increasingly distributed in nature.  Simplistic "auto increment" schemes
             with integers in sequence do not work well in a distributed system since the effort required to
-            syncrhonize such numbers across a network can easily become not worth it.  
+            synchronize such numbers across a network can easily become not worth it.  
             The fact that UUIDs can be used to 
             create unique and reasonably short values in distributed systems without requiring synchronization
             makes them a good candidate for use as a database key in such environments.
@@ -82,7 +82,7 @@
         <t>
             However, most of the existing UUID versions have poor database index locality.  Meaning 
             new values created in succession are not close to each other in the index and thus require 
-            inserts to be performed at random locations. Tthe negative performance effects of which on 
+            inserts to be performed at random locations. The negative performance effects of which on 
             common structures used for this (B-tree and its variants) can be dramatic.  Newly inserted 
             values should be time-ordered to address this.  Version 1 UUIDs are time-ordered, but have other
             issues (see next).
@@ -90,7 +90,7 @@
         <t>
             A point of convenience and simplicity of implementation is that custom sort 
             ordering logic should not be needed to put time ordered values in sequence.  It is possible to sort 
-            Version 1 UUIDs by time but requires breaking the bytes of the UUID into various pieces to determine 
+            Version 1 UUIDs by time but it requires breaking the bytes of the UUID into various pieces to determine 
             the order (from the timestamp).  Implementations would be simplified with a sort order where the 
             UUID can simply be treated as an opaque sequence of bytes and ordered as such. This covers the first
             64 bits of the UUID.
@@ -112,20 +112,20 @@
             Still others might already 
             have a predefined means to determine uniqueness for the application in question, such as a server node 
             number.  In an attempt to ensure uniqueness, the existing UUID format over-specifies exactly how 
-            this uniquess is determined.  This document posits the idea that while such mechanisms as MAC address 
+            this uniqueness is determined.  This document posits the idea that while such mechanisms as MAC address 
             may be okay for certain applications, it should be treated as a suggestion, not a requirement for 
             proper implementation.  Many applications will work perfectly well with more narrow and simpler 
             uniqueness mechanisms (like using an existing node ID from whatever cluster the server is already in)
             and that this should be allowed as long as the uniqueness properties are clearly specified in the 
             implementation.  I.e. "using this field type as a database primary key will produce UUIDs which are
             unique within this database cluster" should be perfectly acceptable. 
-            Some other unnecessary requirement of global/universal uniquess should not be needed for the 
+            Some other unnecessary requirement of global/universal uniqueness should not be needed for the 
             implementation to be considered correct.
         </t>
         <t>
             The property of "unguessability" is also application-specific.  Some applications may desire increased 
             security by using UUIDs which are difficult to guess (this way for example rate-limiting
-            can be used to greatly reduce the proabililty of someone correclty guessing a new identifier or at least 
+            can be used to greatly reduce the probabililty of someone correctly guessing a new identifier or at least 
             make it harder/take longer to do so).  While 
             applications should of course be using proper security measures, and relying solely on the unguessability 
             of an identifier for security purposes is ill-advised, it is certainly not wrong to use this property 
@@ -194,7 +194,8 @@
                 The node field is problematic as it encourages applications to
                 use their MAC address which may present a security problem 
                 (it is not always appropriate to reveal the network address of 
-                a machine as it could make it the target of an attack).
+                a machine as it could make it the target of an attack or provide 
+                information about its manufacturer or other details).
                 A lesser concern is that it also incidentally produces UUID with the
                 same 6 bytes at the end and are visually more difficult to distinguish
                 when looking at them in a list.
@@ -243,7 +244,7 @@
             <t>
                 Many applications have a need to use the unique identifier of a database record in a URL (e.g. in an HTTP
                 request either in the path or a query parameter).  It can also be useful as a file name.  Being able to 
-                use a UUID for thise purpose without having to escape certain characters it is a useful property.
+                use a UUID for this purpose without having to escape certain characters it is a useful property.
             </t>
             <t>
                 This document proposes alternate alphabets for encoding UUIDs which are convenient for use in URLs 
@@ -284,7 +285,7 @@
                 <t>
                     UUIDs encoded in this form use digits "2" through "7" followed by "A" through "Z" (same alphabet as 
                     in <xref target="RFC4648"/> but in ASCII value sequence).  Case is not sensitive. Implementations
-                    MAY choose to output lower case letters and doing so is also correct.  Implementions which parse
+                    MAY choose to output lower case letters and doing so is also correct.  Implementations which parse
                     UUIDs encoded in this way MUST be case insensitive.
                     No padding characters are used.
                 </t>

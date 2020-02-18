@@ -99,7 +99,7 @@ Table of Contents
    the fact that applications are increasingly distributed in nature.
    Simplistic "auto increment" schemes with integers in sequence do not
    work well in a distributed system since the effort required to
-   syncrhonize such numbers across a network can easily become not worth
+   synchronize such numbers across a network can easily become not worth
    it.  The fact that UUIDs can be used to create unique and reasonably
    short values in distributed systems without requiring synchronization
    makes them a good candidate for use as a database key in such
@@ -117,7 +117,7 @@ Internet-Draft               new-uuid-format               February 2020
    However, most of the existing UUID versions have poor database index
    locality.  Meaning new values created in succession are not close to
    each other in the index and thus require inserts to be performed at
-   random locations.  Tthe negative performance effects of which on
+   random locations.  The negative performance effects of which on
    common structures used for this (B-tree and its variants) can be
    dramatic.  Newly inserted values should be time-ordered to address
    this.  Version 1 UUIDs are time-ordered, but have other issues (see
@@ -126,7 +126,7 @@ Internet-Draft               new-uuid-format               February 2020
    A point of convenience and simplicity of implementation is that
    custom sort ordering logic should not be needed to put time ordered
    values in sequence.  It is possible to sort Version 1 UUIDs by time
-   but requires breaking the bytes of the UUID into various pieces to
+   but it requires breaking the bytes of the UUID into various pieces to
    determine the order (from the timestamp).  Implementations would be
    simplified with a sort order where the UUID can simply be treated as
    an opaque sequence of bytes and ordered as such.  This covers the
@@ -150,7 +150,7 @@ Internet-Draft               new-uuid-format               February 2020
    predefined means to determine uniqueness for the application in
    question, such as a server node number.  In an attempt to ensure
    uniqueness, the existing UUID format over-specifies exactly how this
-   uniquess is determined.  This document posits the idea that while
+   uniqueness is determined.  This document posits the idea that while
    such mechanisms as MAC address may be okay for certain applications,
    it should be treated as a suggestion, not a requirement for proper
    implementation.  Many applications will work perfectly well with more
@@ -160,7 +160,7 @@ Internet-Draft               new-uuid-format               February 2020
    specified in the implementation.  I.e. "using this field type as a
    database primary key will produce UUIDs which are unique within this
    database cluster" should be perfectly acceptable.  Some other
-   unnecessary requirement of global/universal uniquess should not be
+   unnecessary requirement of global/universal uniqueness should not be
    needed for the implementation to be considered correct.
 
 
@@ -173,7 +173,7 @@ Internet-Draft               new-uuid-format               February 2020
    The property of "unguessability" is also application-specific.  Some
    applications may desire increased security by using UUIDs which are
    difficult to guess (this way for example rate-limiting can be used to
-   greatly reduce the proabililty of someone correclty guessing a new
+   greatly reduce the probabililty of someone correctly guessing a new
    identifier or at least make it harder/take longer to do so).  While
    applications should of course be using proper security measures, and
    relying solely on the unguessability of an identifier for security
@@ -181,17 +181,16 @@ Internet-Draft               new-uuid-format               February 2020
    property as an additional layer of security.
 
    Using a UUID as a database key requires communicating that UUID to
-   various, potentially disparate, applications.  The database server
-   will store the value internally.  It may be referenced in a query
-   language (e.g.  SQL), and/or transmitted in some database driver
-   protocol.  Other software, often written in another language,
-   frequently then needs to store this identifier in its own memory and
-   potentially perform its own operations like sorting and searching
-   with it.  And such identifiers are also commonly then used in
-   protocols like HTTP where they indicate a particular resource.
-   Sometimes they are typed in by humans.  Sometimes constraints exist
-   on which bytes may be used (such as an HTTP URL path).  In most
-   cases, shorter is better.
+   other applications.  The database server will store the value
+   internally.  It may be referenced in a query language (e.g.  SQL),
+   and/or transmitted in some database driver protocol.  Other software,
+   often written in another language, frequently then needs to store
+   this identifier in its own memory and potentially perform its own
+   operations like sorting and searching with it.  And such identifiers
+   are also commonly then used in protocols like HTTP where they
+   indicate a particular resource.  Sometimes they are typed in by
+   humans.  Sometimes constraints exist on which bytes may be used (such
+   as an HTTP URL path).  In most cases, shorter is better.
 
    For these reasons, having a compact textual format is important.  The
    existing hex format is already in wide use, so keeping it for
@@ -200,7 +199,7 @@ Internet-Draft               new-uuid-format               February 2020
    A base64 alphabet would be even more compact (but require case-
    sensitivity).  This document proposes both as options.  This would
    allow applications to use a more compact text format for the
-   situations needed textual representation (i.e. you can just put this
+   situations needing textual representation (i.e. you can just put this
    value in URL and it is not unnecessarily long and does not require
    escaping).  The alphabets used for base32 and base64 encoding should
    be in ASCII numeric value sequence so the text forms can also be
@@ -215,6 +214,7 @@ Internet-Draft               new-uuid-format               February 2020
    specification in [RFC4122].  Each is given as a statement of the
    problem or limitation to which it is addressed, along with a
    description of the proposed change.
+
 
 
 
@@ -254,7 +254,8 @@ Internet-Draft               new-uuid-format               February 2020
    node fields.  The node field is problematic as it encourages
    applications to use their MAC address which may present a security
    problem (it is not always appropriate to reveal the network address
-   of a machine as it could make it the target of an attack).  A lesser
+   of a machine as it could make it the target of an attack or provide
+   information about its manufacturer or other details).  A lesser
    concern is that it also incidentally produces UUID with the same 6
    bytes at the end and are visually more difficult to distinguish when
    looking at them in a list.
@@ -273,7 +274,6 @@ Internet-Draft               new-uuid-format               February 2020
    applications each have their own requirements for uniqueness.
    Uniqueness within a single database cluster for example is acceptable
    in many cases.  A specification that forces all UUIDs to be globally
-   unique when it is not needed might not be a good idea.  Identifiers
 
 
 
@@ -282,6 +282,7 @@ Peabody                  Expires August 21, 2020                [Page 5]
 Internet-Draft               new-uuid-format               February 2020
 
 
+   unique when it is not needed might not be a good idea.  Identifiers
    are only as universally unique as their input, so it might be better
    to just clearly state this and say that it's fine if UUIDs are only
    guaranteed to be unique within a specific context if it makes sense
@@ -297,7 +298,7 @@ Internet-Draft               new-uuid-format               February 2020
    Many applications have a need to use the unique identifier of a
    database record in a URL (e.g. in an HTTP request either in the path
    or a query parameter).  It can also be useful as a file name.  Being
-   able to use a UUID for thise purpose without having to escape certain
+   able to use a UUID for this purpose without having to escape certain
    characters it is a useful property.
 
    This document proposes alternate alphabets for encoding UUIDs which
@@ -332,7 +333,6 @@ Internet-Draft               new-uuid-format               February 2020
 
 
 
-
 Peabody                  Expires August 21, 2020                [Page 6]
 
 Internet-Draft               new-uuid-format               February 2020
@@ -351,7 +351,7 @@ Internet-Draft               new-uuid-format               February 2020
    through "Z" (same alphabet as in [RFC4648] but in ASCII value
    sequence).  Case is not sensitive.  Implementations MAY choose to
    output lower case letters and doing so is also correct.
-   Implementions which parse UUIDs encoded in this way MUST be case
+   Implementations which parse UUIDs encoded in this way MUST be case
    insensitive.  No padding characters are used.
 
    The name "b32a" (not case sensitive) can be used by implementations
