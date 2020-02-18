@@ -3,10 +3,10 @@
 
 
 dispatch                                                    BGP. Peabody
-Internet-Draft                                         February 10, 2020
+Internet-Draft                                         February 18, 2020
 Updates: 4122 (if approved)
 Intended status: Standards Track
-Expires: August 13, 2020
+Expires: August 21, 2020
 
 
                            UUID Format Update
@@ -17,7 +17,12 @@ Abstract
    This document presents a new UUID format (version 6) which is suited
    for use as a database key.
 
-   This document is a proposal to update [RFC4122].
+   A common case for modern applications is to create a unique
+   identifier to be used as a primary key in a database table that is
+   ordered by creation time, difficult to guess and has a compact text
+   format.  None of the existing UUID versions fulfill each of these
+   requirements.  This document is a proposal to update [RFC4122] with a
+   new UUID version that addresses these concerns.
 
 Status of This Memo
 
@@ -34,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 13, 2020.
+   This Internet-Draft will expire on August 21, 2020.
 
 Copyright Notice
 
@@ -45,34 +50,36 @@ Copyright Notice
    Provisions Relating to IETF Documents
    (https://trustee.ietf.org/license-info) in effect on the date of
    publication of this document.  Please review these documents
+
+
+
+Peabody                  Expires August 21, 2020                [Page 1]
+
+Internet-Draft               new-uuid-format               February 2020
+
+
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
 
-
-
-Peabody                  Expires August 13, 2020                [Page 1]
-
-Internet-Draft               new-uuid-format               February 2020
-
-
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-   2.  Summary of Changes  . . . . . . . . . . . . . . . . . . . . .   2
-     2.1.  Version 6 . . . . . . . . . . . . . . . . . . . . . . . .   2
-     2.2.  Timestamp . . . . . . . . . . . . . . . . . . . . . . . .   2
-     2.3.  Clock Sequence and Node Parts . . . . . . . . . . . . . .   3
-     2.4.  Alternate Text Formats  . . . . . . . . . . . . . . . . .   3
-       2.4.1.  Base64 Text (Variant A) . . . . . . . . . . . . . . .   4
-       2.4.2.  Base32 Text . . . . . . . . . . . . . . . . . . . . .   4
-   3.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   5
-   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
-   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
-   6.  Normative References  . . . . . . . . . . . . . . . . . . . .   5
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   5
+   2.  Background  . . . . . . . . . . . . . . . . . . . . . . . . .   2
+   3.  Summary of Changes  . . . . . . . . . . . . . . . . . . . . .   4
+     3.1.  Version 6 . . . . . . . . . . . . . . . . . . . . . . . .   5
+     3.2.  Timestamp . . . . . . . . . . . . . . . . . . . . . . . .   5
+     3.3.  Clock Sequence and Node Parts . . . . . . . . . . . . . .   5
+     3.4.  Alternate Text Formats  . . . . . . . . . . . . . . . . .   6
+       3.4.1.  Base64 Text (Variant A) . . . . . . . . . . . . . . .   6
+       3.4.2.  Base32 Text . . . . . . . . . . . . . . . . . . . . .   7
+   4.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   7
+   7.  Normative References  . . . . . . . . . . . . . . . . . . . .   7
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   8
 
 1.  Introduction
 
@@ -80,22 +87,152 @@ Table of Contents
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
    document are to be interpreted as described in [RFC2119].
 
-2.  Summary of Changes
+2.  Background
+
+   A lot of things have changed in the time since UUIDs were originally
+   created.  Modern applications have a need to use (and many have
+   already implemented) UUIDs as database primary keys.  However some
+   properties of the existing specification are not well suited to this
+   task.
+
+   The motivation for using UUIDs as database keys stems primarily from
+   the fact that applications are increasingly distributed in nature.
+   Simplistic "auto increment" schemes with integers in sequence do not
+   work well in a distributed system since the effort required to
+   syncrhonize such numbers across a network can easily become not worth
+   it.  The fact that UUIDs can be used to create unique and reasonably
+   short values in distributed systems without requiring synchronization
+   makes them a good candidate for use as a database key in such
+   environments.
+
+
+
+
+
+Peabody                  Expires August 21, 2020                [Page 2]
+
+Internet-Draft               new-uuid-format               February 2020
+
+
+   However, most of the existing UUID versions have poor database index
+   locality.  Meaning new values created in succession are not close to
+   each other in the index and thus require inserts to be performed at
+   random locations.  Tthe negative performance effects of which on
+   common structures used for this (B-tree and its variants) can be
+   dramatic.  Newly inserted values should be time-ordered to address
+   this.  Version 1 UUIDs are time-ordered, but have other issues (see
+   next).
+
+   A point of convenience and simplicity of implementation is that
+   custom sort ordering logic should not be needed to put time ordered
+   values in sequence.  It is possible to sort Version 1 UUIDs by time
+   but requires breaking the bytes of the UUID into various pieces to
+   determine the order (from the timestamp).  Implementations would be
+   simplified with a sort order where the UUID can simply be treated as
+   an opaque sequence of bytes and ordered as such.  This covers the
+   first 64 bits of the UUID.
+
+   The latter portion (the last 64 bits) are in essence used to provide
+   uniqueness.
+
+   Privacy and network security issues arise from using a MAC address in
+   the node field of Version 1 UUIDs.  Exposed MAC addresses can be used
+   to locate machines to attack and can reveal various information about
+   such machines (minimally manufacturer, potentially other details).
+
+   The use of MAC addresses in UUID Version 1, and the other hashing
+   schemes used in the various versions, points to a more basic issue:
+   There is no known way to guarantee "universal uniqueness".  In fact,
+   uniqueness needs are application-specific.  MAC addresses in the node
+   field might be okay for some applications.  Others might be okay with
+   using cryptographically secure random numbers (possibly with
+   increased risk of collision).  Still others might already have a
+   predefined means to determine uniqueness for the application in
+   question, such as a server node number.  In an attempt to ensure
+   uniqueness, the existing UUID format over-specifies exactly how this
+   uniquess is determined.  This document posits the idea that while
+   such mechanisms as MAC address may be okay for certain applications,
+   it should be treated as a suggestion, not a requirement for proper
+   implementation.  Many applications will work perfectly well with more
+   narrow and simpler uniqueness mechanisms (like using an existing node
+   ID from whatever cluster the server is already in) and that this
+   should be allowed as long as the uniqueness properties are clearly
+   specified in the implementation.  I.e. "using this field type as a
+   database primary key will produce UUIDs which are unique within this
+   database cluster" should be perfectly acceptable.  Some other
+   unnecessary requirement of global/universal uniquess should not be
+   needed for the implementation to be considered correct.
+
+
+
+Peabody                  Expires August 21, 2020                [Page 3]
+
+Internet-Draft               new-uuid-format               February 2020
+
+
+   The property of "unguessability" is also application-specific.  Some
+   applications may desire increased security by using UUIDs which are
+   difficult to guess (this way for example rate-limiting can be used to
+   greatly reduce the proabililty of someone correclty guessing a new
+   identifier or at least make it harder/take longer to do so).  While
+   applications should of course be using proper security measures, and
+   relying solely on the unguessability of an identifier for security
+   purposes is ill-advised, it is certainly not wrong to use this
+   property as an additional layer of security.
+
+   Using a UUID as a database key requires communicating that UUID to
+   various, potentially disparate, applications.  The database server
+   will store the value internally.  It may be referenced in a query
+   language (e.g.  SQL), and/or transmitted in some database driver
+   protocol.  Other software, often written in another language,
+   frequently then needs to store this identifier in its own memory and
+   potentially perform its own operations like sorting and searching
+   with it.  And such identifiers are also commonly then used in
+   protocols like HTTP where they indicate a particular resource.
+   Sometimes they are typed in by humans.  Sometimes constraints exist
+   on which bytes may be used (such as an HTTP URL path).  In most
+   cases, shorter is better.
+
+   For these reasons, having a compact textual format is important.  The
+   existing hex format is already in wide use, so keeping it for
+   backward compatibility makes sense.  However an encoding using a
+   base32 alphabet would be more compact and still be case-insensitive.
+   A base64 alphabet would be even more compact (but require case-
+   sensitivity).  This document proposes both as options.  This would
+   allow applications to use a more compact text format for the
+   situations needed textual representation (i.e. you can just put this
+   value in URL and it is not unnecessarily long and does not require
+   escaping).  The alphabets used for base32 and base64 encoding should
+   be in ASCII numeric value sequence so the text forms can also be
+   sorted correctly as raw bytes.  (This is not a property of the Base32
+   and Base64 standards from [RFC4648], however there are several
+   variations in use so introducing a new one here for the express
+   purpose of correct sorting would seem to be acceptable.)
+
+3.  Summary of Changes
 
    The following is a summary of proposed changes to the UUID
-   specification in [RFC4122].  Each is given as a statement of a
+   specification in [RFC4122].  Each is given as a statement of the
    problem or limitation to which it is addressed, along with a
    description of the proposed change.
 
-2.1.  Version 6
 
-   A common case for modern applications is to need to create a unique
-   identifier (to be used as a primary key in a database table) that is
-   ordered by creation time, difficult to guess and has a compact text
-   format.  None of the existing UUID versions address each of these
-   requirements.  Thus a new UUID version number 6 is proposed.
 
-2.2.  Timestamp
+
+
+
+Peabody                  Expires August 21, 2020                [Page 4]
+
+Internet-Draft               new-uuid-format               February 2020
+
+
+3.1.  Version 6
+
+   A UUID version 6 is proposed.  It is ordered by creation time, sorts
+   correctly as raw bytes, does not require use of a MAC address in the
+   node section and has options for a compact text format.
+
+3.2.  Timestamp
 
    The timestamp value from [RFC4122] (60-bit number of 100- nanosecond
    intervals since 00:00:00.00, 15 October 1582) is workable but the
@@ -106,20 +243,12 @@ Table of Contents
    grouping new records close to each other (this can have major
    performance implications in large tables).
 
-
-
-
-Peabody                  Expires August 13, 2020                [Page 2]
-
-Internet-Draft               new-uuid-format               February 2020
-
-
    The proposed change is to encode the timestamp value into the same 60
    bits as in [RFC4122] but in big-endian byte ordering.  This way an
    application can sort by timestamp by simply treating the UUID as an
    opaque bunch of bytes.
 
-2.3.  Clock Sequence and Node Parts
+3.3.  Clock Sequence and Node Parts
 
    The latter 64 bits of a UUID per [RFC4122] are the clock sequence and
    node fields.  The node field is problematic as it encourages
@@ -145,12 +274,20 @@ Internet-Draft               new-uuid-format               February 2020
    Uniqueness within a single database cluster for example is acceptable
    in many cases.  A specification that forces all UUIDs to be globally
    unique when it is not needed might not be a good idea.  Identifiers
+
+
+
+Peabody                  Expires August 21, 2020                [Page 5]
+
+Internet-Draft               new-uuid-format               February 2020
+
+
    are only as universally unique as their input, so it might be better
    to just clearly state this and say that it's fine if UUIDs are only
    guaranteed to be unique within a specific context if it makes sense
    for that application.
 
-2.4.  Alternate Text Formats
+3.4.  Alternate Text Formats
 
    The existing UUID text format is hex encoded plus four hyphens.  For
    many applications this is unnecessarily verbose.  The same
@@ -162,13 +299,6 @@ Internet-Draft               new-uuid-format               February 2020
    or a query parameter).  It can also be useful as a file name.  Being
    able to use a UUID for thise purpose without having to escape certain
    characters it is a useful property.
-
-
-
-Peabody                  Expires August 13, 2020                [Page 3]
-
-Internet-Draft               new-uuid-format               February 2020
-
 
    This document proposes alternate alphabets for encoding UUIDs which
    are convenient for use in URLs and file names, and also sort
@@ -190,7 +320,7 @@ Internet-Draft               new-uuid-format               February 2020
    text or binary form.  A 16-byte value will necessarily be raw
    unencoded bytes whereas text forms will be longer.
 
-2.4.1.  Base64 Text (Variant A)
+3.4.1.  Base64 Text (Variant A)
 
    UUIDs encoded in this form use the "url-safe base64" alphabet: "A" to
    "Z", "a" to "z", "0" to "9" and "-" and "_", but in ASCII value
@@ -199,12 +329,21 @@ Internet-Draft               new-uuid-format               February 2020
    The name "b64a" (not case sensitive) can be used by implementations
    to refer to this encoding.
 
+
+
+
+
+Peabody                  Expires August 21, 2020                [Page 6]
+
+Internet-Draft               new-uuid-format               February 2020
+
+
    Note: It might be useful to add another variation ("b64b") with a
    different alphabet.  Hyphen and underscore are useful in a lot of
    places but there might be some others that are better for specific
    cases.
 
-2.4.2.  Base32 Text
+3.4.2.  Base32 Text
 
    Base32 can be useful if case-insensitivity is required.
 
@@ -218,27 +357,19 @@ Internet-Draft               new-uuid-format               February 2020
    The name "b32a" (not case sensitive) can be used by implementations
    to refer to this encoding.
 
-
-
-
-Peabody                  Expires August 13, 2020                [Page 4]
-
-Internet-Draft               new-uuid-format               February 2020
-
-
-3.  Acknowledgements
+4.  Acknowledgements
 
    TBD
 
-4.  IANA Considerations
+5.  IANA Considerations
 
    TBD
 
-5.  Security Considerations
+6.  Security Considerations
 
    TBD
 
-6.  Normative References
+7.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -253,6 +384,15 @@ Internet-Draft               new-uuid-format               February 2020
    [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
               Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
               <https://www.rfc-editor.org/info/rfc4648>.
+
+
+
+
+
+Peabody                  Expires August 21, 2020                [Page 7]
+
+Internet-Draft               new-uuid-format               February 2020
+
 
 Author's Address
 
@@ -277,4 +417,32 @@ Author's Address
 
 
 
-Peabody                  Expires August 13, 2020                [Page 5]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Peabody                  Expires August 21, 2020                [Page 8]
