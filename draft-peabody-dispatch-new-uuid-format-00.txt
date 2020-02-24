@@ -3,10 +3,10 @@
 
 
 dispatch                                                    BGP. Peabody
-Internet-Draft                                         February 18, 2020
+Internet-Draft                                         February 24, 2020
 Updates: 4122 (if approved)
 Intended status: Standards Track
-Expires: August 21, 2020
+Expires: August 27, 2020
 
 
                            UUID Format Update
@@ -21,7 +21,7 @@ Abstract
    identifier to be used as a primary key in a database table that is
    ordered by creation time, difficult to guess and has a compact text
    format.  None of the existing UUID versions fulfill each of these
-   requirements.  This document is a proposal to update [RFC4122] with a
+   requirements.  This document is a proposal to update RFC4122 with a
    new UUID version that addresses these concerns.
 
 Status of This Memo
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 21, 2020.
+   This Internet-Draft will expire on August 27, 2020.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Peabody                  Expires August 21, 2020                [Page 1]
+Peabody                  Expires August 27, 2020                [Page 1]
 
 Internet-Draft               new-uuid-format               February 2020
 
@@ -75,10 +75,11 @@ Table of Contents
      3.4.  Alternate Text Formats  . . . . . . . . . . . . . . . . .   6
        3.4.1.  Base64 Text (Variant A) . . . . . . . . . . . . . . .   7
        3.4.2.  Base32 Text . . . . . . . . . . . . . . . . . . . . .   7
-   4.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
-   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
-   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   7
-   7.  Normative References  . . . . . . . . . . . . . . . . . . . .   7
+   4.  Uniquness Service . . . . . . . . . . . . . . . . . . . . . .   7
+   5.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
+   8.  Normative References  . . . . . . . . . . . . . . . . . . . .   8
    Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   8
 
 1.  Introduction
@@ -108,8 +109,7 @@ Table of Contents
 
 
 
-
-Peabody                  Expires August 21, 2020                [Page 2]
+Peabody                  Expires August 27, 2020                [Page 2]
 
 Internet-Draft               new-uuid-format               February 2020
 
@@ -165,7 +165,7 @@ Internet-Draft               new-uuid-format               February 2020
 
 
 
-Peabody                  Expires August 21, 2020                [Page 3]
+Peabody                  Expires August 27, 2020                [Page 3]
 
 Internet-Draft               new-uuid-format               February 2020
 
@@ -221,7 +221,7 @@ Internet-Draft               new-uuid-format               February 2020
 
 
 
-Peabody                  Expires August 21, 2020                [Page 4]
+Peabody                  Expires August 27, 2020                [Page 4]
 
 Internet-Draft               new-uuid-format               February 2020
 
@@ -277,7 +277,7 @@ Internet-Draft               new-uuid-format               February 2020
 
 
 
-Peabody                  Expires August 21, 2020                [Page 5]
+Peabody                  Expires August 27, 2020                [Page 5]
 
 Internet-Draft               new-uuid-format               February 2020
 
@@ -333,7 +333,7 @@ Internet-Draft               new-uuid-format               February 2020
 
 
 
-Peabody                  Expires August 21, 2020                [Page 6]
+Peabody                  Expires August 27, 2020                [Page 6]
 
 Internet-Draft               new-uuid-format               February 2020
 
@@ -361,38 +361,60 @@ Internet-Draft               new-uuid-format               February 2020
    sequence).  Case is not sensitive.  Implementations MAY choose to
    output lower case letters and doing so is also correct.
    Implementations which parse UUIDs encoded in this way MUST be case
-   insensitive.  No padding characters are used.
+   insensitive.  No padding characters are used.  Unless there is a
+   sepcific reason for an implementation to do otherwise, it SHOULD
+   output lower case base32 characters.  The motivation for this it will
+   increase the number of situations where UUIDs encoded in base32 and
+   then used in different environments (some of which may be case
+   sensitive, some not) are handled correctly by default.  For example
+   file names are case sensitive on some file systems and not on others.
+   Preferring one specific (lower) case allows these to be used
+   interchangably with predictable results.
 
    The name "b32a" (not case sensitive) can be used by implementations
    to refer to this encoding.
 
-4.  Acknowledgements
+4.  Uniquness Service
+
+   An idea for discssion is that for applications which truly require
+   globally unique identifiers one possible solution would be for
+   someone to maintain a service which allocates numbers by time.  In
+   essense and for example "give me a 32-bit number that will be unique
+   for the time range of midnight to midnight tomorrow".  Such a service
+   would be relaitvely easy to create.  The effort required to maintain
+   it depends largely on how much it is used.  Applications using the
+   same endpoint for this service would be guaranteed unique UUIDs.
+   Companies could host their own too.  I'm not sure if this sort of
+   thing would be worth the effort but it's another idea for how to
+
+
+
+Peabody                  Expires August 27, 2020                [Page 7]
+
+Internet-Draft               new-uuid-format               February 2020
+
+
+   address the global uniqueness issue for applications that really need
+   it.
+
+5.  Acknowledgements
+
+   TODO: Acknowledgements for prior work and discussion.
+
+6.  IANA Considerations
 
    TBD
 
-5.  IANA Considerations
+7.  Security Considerations
 
-   TBD
+   TODO: Provide additional information on "unguessability" as needed.
 
-6.  Security Considerations
-
-   TBD
-
-7.  Normative References
+8.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
-
-
-
-
-
-Peabody                  Expires August 21, 2020                [Page 7]
-
-Internet-Draft               new-uuid-format               February 2020
-
 
    [RFC4122]  Leach, P., Mealling, M., and R. Salz, "A Universally
               Unique IDentifier (UUID) URN Namespace", RFC 4122,
@@ -423,26 +445,4 @@ Author's Address
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Peabody                  Expires August 21, 2020                [Page 8]
+Peabody                  Expires August 27, 2020                [Page 8]

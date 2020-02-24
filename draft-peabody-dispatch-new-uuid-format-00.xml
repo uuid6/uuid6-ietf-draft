@@ -49,7 +49,7 @@
             A common case for modern applications is to create a unique identifier
             to be used as a primary key in a database table that is ordered by creation time, 
             difficult to guess and has a compact text format. None of the existing UUID versions 
-            fulfill each of these requirements. This document is a proposal to update <xref target="RFC4122"/>
+            fulfill each of these requirements. This document is a proposal to update RFC4122
             with a new UUID version that addresses these concerns.
         </t>
     </abstract>
@@ -291,8 +291,14 @@
                     UUIDs encoded in this form use digits "2" through "7" followed by "A" through "Z" (same alphabet as 
                     in <xref target="RFC4648"/> but in ASCII value sequence).  Case is not sensitive. Implementations
                     MAY choose to output lower case letters and doing so is also correct.  Implementations which parse
-                    UUIDs encoded in this way MUST be case insensitive.
-                    No padding characters are used.
+                    UUIDs encoded in this way MUST be case insensitive.  No padding characters are used.
+                    Unless there is a sepcific reason for 
+                    an implementation to do otherwise, it SHOULD output lower case base32 characters.
+                    The motivation for this it will increase the number of situations where UUIDs encoded in base32 
+                    and then used in different environments (some of which may be case sensitive, some not) are 
+                    handled correctly by default.  For example file names are case sensitive on some file systems 
+                    and not on others.  Preferring one specific (lower) case
+                    allows these to be used interchangably with predictable results.
                 </t>
                 <t>
                     The name "b32a" (not case sensitive) can be used by implementations to refer to this encoding.
@@ -300,14 +306,27 @@
             </section>
         </section>
     </section>
+    <section anchor="UniqunessService" title="Uniquness Service">
+        <t>
+            An idea for discssion is that for applications which truly require globally unique identifiers
+            one possible solution would be for someone to maintain a service which allocates numbers by time.
+            In essense and for example "give me a 32-bit number that will be unique for the time range of midnight to midnight tomorrow".
+            Such a service would be relaitvely easy to create.  The effort required to maintain it depends largely
+            on how much it is used.
+            Applications using the same endpoint for this service would be guaranteed unique UUIDs.
+            Companies could host their own too.
+            I'm not sure if this sort of thing would be worth the effort but it's another idea 
+            for how to address the global uniqueness issue for applications that really need it.
+        </t>
+    </section>
     <section anchor="Acknowledgements" title="Acknowledgements">
-        <t>TBD</t>
+        <t>TODO: Acknowledgements for prior work and discussion.</t>
     </section>
     <section anchor="IANA" title="IANA Considerations">
         <t>TBD</t>
     </section>
     <section anchor="Security" title="Security Considerations">
-        <t>TBD</t>
+        <t>TODO: Provide additional information on "unguessability" as needed.</t>
     </section>
   </middle>
   <back>
