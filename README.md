@@ -4,7 +4,7 @@ This is the IETF draft for a version 6 UUID.  Various discussion will need to oc
 
 The following is a list of relevant topics related to this draft.
 
-Pull requests will be accepted for changes to Concerns and Possible Solutions or to introduce a new Topic if it is missing.  *As long as the text is concise, clear and objective.* PRs will not be accepted for changes to the decision made for the draft without full discussion.  Please make an issue to discuss such things.
+Pull requests will be accepted for changes to Concerns and Possible Solutions or to introduce a new Topic if it is missing,  *as long as the text is concise, clear and objective.* PRs will not be accepted for changes to the decision made for the draft without full discussion.  Please make an issue to discuss such things.
 
 - Topic: **Length**.  
   - Concerns:
@@ -17,3 +17,12 @@ Pull requests will be accepted for changes to Concerns and Possible Solutions or
     - Introduce a system for variable-length UUIDs
   - Current Decision Per Draft:
     - *Keep the same length.*  Introducing different length(s) would break backward compatibility and is not generally useful enough to be worth it.  If you need something other than 128 bits, it's not a UUID.
+
+- Topic: **Text Encoding**
+  - TODO
+
+- Topic: **Timestamp**
+  - TODO
+
+- Topic: **Local/Global Uniqueness**
+  - TODO
