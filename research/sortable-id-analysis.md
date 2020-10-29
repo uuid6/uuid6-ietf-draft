@@ -3,7 +3,7 @@
 ### Length
 **Q:** Are we sticking with 128-bits or are we introducing variable-length.
 - The most common implementations utilize 128 bits for globally unique values. This should be kept for backwards compatibility.
-- Where required, to best optimize database sizes, 64 bits is the second most common and provide a level of uniqueness sufficient to a specific applications purpose.
+- Where required, to best optimize database sizes, 64 bits is the second most common and provide a level of uniqueness sufficient to a specific applications context.
 - Many articles exist on the general topic of "how long should an ID be to guarantee uniqueness" most agree that 128 is great, 64 is just as good if you only require uniqueness in the application context.
 - Larger than 128 bits is not required from a collision avoidance perspective and adds extra unneeded data to the application/database/wire/etc 
 
@@ -33,7 +33,18 @@ A note on Security:
 - The timestamp embedded within an ID does expose some data about when the corresponding data was created and the time on the current server.
 - However the timestamp alone articulates nothing about the data itself or the entire database or application as a whole.
 
-There are two outstanding approaches:
+The current UUIDv6 draft proposes:
+- A 60 bit timestamp sourced from the UTC Gregorian calendar and big Indian encoding. This ultimately re-ranges the original spec to contain High, Mid, Low time values to preserve their position in time and promote better sorting ability
+- The clock sequence sections and node are relaxed to include random bytes.
+- Note that the clock sequence may be valuable to keep as per some discussion coming up later
+
+A note on the time source for the timestamp
+- UUIDv1 and proposed UUIDv6 utilize UTC Gregorian that are 100-nanosecond intervals.
+- Many other implementations utilize Unix Epoch time
+- Many others utilize a custom epoch date as the start
+- Recommendation: Relax the spec and allow for any properly synced, monotonic time source as long as the required amount of time bits can be achieved.
+
+In examining other implementations there are two outstanding approaches that can be found.
 1. timestamp|random
 - This approach takes an input timestamp of varying length (more on this in a moment) and concatenates random data amounting to the leftover space.
 - The timestamp itself is usually epoch time as a standard rather than the UUIDv1 timestamp which uses Gregorian time.
@@ -101,11 +112,17 @@ Example:
 - That being said, one could explore the act of an "as required" mutations for a 64 bit variant when a situation arises where UUID is required to be transmitted outside of the application context.
 
 Potential Mutation Example
-1. Compute a hash on the 64 bit variant
+1. Compute a hash on the 64 bit variant's text representation
 2. Truncate the resulting hash to 64 bits by removing the most least significant bits (Truncation process in RFC 2104, Section 5)
 3. Post-fix the trimmed hash at the end of the 64bit-UUID
 4. Mutate the variant bits to '111' (hex E or F) as per the leftover Variant in RFC 4122, Section 4.1.1. this is "Reserved for future definition." and is perfect for a new 64bit variant UUID.
 5. The Version can be mutated to 0001 as the first version of the 64to128 conversion Variant
-Problem: This is a one-way conversion as bits have been mutated and there is not a good way to undo the conversion.
 
-Alternatively, the prefix solution described could be used to identify that the 64 bit value is actually UUID 64.
+Other Thoughts
+- Problem: This is a one-way conversion as bits have been mutated and there is not a good way to undo the conversion.
+- Alternatively, the prefix solution described could be used to identify that the 64 bit value is actually UUID 64.
+- Thought, this could also be used as a method to create a larger than 128 bit UUID as well using the same steps but on a 128bit UUID in step 1 and then prefixing on the current UUID behind a dash.
+- Input: b3ebb6c8-19a3-11eb-adc1-0242ac120002
+- SHA256: 99a65514eca05bfa1ccaa95bd2510d889f1bfea20ffc2aa57a739e1bbce060c7
+- Combined: b3ebb6c8-19a3-11eb-adc1-0242ac120002-99a65514eca05bfa1ccaa95bd2510d889f1bfea20ffc2aa57a739e1bbce060c7
+- There may be no use case for this but if a larger more unique UUID is required this could be a potential method for creating one. The hash method could also be variable in length. sha1, md5, sha256, etc.
