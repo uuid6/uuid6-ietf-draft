@@ -265,14 +265,9 @@
             </section>
             <section anchor="uuiv6node" title="UUIDv6 Node Usage">
 			<t>
-            UUIDv6 node bits MUST be set to a 48-bit random or pseudo-random number.
-            UUIDv6 nodes MUST NOT utilize an IEEE 802 MAC address or the
+            UUIDv6 node bits SHOULD be set to a 48-bit random or pseudo-random number.
+            UUIDv6 nodes SHOULD NOT utilize an IEEE 802 MAC address or the
             RFC 4122, Section 4.5 method of generating a random multicast IEEE 802 MAC address.
-            <!--
-            NOTE: I'm not entirely sure that we should make this a MUST.  We want implementations to use PRNG
-            data as a default, but I don't know that it should violate the specification if they don't.
-            I'm thinking this becomes a SHOULD.
-            -->
 			</t>
             </section>
             <section anchor="uuiv6pseudo" title="UUIDv6 Basic Creation Algorithm">
