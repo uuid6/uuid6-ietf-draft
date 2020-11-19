@@ -46,10 +46,10 @@
         </t>
         <t>
             A common case for modern applications is to create a unique identifier for use as a primary key in a database table.
-			This identifier is usually implements an embedded timestamp that is sortable using the monotonic creation time in the most significant bits. 
+			This identifier usually implements an embedded timestamp that is sortable using the monotonic creation time in the most significant bits. 
 			In addition the identifier is highly collision resistant, difficult to guess, and provides minimal security attack surfaces.
 			None of the existing UUID versions, including UUIDv1, fulfill each of these requirements in the most efficient possible way.
-			This document is a proposal to update RFC4122 with three new UUID versions that address these concerns.
+			This document is a proposal to update RFC4122 with three new UUID versions that address these concerns, each with different trade-offs.
         </t>
     </abstract>
   </front>
@@ -92,10 +92,9 @@
 			into various pieces, re-ordering the bits, and then determining the order from the reconstructed timestamp. This 
 			is not efficient in very large systems. Implementations would be simplified with a sort order where the
 			UUID can simply be treated as an opaque sequence of bytes and ordered as such.
-			This covers the first, most significant, 64 bits of the UUID.
         </t>
         <t>
-            The latter portion, the last 64 bits, are in essence used to provide uniqueness both on a global scale and
+            After the embedded timestamp, the remaining 64 bits are in essence used to provide uniqueness both on a global scale and
 			within a given timestamp tick. The clock sequence value ensures that when multiple UUIDs are 
 			generated for the same timestamp value are given a monotonic sequence value. This explicit sequencing 
 			helps further facilitate sorting. The remaining random bits ensure collisions are minimal.
@@ -124,6 +123,8 @@
 		</t>
 			<ul spacing="compact" empty="true">
 				<li><t>- Timestamps MUST be k-sortable with the most-significant bits of the big-endian time embedded as-is without reordering.</t></li>
+                <!-- NOTE: Ky, forgive my ignorance but I think an inline definition of "k-sortable" would help here,
+                I'm unclear on which specific property(ies) make it k-sortable. -->
 				<li><t>- Timestamps SHOULD utilize millisecond precision and Unix Epoch as timestamp source. Although,
 				  there is some variation to this among implementations depending on the application requirements.</t></li>			
 				<li><t>- The ID format SHOULD be Lexicographically sortable while in the textual representation.</t></li>	
@@ -147,7 +148,8 @@
 		<t>
 		Next, UUIDv7 introduces an entirely new time-based UUID bit layout utilizing a variable length timestamp sourced from the 
 		widely implemented and well known Unix Epoch timestamp source.
-		To Do: Add other details defined in the bit layout to solve the problems outlined in the Background section.
+        The timestamp is broken into a 36-bit integer sections part, and is followed by a field of variable length which
+        represents the sub-second timestamp portion, encoded so that each bit from most to least significant adds more precision.
 		</t>
 		<t>
 		Finally, UUIDv8 introduces a relaxed time-based UUID format that caters to application implementations
@@ -161,7 +163,7 @@
         <t>
 		The UUID length of 16 octets (128 bits) remains unchanged. The textual representation of a UUID consisting of 36
         hexadecimal and dash characters in the format 8-4-4-4-12 remains unchanged for human readability.
-        In addition the position of the position of both the Version and Variant bits remain unchanged in the layout.
+        In addition the position of both the Version and Variant bits remain unchanged in the layout.
         </t>
 		<section anchor="versions" title="Versions">
 		<t>
@@ -174,8 +176,8 @@
 		</thead>
 		<tbody>
 			<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>6</td><td>Reordered Gregorian time-based UUID</td></tr>
-			<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>7</td><td>New Unix Epoch time-based UUID</td></tr>
-			<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>8</td><td>Variable length time-based UUID</td></tr>
+			<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>7</td><td>Variable length Unix Epoch time-based UUID</td></tr>
+			<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>8</td><td>Custom time-based UUID</td></tr>
 		</tbody>
 		</table>
 		</section>
@@ -214,7 +216,7 @@
         The format for the 16-octet, 128-bit UUIDv6 is shown in Figure 1
 		</t>
 <figure>
-<name>UUIDv7 Field and Bit Layout</name>
+<name>UUIDv6 Field and Bit Layout</name>
 <artwork>
      0                   1                   2                   3
      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -266,6 +268,11 @@
             UUIDv6 node bits MUST be set to a 48-bit random or pseudo-random number.
             UUIDv6 nodes MUST NOT utilize an IEEE 802 MAC address or the
             RFC 4122, Section 4.5 method of generating a random multicast IEEE 802 MAC address.
+            <!--
+            NOTE: I'm not entirely sure that we should make this a MUST.  We want implementations to use PRNG
+            data as a default, but I don't know that it should violate the specification if they don't.
+            I'm thinking this becomes a SHOULD.
+            -->
 			</t>
             </section>
             <section anchor="uuiv6pseudo" title="UUIDv6 Basic Creation Algorithm">
@@ -330,7 +337,13 @@
      0                   1                   2                   3
      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                          DATA                                 |
+    |                      unix_timestamp_sec                       |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |       |       ms_time         |  ver  |      us_time          |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    | var |    ns_time    |           node                          |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                                                               |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </artwork></figure>
             <section anchor="uuiv7timestamp" title="UUIDv7 Timestamp Usage">
