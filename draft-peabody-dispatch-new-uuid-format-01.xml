@@ -33,7 +33,7 @@
       <email>kydavis@cisco.com</email>
       </address>
     </author>
-    <date year="2020" />
+    <date year="2021" />
       <area>ART</area>
       <workgroup>dispatch</workgroup>
       <keyword>uuid</keyword>
@@ -49,7 +49,7 @@
 			This identifier usually implements an embedded timestamp that is sortable using the monotonic creation time in the most significant bits. 
 			In addition the identifier is highly collision resistant, difficult to guess, and provides minimal security attack surfaces.
 			None of the existing UUID versions, including UUIDv1, fulfill each of these requirements in the most efficient possible way.
-			This document is a proposal to update RFC4122 with three new UUID versions that address these concerns, each with different trade-offs.
+			This document is a proposal to update <xref target="RFC4122"/> with three new UUID versions that address these concerns, each with different trade-offs.
         </t>
     </abstract>
   </front>
@@ -78,7 +78,7 @@
 			for use as a database key in such environments.
         </t>
         <t>
-            However some properties of RFC 4122 UUIDs are not well suited to this task.
+            However some properties of <xref target="RFC4122"/> UUIDs are not well suited to this task.
 			First, most of the existing UUID versions such as UUIDv4 have poor database index locality.
 			Meaning new values created in succession are not close to each other in the index and thus require 
             inserts to be performed at random locations. The negative performance effects of which on 
@@ -116,15 +116,36 @@
 			Due to the shortcomings of UUIDv1 and UUIDv4 details so far, many widely distributed database applications 
 			and large application vendors have sought to solve the problem of creating a better 
 			time-based, sortable unique identifier for use as a database key. This has lead to numerous implementations 
-			over the past 10 years solving the same problem in slightly different ways.
+			over the past 10+ years solving the same problem in slightly different ways.
         </t>
+		<t>
+		   While preparing this specification the following 16 different implementations were analyzed for trends in total ID length, bit Layout, lexical formatting/encoding, timestamp type, timestamp format, timestamp accurancy, node format/components, collision handling and multi-timestamp tick generation sequencing.
+		</t>
+		   <ol spacing="compact">
+				<li><t><xref target="LexicalUUID"/> by Twitter</t></li>	
+				<li><t><xref target="Snowflake"/> by Twitter</t></li>	
+				<li><t><xref target="Flake"/> by Boundary</t></li>	
+				<li><t><xref target="ShardingID"/> by Instagram</t></li>	
+				<li><t><xref target="KSUID"/> by Segment</t></li>	
+				<li><t><xref target="Elasticflake"/> by P. Pearcy</t></li>	
+				<li><t><xref target="FlakeID"/> by T. Pawlak</t></li>	
+				<li><t><xref target="Sonyflake"/> by Sony</t></li>	
+				<li><t><xref target="orderedUuid"/> by IT. Cabrera</t></li>	
+				<li><t><xref target="COMBGUID"/> by R. Tallent</t></li>	
+				<li><t><xref target="ULID"/> by A. Feerasta</t></li>	
+				<li><t><xref target="SID"/> by A. Chilton</t></li>	
+				<li><t><xref target="pushID"/> by Google</t></li>	
+				<li><t><xref target="XID"/> by O. Poitrey</t></li>	
+				<li><t><xref target="ObjectID"/> by MongoDB</t></li>	
+				<li><t><xref target="CUID"/> by E. Elliott</t></li>	
+			</ol>
+
 		<t>
 			An inspection of these implementations details the following trends that help define this standard:
 		</t>
 			<ul spacing="compact" empty="true">
-				<li><t>- Timestamps MUST be k-sortable with the most-significant bits of the big-endian time embedded as-is without reordering.</t></li>
-                <!-- NOTE: Ky, forgive my ignorance but I think an inline definition of "k-sortable" would help here,
-                I'm unclear on which specific property(ies) make it k-sortable. -->
+				<li><t>- Timestamps MUST be k-sortable. That is, values within or close to the same timestamp are ordered properly by sorting algorithms.</t></li>
+				<li><t>- Timestamps SHOULD be big-endian with the most-significant bits of the time embedded as-is without reordering.</t></li>
 				<li><t>- Timestamps SHOULD utilize millisecond precision and Unix Epoch as timestamp source. Although,
 				  there is some variation to this among implementations depending on the application requirements.</t></li>			
 				<li><t>- The ID format SHOULD be Lexicographically sortable while in the textual representation.</t></li>	
@@ -143,20 +164,20 @@
 		The first, UUIDv6, aims to be the easiest to implement for applications which already
 		implement UUIDv1. The UUIDv6 specification keeps the original Gregorian timestamp source but does not reorder the timestamp bits as per the process  
 		utilized by UUIDv1. UUIDv6 also requires that pseudo-random data MUST be used in place of the MAC address.
-		The rest of the UUIDv1 format remains unchanged in UUIDv6.
+		The rest of the UUIDv1 format remains unchanged in UUIDv6. See <xref target="uuidv6layout"/>
         </t>
 		<t>
 		Next, UUIDv7 introduces an entirely new time-based UUID bit layout utilizing a variable length timestamp sourced from the 
 		widely implemented and well known Unix Epoch timestamp source.
         The timestamp is broken into a 36-bit integer sections part, and is followed by a field of variable length which
-        represents the sub-second timestamp portion, encoded so that each bit from most to least significant adds more precision.
+        represents the sub-second timestamp portion, encoded so that each bit from most to least significant adds more precision. See <xref target="uuidv7layout"/>
 		</t>
 		<t>
 		Finally, UUIDv8 introduces a relaxed time-based UUID format that caters to application implementations
 		that cannot utilize UUIDv1, UUIDv6, or UUIDv7. UUIDv8 also future-proofs this specification by allowing 
 		time-based UUID formats from timestamp sources that are not yet be defined. The variable size timestamp offers
 		lots of flexibility to create an implementation specific RFC compliant time-based UUID while retaining the 
-		properties that make UUID great.
+		properties that make UUID great. See <xref target="uuidv8layout"/>
         </t>
     </section>
     <section anchor="format" title="Format">
@@ -184,7 +205,7 @@
         <section anchor="variant" title="Variant">
         <t>
 		The variant bits utilized by UUIDs in this specification 
-		remains the same as RFC 4122, section 4.1.1. 
+		remains the same as <xref target="RFC4122" sectionFormat="comma" section="4.1.1"/>. 
 		</t>
 		<t>
         The Table 2 lists the contents of the variant field, bits 64 and 65,
@@ -201,15 +222,15 @@
 		</tbody>
 		</table>
         </section>
-        <section anchor="uuiv6layout" title="UUIDv6 Layout and Bit Order">
+        <section anchor="uuidv6layout" title="UUIDv6 Layout and Bit Order">
         <t>
-		UIDv6 aims to be the easiest to implement by reusing most of the layout of bits
+		UUIDv6 aims to be the easiest to implement by reusing most of the layout of bits
         found in UUIDv1 but with changes to bit ordering for the timestamp.
         Where UUIDv1 splits the timestamp bits into three distinct parts and orders them as
         time_low, time_mid, time_high_and_version. UUIDv6 instead keeps the source bits
         from the timestamp intact and changes the order to time_high, time_mid, and time_low.
         Incidentally this will match the original 60-bit Gregorian timestamp source.
-        The clock sequence bits remain unchanged from their usage and position in RFC 4122.
+        The clock sequence bits remain unchanged from their usage and position in <xref target="RFC4122"/>.
         The 48-bit node MUST be set to a pseudo-random value.
 		</t>
 		<t>
@@ -252,27 +273,27 @@
         <dt>node:</dt> <dd>48-bit pseudo-random number used as a spatially unique identifier
             Occupies bits 80 through 127 (octets 10-15)</dd>
 		</dl>
-            <section anchor="uuiv6timestamp" title="UUIDv6 Timestamp Usage">
+            <section anchor="uuidv6timestamp" title="UUIDv6 Timestamp Usage">
             <t>
 			UUIDv6 reuses the 60-bit Gregorian timestamp with 100-nanosecond
-            precision defined in RFC4122, Section 4.1.4.
+            precision defined in <xref target="RFC4122" sectionFormat="comma" section="4.1.4"/>.
             </t>
 			</section>
-            <section anchor="uuiv6sequence" title="UUIDv6 Clock Sequence  Usage">
+            <section anchor="uuidv6sequence" title="UUIDv6 Clock Sequence  Usage">
             <t>
-			UUIDv6 makes no change to the Clock Sequence usage defined by RFC 4122, Section 4.1.5.
+			UUIDv6 makes no change to the Clock Sequence usage defined by <xref target="RFC4122" sectionFormat="comma" section="4.1.5"/>.
 			</t>
             </section>
-            <section anchor="uuiv6node" title="UUIDv6 Node Usage">
+            <section anchor="uuidv6node" title="UUIDv6 Node Usage">
 			<t>
             UUIDv6 node bits SHOULD be set to a 48-bit random or pseudo-random number.
             UUIDv6 nodes SHOULD NOT utilize an IEEE 802 MAC address or the
-            RFC 4122, Section 4.5 method of generating a random multicast IEEE 802 MAC address.
+            <xref target="RFC4122" sectionFormat="comma" section="4.5"/> method of generating a random multicast IEEE 802 MAC address.
 			</t>
             </section>
-            <section anchor="uuiv6pseudo" title="UUIDv6 Basic Creation Algorithm">
+            <section anchor="uuidv6pseudo" title="UUIDv6 Basic Creation Algorithm">
 			<t>
-            The following implementation algorithm is based on RFC 4122
+            The following implementation algorithm is based on <xref target="RFC4122"/>
             but with changes specific to UUIDv6:
 			</t>
 			<ol>
@@ -341,23 +362,23 @@
     |                                                               |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </artwork></figure>
-            <section anchor="uuiv7timestamp" title="UUIDv7 Timestamp Usage">
+            <section anchor="uuidv7timestamp" title="UUIDv7 Timestamp Usage">
 			<!-- To Do: Describe timestamp usage in UUIDv7 -->
             </section>
-            <section anchor="uuiv7sequence" title="UUIDv7 Clock Sequence Usage">
+            <section anchor="uuidv7sequence" title="UUIDv7 Clock Sequence Usage">
 			<!-- To Do: Describe clock sequence usage -->
             </section>
-            <section anchor="uuiv7node" title="UUIDv7 Node Usage">
+            <section anchor="uuidv7node" title="UUIDv7 Node Usage">
 			<!-- To Do: Describe node usage -->
             </section>
-            <section anchor="uuiv7pseudo" title="UUIDv7 Basic Creation Algorithm">
+            <section anchor="uuidv7pseudo" title="UUIDv7 Basic Creation Algorithm">
 			<!-- To Do: Define ordered list of steps used to craft a UUIDv7 -->
             </section>
         </section>
         <section anchor="uuidv8layout" title="UUIDv8 Layout and Bit Order">
 		<t>
         UUIDv8 offers variable-size timestamp, clock sequence, and node values
-        which allow for a highly customization UUID that fits a given application needs.
+        which allow for a highly customizable UUID that fits a given application needs.
 		</t>
 		<t>
         UUIDv8 SHOULD only be utilized if an implementation cannot utilize UUIDv1, UUIDv6, or UUIDv8.
@@ -421,19 +442,19 @@
             source with at least 48 bits is used. When a 32-bit timestamp source
             is utilized, these bits are set to 0. Occupies bits 32 through 47</dd>
         <dt>ver:</dt> <dd>The 4 bit UUIDv8 version (1000). Occupies bits 48 through 51.</dd>
-        <dt>time_or_seq:</dt> <dd>If a 60-bit timestamp is used these 12-bits are used to
+        <dt>time_or_seq:</dt> <dd>If a 60-bit, or larger, timestamp is used these 12-bits are used to
             fill out the remaining timestamp. If a 32 or 48-bit timestamp
             is leveraged a 12-bit clock sequence MAY be used. 
 			Together ver and time_or_seq occupy bits 48 through 63 (octets 6-7)</dd>
         <dt>var:</dt> <dd>2-bit UUID variant (10)</dd>
-        <dt>seq_or_node:</dt> <dd>If a 60-bit timestamp source is leverages these 8 bits
+        <dt>seq_or_node:</dt> <dd>If a 60-bit, or larger, timestamp source is leverages these 8 bits
             SHOULD be allocated for an 8-bit clock sequence counter. If
             a 32 or 48 bit timestamp source is used these 8-bits SHOULD be set to random.</dd>
         <dt>node:</dt> <dd>In most implementations these bits will likely be set to
             pseudo-random data. However, implementations utilize the node as they see fit.
             Together var, seq_or_node, and node occupy Bits 64 through 127 (octets 8-15)</dd>
 		</dl>
-            <section anchor="uuiv8timestamp" title="UUIDv8 Timestamp Usage">
+            <section anchor="uuidv8timestamp" title="UUIDv8 Timestamp Usage">
 			<t>
             UUIDv8's usage of timestamp relaxes both the timestamp source
             and timestamp length. Implementations are free to utilize
@@ -443,9 +464,7 @@
             Some examples include:
 			</t>
 			<ul spacing="compact"  empty="true">
-                <li><t>- Unix Epoch</t></li>
                 <li><t>- Custom Epoch</t></li>
-                <li><t>- Gregorian Epoch</t></li>
                 <li><t>- NTP Timestamp</t></li>
                 <li><t>- ISO 8601 timestamp</t></li>
 			</ul>
@@ -487,12 +506,12 @@
             knowledge of the source timestamp used by the UUIDv8 implementation.
 			</t>
             </section>
-            <section anchor="uuiv8sequence" title="UUIDv8 Clock Sequence Usage">
+            <section anchor="uuidv8sequence" title="UUIDv8 Clock Sequence Usage">
 			<t>
             A clock sequence MUST be used with UUIDv8 as added sequencing guarantees
             when multiple UUIDv8 will be created on the same clock tick.
             The amount of bits allocated to the clock sequence depends on the
-            precision of the timestamp source. A more accurate timestamp source using
+            precision of the timestamp source. For example, a more accurate timestamp source using
             nanosecond precision will require less clock sequence bits than a timestamp
             source utilizing seconds for precision.
 			</t>
@@ -522,7 +541,7 @@
             timestamp precision and expected UUID generation rates.
 			</t>
             </section>
-            <section anchor="uuiv8node" title="UUIDv8 Node Usage">
+            <section anchor="uuidv8node" title="UUIDv8 Node Usage">
 			<t>
             The UUIDv8 Node MAY contain any set of data an implementation desires however
             the node MUST NOT be set to all 0s which does not ensure global uniqueness.
@@ -545,7 +564,7 @@
             ensure global uniqueness can be guaranteed.
 			</t>
             </section>
-            <section anchor="uuiv8pseudo" title="UUIDv6 Basic Creation Algorithm">
+            <section anchor="uuidv8pseudo" title="UUIDv6 Basic Creation Algorithm">
 			<t>
             The entire usage of UUIDv8 is meant to be variable
             and allow as much customization as possible to meet
@@ -557,7 +576,7 @@
             and the recommendations outlined in this specification.
 			</t>
 			<t>
-            32-bit timestamp, 12-bit sequence counter, 62-bit node:
+            <strong>32-bit timestamp, 12-bit sequence counter, 62-bit node:</strong>
 			</t>
 			<ol>
 				<li><t>From a system-wide shared stable store (e.g., a file) or global variable,
@@ -582,7 +601,7 @@
 				  back to the stable store</t></li>
 			</ol>
 			<t>
-            48-bit timestamp, 12-bit sequence counter, 62-bit node:
+            <strong>48-bit timestamp, 12-bit sequence counter, 62-bit node:</strong>
 			</t>
 			<ol>
 				<li><t>From a system-wide shared stable store (e.g., a file) or global variable,
@@ -596,7 +615,7 @@
 				<li><t>The rest of the steps are the same as the previous example.</t></li>
 			</ol>
 			<t>
-            60-bit timestamp, 8-bit sequence counter, 54-bit node:
+            <strong>60-bit timestamp, 8-bit sequence counter, 54-bit node:</strong>
 			</t>
 			<ol>
 				<li><t>From a system-wide shared stable store (e.g., a file) or global variable,
@@ -620,7 +639,7 @@
 				<li><t>Save the state (current timestamp and clock sequence) back to the stable store</t></li>
 			</ol>
 			<t>
-            64-bit timestamp, 8-bit sequence counter, 54-bit node:
+            <strong>64-bit timestamp, 8-bit sequence counter, 54-bit node:</strong>
 			</t>
 			<ol>
 				<li><t>The same steps as the 60-bit timestamp can be utilized
@@ -630,7 +649,7 @@
 				  and lose 4 bits of precision in the nanoseconds or microseconds position.</t></li>
 			</ol>
 			<t>
-            General algorithm for generation of UUIDv8 not defined here:
+            <strong>General algorithm for generation of UUIDv8 not defined here:</strong>
 			</t>
 			<ol>
 				<li><t>From a system-wide shared stable store (e.g., a file) or global variable,
@@ -669,14 +688,14 @@
 			<li><t>8-bits for each of the 4 hyphens = 32 bits</t></li>
 		</ul>
 		<t>
-        Where possible the UUID SHOULD be stored within
+        Where possible UUIDs SHOULD be stored within
         database applications as the underlying 128-bit binary value.
         </t>
     </section>
     <section anchor="uniquness" title="Global Uniqueness">
         <t>
         UUIDs created by this specification offer the same guarantees for global uniqueness 
-		as those found in RFC 4122. Furthermore, the time-based UUIDs defined in this specification 
+		as those found in <xref target="RFC4122"/>. Furthermore, the time-based UUIDs defined in this specification 
 		are geared towards database applications but MAY be used for a wide variety of use-cases. 
 		Just as global uniqueness is guaranteed, UUIDs are guaranteed to be unique within an application 
 		context within the enterprise domain.
@@ -711,11 +730,11 @@
         Timestamps embedded in the UUID do pose a very small attack surface. The timestamp in conjunction with 
 		the clock sequence does signal the order of creation for a given UUID and it's corresponding data but 
 		does not define anything about the data itself or the application as a whole. If UUIDs are required for
-		use with any security operation within an application context in any shape or form then RFC 4122 UUIDv4 
+		use with any security operation within an application context in any shape or form then <xref target="RFC4122"/> UUIDv4 
 		SHOULD be utilized.
         </t>
         <t>
-        The machineID portion of node that MAY be leveraged for distributed applications generating UUIDs does 
+        The machineID portion of node, described in <xref target="distributed"/>, does 
 		provide small unique identifier which could be used to determine which application is generating 
 		data but this machineID alone is not enough to identify a node on the network without other corresponding 
 		data points. Furthermore the machineID, like the timestamp+sequence, does not provide any context about 
@@ -762,5 +781,162 @@
 			  <seriesInfo name="DOI" value="10.17487/RFC4122"/>
 		</reference>
     </references>
+	<references title="Informative References">
+	    <reference anchor="LexicalUUID" target="https://github.com/twitter-archive/cassie">
+			<front>
+				<title>A Scala client for Cassandra</title>
+				<author>
+					<organization showOnFrontPage="true">Twitter</organization>
+				</author>
+				<date month="November" year="2012" />
+			</front>
+			<seriesInfo name="commit" value="f6da4e0" />
+		</reference>
+		<reference anchor="Snowflake" target="https://github.com/twitter-archive/snowflake/releases/tag/snowflake-2010">
+			<front>
+				<title>Snowflake is a network service for generating unique ID numbers at high scale with some simple guarantees.</title>
+				<author>
+					<organization showOnFrontPage="true">Twitter</organization>
+				</author>
+				<date month="May" year="2014" />
+			</front>
+			<seriesInfo name="Commit" value="b3f6a3c" />
+		</reference>
+		<reference anchor="Flake" target="https://github.com/boundary/flake">
+			<front>
+				<title>Flake: A decentralized, k-ordered id generation service in Erlang</title>
+				<author>
+					<organization showOnFrontPage="true">Boundary</organization>
+				</author>
+				<date month="February" year="2017" />
+			</front>
+			<seriesInfo name="Commit" value="15c933a" />
+		</reference>
+		<reference anchor="ShardingID" target="https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c">
+			<front>
+				<title>Sharding &#038; IDs at Instagram</title>
+				<author>
+					<organization showOnFrontPage="true">Instagram Engineering</organization>
+				</author>
+				<date month="December" year="2012" />
+			</front>
+		</reference>
+		<reference anchor="KSUID" target="https://github.com/segmentio/ksuid">
+			<front>
+				<title>K-Sortable Globally Unique IDs</title>
+				<author>
+					<organization showOnFrontPage="true">Segment</organization>
+				</author>
+				<date month="July" year="2020" />
+			</front>
+			<seriesInfo name="Commit" value="bf376a7" />
+		</reference>
+		<reference anchor="Elasticflake" target="https://github.com/ppearcy/elasticflake">
+			<front>
+				<title>Sequential UUID / Flake ID generator pulled out of elasticsearch common</title>
+				<author initials="P" surname="Pearcy" fullname="Paul Pearcy">
+					<organization />
+				</author>
+				<date month="January" year="2015" />
+			</front>
+			<seriesInfo name="Commit" value="dd71c21" />
+		</reference>
+		<reference anchor="FlakeID" target="https://github.com/T-PWK/flake-idgen">
+			<front>
+				<title>Flake ID Generator</title>
+				<author initials="T" surname="Pawlak" fullname="Tom Pawlak">
+					<organization />
+				</author>
+				<date month="April" year="2020" />
+			</front>
+			<seriesInfo name="Commit" value="fcd6a2f" />
+		</reference>
+		<reference anchor="Sonyflake" target="https://github.com/sony/sonyflake">
+			<front>
+				<title>A distributed unique ID generator inspired by Twitter's Snowflake</title>
+				<author>
+					<organization showOnFrontPage="true">Sony</organization>
+				</author>
+				<date month="August" year="2020" />
+			</front>
+			<seriesInfo name="Commit" value="848d664" />
+		</reference>
+		<reference anchor="orderedUuid" target="https://itnext.io/laravel-the-mysterious-ordered-uuid-29e7500b4f8">
+			<front>
+				<title>Laravel: The mysterious "Ordered UUID"</title>
+				<author initials="IT" surname="Cabrera" fullname="Italo Baeza Cabrera">
+					<organization />
+				</author>
+				<date month="January" year="2020" />
+			</front>
+		</reference>
+		<reference anchor="COMBGUID" target="https://github.com/richardtallent/RT.Comb">
+			<front>
+				<title>Creating sequential GUIDs in C# for MSSQL or PostgreSql</title>
+				<author initials="R" surname="Tallent" fullname="Richard Tallent">
+					<organization />
+				</author>
+				<date month="December" year="2020" />
+			</front>
+			<seriesInfo name="Commit" value="2759820" />
+		</reference>
+		<reference anchor="ULID" target="https://github.com/ulid/spec">
+			<front>
+				<title>Universally Unique Lexicographically Sortable Identifier</title>
+				<author initials="A" surname="Feerasta" fullname="Alizain Feerasta">
+					<organization />
+				</author>
+				<date month="May" year="2019" />
+			</front>
+			<seriesInfo name="Commit" value="d0c7170" />
+		</reference>
+		<reference anchor="SID" target="https://github.com/chilts/sid">
+			<front>
+				<title>sid : generate sortable identifiers</title>
+				<author initials="A" surname="Chilton" fullname="Andrew Chilton">
+					<organization />
+				</author>
+				<date month="June" year="2019" />
+			</front>
+			<seriesInfo name="Commit" value="660e947" />
+		</reference>
+		<reference anchor="pushID" target="https://firebase.googleblog.com/2015/02/the-2120-ways-to-ensure-unique_68.html">
+			<front>
+				<title>The 2^120 Ways to Ensure Unique Identifiers</title>
+				<author>
+					<organization showOnFrontPage="true">Google</organization>
+				</author>
+				<date month="February" year="2015" />
+			</front>
+		</reference>
+		<reference anchor="XID" target="https://github.com/rs/xid">
+			<front>
+				<title>Globally Unique ID Generator</title>
+				<author initials="O" surname="Poitrey" fullname="Olivier Poitrey">
+					<organization />
+				</author>
+				<date month="October" year="2020" />
+			</front>
+			<seriesInfo name="Commit" value="efa678f" />
+		</reference>
+		<reference anchor="ObjectID" target="https://docs.mongodb.com/manual/reference/method/ObjectId/">
+			<front>
+				<title>ObjectId - MongoDB Manual</title>
+				<author>
+					<organization showOnFrontPage="true">MongoDB</organization>
+				</author>
+			</front>
+		</reference>
+		<reference anchor="CUID" target="https://github.com/ericelliott/cuid">
+			<front>
+				<title>Collision-resistant ids optimized for horizontal scaling and performance.</title>
+				<author initials="E" surname="Elliott" fullname="Eric Elliott">
+					<organization />
+				</author>
+				<date month="October" year="2020" />
+			</front>
+			<seriesInfo name="Commit" value="215b27b" />
+		</reference>
+	</references>
   </back>
 </rfc>
