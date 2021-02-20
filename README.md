@@ -1,28 +1,35 @@
-# UUID Version 6 IETF Draft
+# New UUID Formats
+This is the github repo for the IETF draft surrounding the topic of new time-based UUID formats.
+Various discussion will need to occur to arrive at a standard and this repo will be used to collect and organize that information.
 
-This is the IETF draft for a version 6 UUID.  Various discussion will need to occur to arrive at a standard and this repo will be used to collect and organize that information.
+Pull requests will be accepted for changes to Concerns and Possible Solutions or to introduce a new Topic if it is missing,  *as long as the text is concise, clear and objective.* PRs will not be accepted for changes to the decision made for the draft without full discussion. Please make an issue to discuss such things.
 
-The following is a list of relevant topics related to this draft.
+## Drafts
+- The XML draft in the root folder is the most recent working draft for resubmission to the IETF.
+- An HTML and Textual (.txt) RFC representation will be provided in the root folder to ease reader input and discussion.
+- Older drafts can be viewed in the "old drafts" folder
 
-Pull requests will be accepted for changes to Concerns and Possible Solutions or to introduce a new Topic if it is missing,  *as long as the text is concise, clear and objective.* PRs will not be accepted for changes to the decision made for the draft without full discussion.  Please make an issue to discuss such things.
+## Other
+- Research efforts can be found in the "research" within the root directory.
+- Prototype Implementations for these drafts can be found in the prototypes section: https://github.com/uuid6/prototypes
 
-- Topic: **Length**.  
-  - Concerns:
-    - A lot of existing code expects a UUID to be 128 bits.  Even when other aspects of the format are changed, this can provide a good deal of backward compatibility.
-    - Some applications may need more than just 16 bytes to ensure uniqueness, depending on how many IDs they have to generate and under what circumstands.
-    - Some applications may benefit from having shorter IDs when global uniqueness is not a requirement (e.g. local uniqueness will suffice) and easier human use of a shorter value is a priority.
-  - Possible Solutions:
-    - Keep the same length (16 bytes)
-    - Change the size to something longer or shorter
-    - Introduce a system for variable-length UUIDs
-  - Current Decision Per Draft:
-    - *Keep the same length.*  Introducing different length(s) would break backward compatibility and is not generally useful enough to be worth it.  If you need something other than 128 bits, it's not a UUID.
+## RFC Scope
+In order to keep things on track the following topics have been decided as in-scope or out of scope for this particular RFC.
+For more information on any of these items refer to the XML, TXT, HTML draft, research and the issue tracker.
 
-- Topic: **Text Encoding**
-  - TODO
+### In Scope Topics
+- Timestamp format, length, accuracy and bit layout
+- Sequence counter position and length
+- Pseudo-random Node formatting
+- Big Endian vs Little Endian bit layout
+- Sorting/Ordering techniques
+- Multi-node and clustering UUID Genration best practices
+- UUID Database Storage best practices
+- Any and all UUID security concerns
+- Same Timestamp-tick collision handling best practices
 
-- Topic: **Timestamp**
-  - TODO
-
-- Topic: **Local/Global Uniqueness**
-  - TODO
+### Out of Scope Topics
+- Total length (128 bits retained for backwards compatibility)
+- UUID textual layout changes (anything other than 8-4-4-4-12 isn't a UUID)
+- Alternative text encoding techniques (Crockfords Base32, Base64, etc) [Possibly a future RFC!]
+- Local/Global Uniqueness (New UUIDs should provide global uniqueness the same as RFC 4122)
