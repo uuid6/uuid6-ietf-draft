@@ -345,7 +345,7 @@
             </section>
         </section>
 
-<section anchor="uuidv7layout" title="UUIDv7 Layout and Bit Order">
+<section anchor="uuidv7layout" title="UUIDv7 Layout">
 <!-- To Do: Intro -->
 <t>
 The UUIDv7 format is designed to encode a timestamp with arbitrary sub-second precision.
@@ -355,15 +355,29 @@ whichever is less.  And the system parsing the UUIDv7 value does not need to kno
 was used during encoding in order to function correctly.
 </t>
 <t>
-For example: If system A produces a UUIDv7 microsecond-precise value, system B can parse this value with
-as much precision as is needed for it's particular purpose, without having to know how much
-precision was used by system A.  In this case if system B parses the value with millisecond
-precision, it will return the correct millisecond value encoded by system A.  If system B
-parses the value with nanosecond precision, the value returned will have the same microsecond
-level of precision provided by the encoder, with the additional precision down to nanosecond
-level being essentially random, according to the additional bits in the format.  The time value will
-essentially be "as close to the correct value as possible" when parsed, even across disparate systems.
+Example starting scenario:
+<ul>
+<li>System A produces a UUIDv7 with microsecond-precise timestamp value.</li>
+<li>System B is unaware of the precision encoded in the UUIDv7 timestamp by System A.</li>
+</ul>
+<t>
+Goal: The time value SHOULD be "as close to the correct value as possible" when parsed, even across disparate systems.
 </t>
+
+<t>
+Scenario 1: System B parses the timestamp with millisecond precision. (Less precision than the encoder)
+</t>
+<t>
+Result: System B will return the correct millisecond value encoded by system A (truncated to milliseconds).
+</t>
+
+<t>
+Scenario 2: System B parses the timestamp with nanosecond precision. (More precision than the encoder)
+</t>
+<t>
+Result: System B's value returned will have the same microsecond level of precision provided by the encoder with the additional precision down to nanosecond level being essentially random as per the encoded random value at the end of the UUIDv7.
+</t>
+
 <t>
 This scheme provides maximum interoperability across systems where
 different levels of time precision are required/feasible/available.  And these values continue
@@ -380,14 +394,14 @@ different systems are in sequence by time.
     For the purposes of decoding, only the time portions are decoded, and in such a way that allows for useful interpretation of the sub-second portion without knowing the level of precision used by the caller.
 </t>
 <t>
-    When encoding, in addition to the sub-second portion, a sequence, random value, and optional node value can all be included, but these are opaque and cannot be reliably read when parsing.
+    When encoding, in addition to the sub-second portion, a sequence, random value, and optional node value can all be included, but these are opaque and cannot be reliably read when parsing.  (Although if individual implementations wish to provide guarantees about these fields that is okay and does not violate the specification.)
 </t>
 <t>
     These properties allow for maximum interoperability between systems while preserving the other useful UUID properties (inter-system monotonicity and sorting, intra-system time parsing and sorting).
 </t>
 </section>
 
-<section anchor="uuidv7timestamp" title="UUIDv7 Version and Variant fields">
+<section anchor="uuidv7vervar" title="UUIDv7 Version and Variant fields">
 <t>
     The Version (ver) and Variant (var) fields, as with the other UUID versions, must remain where they are. UUIDv7 values always contain the number 7 (bits: 0111) in the ver field, and the var field is always set to 2 (bits: 10).
 </t>
@@ -410,6 +424,8 @@ different systems are in sequence by time.
 
 </section>
 
+<section anchor="uuidv7decoding" title="UUIDv7 Layout for Decoding">
+
 <figure>
 <name>UUIDv7 Field and Bit Layout - Decoding</name>
 <artwork>
@@ -418,7 +434,7 @@ different systems are in sequence by time.
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                            unixts                             |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |            unixts             |  ver  |         subsec        |
+    |unixts |        subsec         |  ver  |         subsec        |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |var|                        subsec                             |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -426,15 +442,15 @@ different systems are in sequence by time.
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </artwork></figure>
 
-<section anchor="uuidv7sequence" title="UUIDv7 Layout for Decoding">
 <t>
     When decoding there are only two fields considered. unixts and subsec.
 </t>
 <t>
-    The unixts field is a 48-bit big-endian unsigned Unix Timestamp value (TODO: specification?).
+    The unixts field is a 36-bit big-endian unsigned Unix Timestamp value (number of seconds since the epoch of 1 Jan 1970, leap seconds excluded so each hour is exactly 3600 seconds long).
 </t>
 <t>
-    The subsec field is a 74-bit value which is interpreted as sub-second information where bits from most to least significant represent a further division by two. (TODO, there's got to be a name for this)  This scheme can work for any number of bits up to the maximum 74 available.  Example: Given one bit, the possible values are 0 = .0 and 1 = .5. With two bits, the combinations are 00 = 0.0, 01 = .25, 10 = .5, 11 = .75. And so on.
+    The subsec field the values with all remaining bits (skipping over ver and var) which is interpreted as sub-second information where bits from most to least significant represent a further division by two.  This is the same normal place notation used to express fractional numbers, except in binary. E.g. in decimal ".1" means one tenth, and ".01" means one hundredth.  In this subsec field, a 1 means one half, 01 means one quarter, 001 is one eighth, etc.
+    This scheme can work for any number of bits up to the maximum available, and keeps the most significant data leftmost in the bit sequence.
 </t>
 <t>
     To perform the sub-second math, simply take the first (most significant/leftmost) N bits of subsec and divide it by 2^N.  Example: To parse the first 16 bits, extract that value as an integer and divide it by 65536 (2 to the 16th).  If these 16 bits are 0101 0101 0101 0101, then treating that as an integer gives 0x5555 or 21845 in decimal, and dividing by 65536 gives 0.3333282
@@ -442,6 +458,37 @@ different systems are in sequence by time.
 <t>
     With the decoding layout specified, the encoding layout is defined as any layout which decodes correctly with the above.  Specifically it means the time portion should contain as much precision as provided by either the encoding or decoding system, whichever is less.
 </t>
+</section>
+
+<section anchor="uuidv7sequence" title="UUIDv7 Encoding">
+<t>
+    The exact layout for encoding UUIDv7 depends on the precision (number of bits) used for the sub-second portion and the sizes of the seq, node and rand fields.
+</t>
+<t>
+    Examples of specific UUIDv7 encodings are given below.  Implementations are not limited to these examples.
+</t>
+<t>
+    In addition to unixts, subsec, var and var, the following field definitions apply:
+</t>
+<ul>
+    <li>seq: A sequence which must be monotic (count up) for each new value produced with the same timestamp (unixts and subsec).  The purpose is to ensure that UUID values are monotic within the same system.</li>
+    <li>node: Optional, can be used to indicate a node number or other predermined and implementation-specific source of uniqueness.  For example, in a cluster of systems with numbers associated with them, this number can be used to ensure uniqueness accross systems with 100% certainty (which is not possible if only using random data).  Implementations must take into account the possible liability of leaking the information about which machine produced a particular value and implementors must make the decision if this is an acceptable risk for guaranteed uniqueness.</li>
+    <li>rand: Random data produced from an applicable source. CSPRNG random data from existing OS or other source is recommended.  The purpose is to help ensure uniqueness accross disparate systems (in the case that the node field cannot provide this) as well as to make values harder to predict/guess.  Systems which have a strong need to produce unguessable values should allocate more bits to this field accordingly.</li>
+</ul>
+<t>
+    All of these fields are only used during encoding, and during decoding the system is unaware of the bit layout used for them and considers this information opaque.  As such, implementations generating these values can assign whatever lengths to each field it deems applicable, as long as it does not break decoding compatibility (i.e. unixts, ver and var have to stay where they are, and seq, node and rand must follow the subsec portion).
+</t>
+<t>
+    In the examples below, the subsec field is called with different names according to the precision, e.g. "msec" for millisecond precision, in order to help with clarity.
+    </t>
+<!--
+<t>
+    Several useful examples of valid encoding layouts are shown above.  They are valid because they decode properly as described in UUIDv7 Layout for Decoding (TODO: link).
+</t>
+<t>
+    (explain: the important thing is to encode sub-second time portion in the right format [wip trying to find a name for this] in order to allow different precisions during encode/decode, followed by the sequence (to provide intra-system monotonicity), and then after that whatever is random and node doesn't matter for the purposes of decoding - whatever scheme for uniqueness/unguessability/entropy that is sufficient for the application is fine and has no bearing on interoperability)
+</t>
+-->
 </section>
 
 
@@ -453,9 +500,9 @@ different systems are in sequence by time.
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                            unixts                             |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |            unixts             |  ver  |          msec         |
+    |unixts |         msec          |  ver  |          seq          |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |var|         seq               |           node                |
+    |var|             node          |            rand               |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                             rand                              |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -469,9 +516,9 @@ different systems are in sequence by time.
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                            unixts                             |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |            unixts             |  ver  |         usec          |
+    |unixts |         usec          |  ver  |         usec          |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |var|      usec      |        seq       |         rand          |
+    |var|             seq           |            node               |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                             rand                              |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -485,22 +532,13 @@ different systems are in sequence by time.
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                            unixts                             |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |            unixts             |  ver  |          nsec         |
+    |unixts |         nsec          |  ver  |         nsec          |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |var|             nsec                  |        seq            |
+    |var|             nsec          |      seq      |     node      |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |       node          |               rand                      |
+    |                             rand                              |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </artwork></figure>
-
-<section anchor="uuidv7sequence" title="UUIDv7 Layout for Encoding">
-<t>
-    Several useful examples of valid encoding layouts are shown above.  They are valid because they decode properly as described in UUIDv7 Layout for Decoding (TODO: link).
-</t>
-<t>
-    (explain: the important thing is to encode sub-second time portion in the right format [wip trying to find a name for this] in order to allow different precisions during encode/decode, followed by the sequence (to provide intra-system monotonicity), and then after that whatever is random and node doesn't matter for the purposes of decoding - whatever scheme for uniqueness/unguessability/entropy that is sufficient for the application is fine and has no bearing on interoperability)
-</t>
-</section>
 
 <!--
 <section anchor="uuidv7sequence" title="UUIDv7 Unix Timestamp">
@@ -518,13 +556,14 @@ different systems are in sequence by time.
 </section>
 -->
 
-<section anchor="uuidv7pseudocreate" title="UUIDv7 Basic Creation and Encoding Algorithm">
+<!-- <section anchor="uuidv7pseudocreate" title="UUIDv7 Basic Creation and Encoding Algorithm"> -->
 <!-- To Do: Define ordered list of steps used to craft a UUIDv7 -->
-</section>
+<!-- </section>-->
 
+<!--
 <section anchor="uuidv7pseudoparse" title="UUIDv7 Basic Decoding/Parsing Algorithm">
-
 </section>
+-->
 
 </section>
 
