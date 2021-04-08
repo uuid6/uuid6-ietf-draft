@@ -356,6 +356,7 @@ was used during encoding in order to function correctly.
 </t>
 <t>
 Example starting scenario:
+</t>
 <ul>
 <li>System A produces a UUIDv7 with microsecond-precise timestamp value.</li>
 <li>System B is unaware of the precision encoded in the UUIDv7 timestamp by System A.</li>
