@@ -119,7 +119,7 @@
 			over the past 10+ years solving the same problem in slightly different ways.
         </t>
 		<t>
-		   While preparing this specification the following 16 different implementations were analyzed for trends in total ID length, bit Layout, lexical formatting/encoding, timestamp type, timestamp format, timestamp accurancy, node format/components, collision handling and multi-timestamp tick generation sequencing.
+		   While preparing this specification the following 16 different implementations were analyzed for trends in total ID length, bit Layout, lexical formatting/encoding, timestamp type, timestamp format, timestamp accuracy, node format/components, collision handling and multi-timestamp tick generation sequencing.
 		</t>
 		   <ol spacing="compact">
 				<li><t><xref target="LexicalUUID"/> by Twitter</t></li>	
@@ -187,55 +187,55 @@
         In addition the position of both the Version and Variant bits remain unchanged in the layout.
         </t>
 		<section anchor="versions" title="Versions">
-		<t>
-		Table 1 defines the 4-bit version found in Bits 48 through 51 within a given UUID.
-		</t>
-		<table>
-		<name>UUID versions defined by this specification</name>
-		<thead>
-			<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Version</td><td>Description</td></tr>
-		</thead>
-		<tbody>
-			<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>6</td><td>Reordered Gregorian time-based UUID</td></tr>
-			<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>7</td><td>Variable length Unix Epoch time-based UUID</td></tr>
-			<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>8</td><td>Custom time-based UUID</td></tr>
-		</tbody>
-		</table>
+			<t>
+			Table 1 defines the 4-bit version found in Bits 48 through 51 within a given UUID.
+			</t>
+			<table>
+			<name>UUID versions defined by this specification</name>
+			<thead>
+				<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Version</td><td>Description</td></tr>
+			</thead>
+			<tbody>
+				<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>6</td><td>Reordered Gregorian time-based UUID</td></tr>
+				<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>7</td><td>Variable length Unix Epoch time-based UUID</td></tr>
+				<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>8</td><td>Custom time-based UUID</td></tr>
+			</tbody>
+			</table>
 		</section>
         <section anchor="variant" title="Variant">
-        <t>
-		The variant bits utilized by UUIDs in this specification 
-		remains the same as <xref target="RFC4122" sectionFormat="comma" section="4.1.1"/>. 
-		</t>
-		<t>
-        The Table 2 lists the contents of the variant field, bits 64 and 65,
-		where the letter "x" indicates a "don't-care" value. Common hex values of 
-		8 (1000), 9 (1001), A (1010), and B (1011) frequent the text representation.
-		</t>
-		<table>
-		<name>UUID Variant defined by this specification</name>
-		<thead>
-			<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Description</td></tr>
-		</thead>
-		<tbody>
-			<tr><td>1</td><td>0</td><td>x</td><td>The variant specified in this document.</td></tr>
-		</tbody>
-		</table>
+			<t>
+			The variant bits utilized by UUIDs in this specification 
+			remains the same as <xref target="RFC4122" sectionFormat="comma" section="4.1.1"/>. 
+			</t>
+			<t>
+			The Table 2 lists the contents of the variant field, bits 64 and 65,
+			where the letter "x" indicates a "don't-care" value. Common hex values of 
+			8 (1000), 9 (1001), A (1010), and B (1011) frequent the text representation.
+			</t>
+			<table>
+			<name>UUID Variant defined by this specification</name>
+			<thead>
+				<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Description</td></tr>
+			</thead>
+			<tbody>
+				<tr><td>1</td><td>0</td><td>x</td><td>The variant specified in this document.</td></tr>
+			</tbody>
+			</table>
         </section>
         <section anchor="uuidv6layout" title="UUIDv6 Layout and Bit Order">
-        <t>
-		UUIDv6 aims to be the easiest to implement by reusing most of the layout of bits
-        found in UUIDv1 but with changes to bit ordering for the timestamp.
-        Where UUIDv1 splits the timestamp bits into three distinct parts and orders them as
-        time_low, time_mid, time_high_and_version. UUIDv6 instead keeps the source bits
-        from the timestamp intact and changes the order to time_high, time_mid, and time_low.
-        Incidentally this will match the original 60-bit Gregorian timestamp source.
-        The clock sequence bits remain unchanged from their usage and position in <xref target="RFC4122"/>.
-        The 48-bit node MUST be set to a pseudo-random value.
-		</t>
-		<t>
-        The format for the 16-octet, 128-bit UUIDv6 is shown in Figure 1
-		</t>
+			<t>
+			UUIDv6 aims to be the easiest to implement by reusing most of the layout of bits
+			found in UUIDv1 but with changes to bit ordering for the timestamp.
+			Where UUIDv1 splits the timestamp bits into three distinct parts and orders them as
+			time_low, time_mid, time_high_and_version. UUIDv6 instead keeps the source bits
+			from the timestamp intact and changes the order to time_high, time_mid, and time_low.
+			Incidentally this will match the original 60-bit Gregorian timestamp source.
+			The clock sequence bits remain unchanged from their usage and position in <xref target="RFC4122"/>.
+			The 48-bit node MUST be set to a pseudo-random value.
+			</t>
+			<t>
+			The format for the 16-octet, 128-bit UUIDv6 is shown in Figure 1
+			</t>
 <figure>
 <name>UUIDv6 Field and Bit Layout</name>
 <artwork>
@@ -250,7 +250,8 @@
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                         node (2-5)                            |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</artwork></figure>
+</artwork>
+</figure>
 		<dl newline="true">
         <dt>time_high:</dt> <dd>The most significant 32 bits of the 60-bit starting timestamp.
             Occupies bits 0 through 31 (octets 0-3)</dd>
@@ -274,225 +275,174 @@
             Occupies bits 80 through 127 (octets 10-15)</dd>
 		</dl>
             <section anchor="uuidv6timestamp" title="UUIDv6 Timestamp Usage">
-            <t>
-			UUIDv6 reuses the 60-bit Gregorian timestamp with 100-nanosecond
-            precision defined in <xref target="RFC4122" sectionFormat="comma" section="4.1.4"/>.
-            </t>
+				<t>
+				UUIDv6 reuses the 60-bit Gregorian timestamp with 100-nanosecond
+				precision defined in <xref target="RFC4122" sectionFormat="comma" section="4.1.4"/>.
+				</t>
 			</section>
             <section anchor="uuidv6sequence" title="UUIDv6 Clock Sequence  Usage">
-            <t>
-			UUIDv6 makes no change to the Clock Sequence usage defined by <xref target="RFC4122" sectionFormat="comma" section="4.1.5"/>.
-			</t>
+				<t>
+				UUIDv6 makes no change to the Clock Sequence usage defined by <xref target="RFC4122" sectionFormat="comma" section="4.1.5"/>.
+				</t>
             </section>
             <section anchor="uuidv6node" title="UUIDv6 Node Usage">
-			<t>
-            UUIDv6 node bits SHOULD be set to a 48-bit random or pseudo-random number.
-            UUIDv6 nodes SHOULD NOT utilize an IEEE 802 MAC address or the
-            <xref target="RFC4122" sectionFormat="comma" section="4.5"/> method of generating a random multicast IEEE 802 MAC address.
-			</t>
+				<t>
+				UUIDv6 node bits SHOULD be set to a 48-bit random or pseudo-random number.
+				UUIDv6 nodes SHOULD NOT utilize an IEEE 802 MAC address or the
+				<xref target="RFC4122" sectionFormat="comma" section="4.5"/> method of generating a random multicast IEEE 802 MAC address.
+				</t>
             </section>
             <section anchor="uuidv6pseudo" title="UUIDv6 Basic Creation Algorithm">
-			<t>
-            The following implementation algorithm is based on <xref target="RFC4122"/>
-            but with changes specific to UUIDv6:
-			</t>
-			<ol>
-				<li><t>From a system-wide shared stable store (e.g., a file) or global variable, read the
-				  UUID generator state: the values of the timestamp and clock sequence
-				  used to generate the last UUID.</t></li>
-				<li><t>Obtain the current time as a 60-bit count of 100-nanosecond intervals
-				  since 00:00:00.00, 15 October 1582.</t></li>
-				<li><t>Set the time_low field to the 12 least significant bits
-				  of the starting 60-bit timestamp.</t></li>
-				<li><t>Truncate the timestamp to the 48 most significant bits
-				  in order to create time_high_and_time_mid.</t></li>
-				<li><t>Set the time_high field to the 32 most significant bits of the truncated timestamp.</t></li>
-				<li><t>Set the time_mid field to the 16 least significant bits of the truncated timestamp.</t></li>
-				<li><t>Create the 16-bit time_low_and_version by concatenating the 4-bit UUIDv6 version
-				  with the 12-bit time_low.</t></li>
-				<li><t>If the state was unavailable (e.g., non-existent or corrupted)
-				  or the timestamp is greater than the current timestamp generate
-				  a random 14-bit clock sequence value.</t></li>
-				<li><t>If the state was available, but the saved timestamp is less than or equal to the current
-				  timestamp, increment the clock sequence value.</t></li>
-				<li><t>Complete the 16-bit clock sequence high, low and reserved creation
-				  by concatenating the clock sequence onto UUID variant bits which take
-				  the most significant position in the 16-bit value.</t></li>
-				<li><t>Generate a 48-bit psuedo-random node.</t></li>
-				<li><t>Format by concatenating the 128 bits from each parts:
-				  time_high|time_mid|time_low_and_version|variant_clk_seq|node</t></li>
-				<li><t>Save the state (current timestamp and clock sequence)
-				  back to the stable store</t></li>
-			</ol>  	
-			<t>
-            The steps for splitting time_high_and_time_mid into time_high and time_mid are optional
-            since the 48-bits of time_high and time_mid will remain in the same order as time_high_and_time_mid
-            during the final concatenation. This extra step of splitting into the most significant
-            32 bits and least significant 16 bits proves useful when reusing an existing UUIDv1 implementation.
-            In which the following logic can be applied to reshuffle the bits with minimal modifications.
-			</t>
-			<table>
-			<name>UUIDv1 to UUIDv6 Field Mappings</name>
-			<thead>
-				<tr><td>UUIDv1 Field</td><td>Bits</td><td>UUIDv6 Field</td></tr>
-			</thead>
-			<tbody>
-				<tr><td>time_low </td><td>32</td><td>time_high</td></tr>
-				<tr><td>time_mid </td><td>16</td><td>time_mid</td></tr>
-				<tr><td>time_high</td><td>12</td><td>time_low</td></tr>
-			</tbody>
-			</table>
+				<t>
+				The following implementation algorithm is based on <xref target="RFC4122"/>
+				but with changes specific to UUIDv6:
+				</t>
+				<ol>
+					<li><t>From a system-wide shared stable store (e.g., a file) or global variable, read the
+					  UUID generator state: the values of the timestamp and clock sequence
+					  used to generate the last UUID.</t></li>
+					<li><t>Obtain the current time as a 60-bit count of 100-nanosecond intervals
+					  since 00:00:00.00, 15 October 1582.</t></li>
+					<li><t>Set the time_low field to the 12 least significant bits
+					  of the starting 60-bit timestamp.</t></li>
+					<li><t>Truncate the timestamp to the 48 most significant bits
+					  in order to create time_high_and_time_mid.</t></li>
+					<li><t>Set the time_high field to the 32 most significant bits of the truncated timestamp.</t></li>
+					<li><t>Set the time_mid field to the 16 least significant bits of the truncated timestamp.</t></li>
+					<li><t>Create the 16-bit time_low_and_version by concatenating the 4-bit UUIDv6 version
+					  with the 12-bit time_low.</t></li>
+					<li><t>If the state was unavailable (e.g., non-existent or corrupted)
+					  or the timestamp is greater than the current timestamp generate
+					  a random 14-bit clock sequence value.</t></li>
+					<li><t>If the state was available, but the saved timestamp is less than or equal to the current
+					  timestamp, increment the clock sequence value.</t></li>
+					<li><t>Complete the 16-bit clock sequence high, low and reserved creation
+					  by concatenating the clock sequence onto UUID variant bits which take
+					  the most significant position in the 16-bit value.</t></li>
+					<li><t>Generate a 48-bit psuedo-random node.</t></li>
+					<li><t>Format by concatenating the 128 bits from each parts:
+					  time_high|time_mid|time_low_and_version|variant_clk_seq|node</t></li>
+					<li><t>Save the state (current timestamp and clock sequence)
+					  back to the stable store</t></li>
+				</ol>  	
+				<t>
+				The steps for splitting time_high_and_time_mid into time_high and time_mid are optional
+				since the 48-bits of time_high and time_mid will remain in the same order as time_high_and_time_mid
+				during the final concatenation. This extra step of splitting into the most significant
+				32 bits and least significant 16 bits proves useful when reusing an existing UUIDv1 implementation.
+				In which the following logic can be applied to reshuffle the bits with minimal modifications.
+				</t>
+				<table>
+				<name>UUIDv1 to UUIDv6 Field Mappings</name>
+				<thead>
+					<tr><td>UUIDv1 Field</td><td>Bits</td><td>UUIDv6 Field</td></tr>
+				</thead>
+				<tbody>
+					<tr><td>time_low </td><td>32</td><td>time_high</td></tr>
+					<tr><td>time_mid </td><td>16</td><td>time_mid</td></tr>
+					<tr><td>time_high</td><td>12</td><td>time_low</td></tr>
+				</tbody>
+				</table>
             </section>
         </section>
 
-<section anchor="uuidv7layout" title="UUIDv7 Layout">
-<!-- To Do: Intro -->
-<t>
-The UUIDv7 format is designed to encode a timestamp with arbitrary sub-second precision.
-The key property provided by v7 is that values generated by one system and then parsed by
-another are guaranteed to have sub-section precision of either the generator or the parser,
-whichever is less.  And the system parsing the UUIDv7 value does not need to know which precision
-was used during encoding in order to function correctly.
-</t>
-<t>
-Example starting scenario:
-</t>
-<ul>
-<li>System A produces a UUIDv7 with microsecond-precise timestamp value.</li>
-<li>System B is unaware of the precision encoded in the UUIDv7 timestamp by System A.</li>
-</ul>
-<t>
-Goal: The time value SHOULD be "as close to the correct value as possible" when parsed, even across disparate systems.
-</t>
-
-<t>
-Scenario 1: System B parses the timestamp with millisecond precision. (Less precision than the encoder)
-</t>
-<t>
-Result: System B will return the correct millisecond value encoded by system A (truncated to milliseconds).
-</t>
-
-<t>
-Scenario 2: System B parses the timestamp with nanosecond precision. (More precision than the encoder)
-</t>
-<t>
-Result: System B's value returned will have the same microsecond level of precision provided by the encoder with the additional precision down to nanosecond level being essentially random as per the encoded random value at the end of the UUIDv7.
-</t>
-
-<t>
-This scheme provides maximum interoperability across systems where
-different levels of time precision are required/feasible/available.  And these values continue
-to have the same properties as the other UUID formats in this document: values from the same
-system are monotonic (including their interpretation as a raw set of bytes), values across
-different systems are in sequence by time.
-</t>
-
-<section anchor="uuidv7encodingdecoding" title="UUIDv7 Encoding and Decoding">
-<t>
-    The UUIDv7 bit layout for encoding and decoding are described separately in this document.
-</t>
-<t>
-    For the purposes of decoding, only the time portions are decoded, and in such a way that allows for useful interpretation of the sub-second portion without knowing the level of precision used by the caller.
-</t>
-<t>
-    When encoding, in addition to the sub-second portion, a sequence, random value, and optional node value can all be included, but these are opaque and cannot be reliably read when parsing.  (Although if individual implementations wish to provide guarantees about these fields that is okay and does not violate the specification.)
-</t>
-<t>
-    These properties allow for maximum interoperability between systems while preserving the other useful UUID properties (inter-system monotonicity and sorting, intra-system time parsing and sorting).
-</t>
-</section>
-
-<section anchor="uuidv7vervar" title="UUIDv7 Version and Variant fields">
-<t>
-    The Version (ver) and Variant (var) fields, as with the other UUID versions, must remain where they are. UUIDv7 values always contain the number 7 (bits: 0111) in the ver field, and the var field is always set to 2 (bits: 10).
-</t>
-<!--
-<t>
-    These two fields always have the exact same place and occupy 6 bits.  The remaining 122 bits are the contents
-    (see next section) and are calculated separately and then filled in into UUIDv7 value skipping over ver and var.  The exact bit ranges are:
-</t>
--->
-
-<!--
-<ul>
-    <li>uuid[0..47]   = unixts</li>
-    <li>uuid[48..51]  = bits:0111 (version)</li>
-    <li>uuid[52..63]  = contents[48..59]</li>
-    <li>uuid[64..65]  = bits:10 (variant)</li>
-    <li>uuid[66..127] = contents[60..121]</li>
-<ul>
--->
-
-</section>
-
-<section anchor="uuidv7decoding" title="UUIDv7 Layout for Decoding">
-
+		<section anchor="uuidv7layout" title="UUIDv7 Layout and Bit Order">
+			<t>
+			The UUIDv7 format is designed to encode a Unix timestamp with arbitrary sub-second precision.
+			The key property provided by UUIDv7 is that timestamp values generated by one system and parsed by
+			another are guaranteed to have sub-section precision of either the generator or the parser,
+			whichever is less. Additionally, the system parsing the UUIDv7 value does not need to know which precision
+			was used during encoding in order to function correctly.
+			</t>
+			
+			<t>
+			The format for the 16-octet, 128-bit UUIDv6 is shown in Figure 2
+			</t>
 <figure>
-<name>UUIDv7 Field and Bit Layout - Decoding</name>
+<name>UUIDv7 Field and Bit Layout</name>
 <artwork>
      0                   1                   2                   3
      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                            unixts                             |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |unixts |        subsec         |  ver  |         subsec        |
+    |unixts |       subsec_a        |  ver  |       subsec_b        |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |var|                        subsec                             |
+    |var|                   subsec_seq_node                         |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                            subsec                             |
+    |                       subsec_seq_node                         |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</artwork></figure>
+</artwork>
+</figure>
+		<dl newline="true">
+			<dt>unixts:</dt> <dd>36-bit big-endian unsigned Unix Timestamp value</dd>
+			<dt>subsec_a:</dt> <dd>12-bits allocated to sub-section precision values.</dd>
+			<dt>ver:</dt> <dd>The 4 bit UUIDv8 version (0111)</dd>
+			<dt>subsec_b:</dt> <dd>12-bits allocated to sub-section precision values.</dd>
+			<dt>var:</dt> <dd>2-bit UUID variant (10)</dd>
+			<dt>subsec_seq_node:</dt> <dd>The remaining 62 bits which MAY be allocated to any combination of additional sub-section precision, sequence counter, or pseudo-random data.</dd>
+		</dl>
 
-<t>
-    When decoding there are only two fields considered. unixts and subsec.
-</t>
-<t>
-    The unixts field is a 36-bit big-endian unsigned Unix Timestamp value (number of seconds since the epoch of 1 Jan 1970, leap seconds excluded so each hour is exactly 3600 seconds long).
-</t>
-<t>
-    The subsec field the values with all remaining bits (skipping over ver and var) which is interpreted as sub-second information where bits from most to least significant represent a further division by two.  This is the same normal place notation used to express fractional numbers, except in binary. E.g. in decimal ".1" means one tenth, and ".01" means one hundredth.  In this subsec field, a 1 means one half, 01 means one quarter, 001 is one eighth, etc.
-    This scheme can work for any number of bits up to the maximum available, and keeps the most significant data leftmost in the bit sequence.
-</t>
-<t>
-    To perform the sub-second math, simply take the first (most significant/leftmost) N bits of subsec and divide it by 2^N.  Example: To parse the first 16 bits, extract that value as an integer and divide it by 65536 (2 to the 16th).  If these 16 bits are 0101 0101 0101 0101, then treating that as an integer gives 0x5555 or 21845 in decimal, and dividing by 65536 gives 0.3333282
-</t>
-<t>
-    With the decoding layout specified, the encoding layout is defined as any layout which decodes correctly with the above.  Specifically it means the time portion should contain as much precision as provided by either the encoding or decoding system, whichever is less.
-</t>
-</section>
+			<section anchor="uuidv7timestamp" title="UUIDv7 Timestamp Usage">
+				<t>UUIDv7 utilizes a 36-bit big-endian unsigned Unix Timestamp value (number of seconds since the epoch of 1 Jan 1970, leap seconds excluded so each hour is exactly 3600 seconds long).</t>
+				<t>Additional sub-second precision (millisecond, nanosecond, microsecond, etc) MAY be provided for encoding and decoding in the remaining bits in the layout.</t>
+			</section>
+			
+			<section anchor="uuidv7sequence" title="UUIDv7 Clock Sequence Usage">
+				<t>
+				UUIDv7 SHOULD utilize a motonic sequence counter to provide additional sequencing guarantees when multiple UUIDv7 values are created in the same UNIXTS and SUBSEC timestamp.
+				The amount of bits allocates to the sequence counter depend on the precision of the timestamp. For example, a more accurate timestamp source using nanosecond precision will require less clock sequence bits than a timestamp source utilizing seconds for precision.
+				For best sequencing results the sequence counter SHOULD be placed immediately after available sub-second bits.
+				</t>
+				<t>
+				The clock sequence MUST start at zero and increment monotonically
+				for each new UUID created on by the application on the same timestamp.
+				When the timestamp increments the clock sequence MUST be reset to zero.
+				The clock sequence MUST NOT rollover or reset to zero unless the timestamp
+				has incremented. Care MUST be given to ensure that an adequate sized
+				clock sequence is selected for a given application based on expected
+				timestamp precision and expected UUID generation rates.
+				</t>
+			</section>
+			
+			<section anchor="uuidv7node" title="UUIDv7 Node Usage">
+				<t>
+				UUIDv7 implementations, even with very detailed sub-second precision and the optional sequence counter, MAY have leftover bits that will be identified as the Node for this section.
+				The UUIDv7 Node MAY contain any set of data an implementation desires however the node MUST NOT be set to all 0s which does not ensure global uniqueness. In most scenarios the node SHOULD be filled with pseudo-random data.
+				</t>
+			</section>
 
-<section anchor="uuidv7sequence" title="UUIDv7 Encoding">
-<t>
-    The exact layout for encoding UUIDv7 depends on the precision (number of bits) used for the sub-second portion and the sizes of the seq, node and rand fields.
-</t>
-<t>
-    Examples of specific UUIDv7 encodings are given below.  Implementations are not limited to these examples.
-</t>
-<t>
-    In addition to unixts, subsec, var and var, the following field definitions apply:
-</t>
-<ul>
-    <li>seq: A sequence which must be monotic (count up) for each new value produced with the same timestamp (unixts and subsec).  The purpose is to ensure that UUID values are monotic within the same system.</li>
-    <li>node: Optional, can be used to indicate a node number or other predermined and implementation-specific source of uniqueness.  For example, in a cluster of systems with numbers associated with them, this number can be used to ensure uniqueness accross systems with 100% certainty (which is not possible if only using random data).  Implementations must take into account the possible liability of leaking the information about which machine produced a particular value and implementors must make the decision if this is an acceptable risk for guaranteed uniqueness.</li>
-    <li>rand: Random data produced from an applicable source. CSPRNG random data from existing OS or other source is recommended.  The purpose is to help ensure uniqueness accross disparate systems (in the case that the node field cannot provide this) as well as to make values harder to predict/guess.  Systems which have a strong need to produce unguessable values should allocate more bits to this field accordingly.</li>
-</ul>
-<t>
-    All of these fields are only used during encoding, and during decoding the system is unaware of the bit layout used for them and considers this information opaque.  As such, implementations generating these values can assign whatever lengths to each field it deems applicable, as long as it does not break decoding compatibility (i.e. unixts, ver and var have to stay where they are, and seq, node and rand must follow the subsec portion).
-</t>
-<t>
-    In the examples below, the subsec field is called with different names according to the precision, e.g. "msec" for millisecond precision, in order to help with clarity.
-    </t>
-<!--
-<t>
-    Several useful examples of valid encoding layouts are shown above.  They are valid because they decode properly as described in UUIDv7 Layout for Decoding (TODO: link).
-</t>
-<t>
-    (explain: the important thing is to encode sub-second time portion in the right format [wip trying to find a name for this] in order to allow different precisions during encode/decode, followed by the sequence (to provide intra-system monotonicity), and then after that whatever is random and node doesn't matter for the purposes of decoding - whatever scheme for uniqueness/unguessability/entropy that is sufficient for the application is fine and has no bearing on interoperability)
-</t>
--->
-</section>
-
-
+			<section anchor="uuidv7encodingdecoding" title="UUIDv7 Encoding and Decoding">
+				<t>
+					The UUIDv7 bit layout for encoding and decoding are described separately in this document.
+				</t>
+				<section anchor="uuidv7encoding" title="UUIDv7 Encoding">
+					<t>
+					 Since the UUIDv7 Unix timestamp is fixed at 36 bits in length the exact layout for encoding UUIDv7 depends on the precision (number of bits)
+					 used for the sub-second portion and the sizes of the optionally desired sequence counter and node bits.
+					</t>
+					<t>
+						Three examples of UUIDv7 encoding are given below as a general guidelines but implementations are not limited to just these three examples.
+					</t>
+					<t>
+						All of these fields are only used during encoding, and during decoding the system is unaware of the bit layout used for them and considers this information opaque.
+						As such, implementations generating these values can assign whatever lengths to each field it deems applicable, as long as it does not break decoding compatibility
+						(i.e. Unix timestamp (unixts), version (ver) and variant (var) have to stay where they are, and clock sequence counter (seq), random (random) or other implementation specific values must follow the sub-second encoding).
+					</t>
+					<t>
+						In Figure 3 the UUIDv7 has been created with millisecond precision with the available sub-second precision bits.
+					</t>
+					<t>
+						Examining Figure 3 one can observe: 
+					</t>
+					<ul>
+						<li><t>The first 36 bits have been dedicated to the Unix Timestamp (unixts)</t></li>
+						<li><t>All 12 bits of scenario subsec_a is fully dedicated to millisecond information (msec).</t></li>
+						<li><t>The 4 Version bits remain unchanged (ver).</t></li>
+						<li><t>All 12 bits of subsec_b have been dedicated to a motonic clock sequence counter (seq).</t></li>
+						<li><t>The 2 Variant bits remain unchanged (var).</t></li>
+						<li><t>Finally the remaining 62 bits in the subsec_seq_node section are layout is filled out with random data to pad the length and provide guaranteed uniqueness (rand).</t></li>
+					</ul>
 <figure>
 <name>UUIDv7 Field and Bit Layout - Encoding Example (Millisecond Precision)</name>
 <artwork>
@@ -503,11 +453,28 @@ different systems are in sequence by time.
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |unixts |         msec          |  ver  |          seq          |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |var|             node          |            rand               |
+    |var|                         rand                              |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                             rand                              |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</artwork></figure>
+</artwork>
+</figure>
+
+					<t>
+						In Figure 4 the UUIDv7 has been created with Microsecond precision with the available sub-second precision bits.
+					</t>
+					<t>
+						Examining Figure 4 one can observe: 
+					</t>
+					<ul>
+						<li><t>The first 36 bits have been dedicated to the Unix Timestamp (unixts)</t></li>
+						<li><t>All 12 bits of scenario subsec_a is fully dedicated to providing sub-second encoding for the Microsecond precision (usec).</t></li>
+						<li><t>The 4 Version bits remain unchanged (ver).</t></li>
+						<li><t>All 12 bits of subsec_b have been dedicated to providing sub-second encoding for the Microsecond precision (usec).</t></li>
+						<li><t>The 2 Variant bits remain unchanged (var).</t></li>
+						<li><t>A 14 bit motonic clock sequence counter (seq) has been embedded in the most significant position of subsec_seq_node </t></li>
+						<li><t>Finally the remaining 48 bits in the subsec_seq_node section are layout is filled out with random data to pad the length and provide guaranteed uniqueness (rand).</t></li>
+					</ul>
 
 <figure>
 <name>UUIDv7 Field and Bit Layout - Encoding Example (Microsecond Precision)</name>
@@ -519,11 +486,29 @@ different systems are in sequence by time.
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |unixts |         usec          |  ver  |         usec          |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |var|             seq           |            node               |
+    |var|             seq           |            rand               |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                             rand                              |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</artwork></figure>
+</artwork>
+</figure>
+
+					<t>
+						In Figure 5 the UUIDv7 has been created with Nanosecond precision with the available sub-second precision bits.
+					</t>
+					<t>
+						Examining Figure 5 one can observe: 
+					</t>
+					<ul>
+						<li><t>The first 36 bits have been dedicated to the Unix Timestamp (unixts)</t></li>
+						<li><t>All 12 bits of scenario subsec_a is fully dedicated to providing sub-second encoding for the Nanosecond precision (nsec).</t></li>
+						<li><t>The 4 Version bits remain unchanged (ver).</t></li>
+						<li><t>All 12 bits of subsec_b have been dedicated to providing sub-second encoding for the Nanosecond precision (nsec).</t></li>
+						<li><t>The 2 Variant bits remain unchanged (var).</t></li>
+						<li><t>The first 14 bit of the subsec_seq_node dedicated to providing sub-second encoding for the Nanosecond precision (nsec).</t></li>
+						<li><t>The next 8 bits of subsec_seq_node dedicated a motonic clock sequence counter (seq).</t></li>
+						<li><t>Finally the remaining 40 bits in the subsec_seq_node section are layout is filled out with random data to pad the length and provide guaranteed uniqueness (rand).</t></li>
+					</ul>
 
 <figure>
 <name>UUIDv7 Field and Bit Layout - Encoding Example (Nanosecond Precision)</name>
@@ -535,39 +520,66 @@ different systems are in sequence by time.
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |unixts |         nsec          |  ver  |         nsec          |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |var|             nsec          |      seq      |     node      |
+    |var|             nsec          |      seq      |     rand      |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                             rand                              |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</artwork></figure>
+</artwork>
+</figure>
 
-<!--
-<section anchor="uuidv7sequence" title="UUIDv7 Unix Timestamp">
-<t>
-    For UUIDv7, the value of the contents field is computed separately and then filled in around the version and variant fields.  When parsing, the process is reversed and the contents should be extracted into one value where its bits can be accessed directly without any regard to the version and variant fields.
-</t>
-<t>
-    The purpose of the contents field is to allow 
-</t>
-</section>
+			</section>
+			<section anchor="uuidv7decoding" title="UUIDv7 Decoding">
+				<t>
+					When decoding or parsing a UUIDv7 value there are only two values to be considered:
+				</t>
+				<ol>
+					<li><t>The unix timestamp defined as unixts</t></li>
+					<li><t>The sub-second precision values defined as subsec_a, subsec_b, and subsec_seq_node</t></li>
+				</ol>
+				<t>As detailed in Figure 2 the unix timestamp (unixts) is always the first 36 bits of the UUIDv7 layout.</t>
+				<t>
+					Similarly as per Figure 2, the sub-second precision values lie within subsec_a, subsec_b, and subsec_seq_node which are all interpreted as sub-second information after skipping over the version (ver) and (var) bits.  
+					These concatenated sub-second information bits are interpreted in a way where most to least significant bits represent a further division by two.
+					This is the same normal place notation used to express fractional numbers, except in binary. For example, in decimal ".1" means one tenth, and ".01" means one hundredth.
+					In this subsec field, a 1 means one half, 01 means one quarter, 001 is one eighth, etc.
+					This scheme can work for any number of bits up to the maximum available, and keeps the most significant data leftmost in the bit sequence.
+				</t>
+				<t>
+					To perform the sub-second math, simply take the first (most significant/leftmost) N bits of subsec and divide it by 2^N. Take for example:
+				</t>
+				<ol>
+						<li><t>To parse the first 16 bits, extract that value as an integer and divide it by 65536 (2 to the 16th).</t></li>
+						<li><t>If these 16 bits are 0101 0101 0101 0101, then treating that as an integer gives 0x5555 or 21845 in decimal, and dividing by 65536 gives 0.3333282</t></li>
+				</ol>		
+				<t>
+				This sub-second encoding scheme provides maximum interoperability across systems where different levels of time precision are required/feasible/available.
+				The timestamp value derived from a UUIDv7 value SHOULD be "as close to the correct value as possible" when parsed, even across disparate systems. 
+				</t>
+				<t>
+				Take for example the starting point for our next two UUIDv7 parsing scenarios:
+				</t>
+				<ol>
+					<li>System A produces a UUIDv7 with a microsecond-precise timestamp value.</li>
+					<li>System B is unaware of the precision encoded in the UUIDv7 timestamp by System A.</li>
+				</ol>
+				<t>
+				Scenario 1:
+				</t>
+				<ol>
+					<li>System B parses the embedded timestamp with millisecond precision. (Less precision than the encoder)</li>
+					<li>System B SHOULD return the correct millisecond value encoded by system A (truncated to milliseconds).</li>
+				</ol>
+				<t>
+				Scenario 2:
+				</t>
+				<ol>
+					<li>System B parses the timestamp with nanosecond precision. (More precision than the encoder)</li>
+					<li>System B's value returned SHOULD have the same microsecond level of precision provided by the encoder with the additional precision down to nanosecond level being essentially random as per the encoded random value at the end of the UUIDv7.</li>
+				</ol>
 
-<section anchor="uuidv7sequence" title="UUIDv7 Sub-second, Sequence, Random/Node (ssrn)">
-<t>
-</t>
-</section>
--->
-
-<!-- <section anchor="uuidv7pseudocreate" title="UUIDv7 Basic Creation and Encoding Algorithm"> -->
-<!-- To Do: Define ordered list of steps used to craft a UUIDv7 -->
-<!-- </section>-->
-
-<!--
-<section anchor="uuidv7pseudoparse" title="UUIDv7 Basic Decoding/Parsing Algorithm">
-</section>
--->
-
-</section>
-
+			</section>
+		</section>
+	</section>
         <section anchor="uuidv8layout" title="UUIDv8 Layout and Bit Order">
 		<t>
         UUIDv8 offers variable-size timestamp, clock sequence, and node values
@@ -610,7 +622,7 @@ different systems are in sequence by time.
         and finally a node containing either random data or implementation specific data.
 		</t>
 		<t>
-        A sample format in Figure 3 is used to further illustrate the point
+        A sample format in Figure 6 is used to further illustrate the point
         for the 16-octet, 128-bit UUIDv8.
 		</t>
 <figure>
@@ -709,7 +721,7 @@ different systems are in sequence by time.
             source utilizing seconds for precision.
 			</t>
 			<t>
-            The UUIDv8 layout in Figure 3 generically defines two possible
+            The UUIDv8 layout in Figure 6 generically defines two possible
             clock sequence values that can leveraged:
 			</t>
 			<ul spacing="compact">
@@ -741,7 +753,7 @@ different systems are in sequence by time.
             In most scenarios the node will be filled with pseudo-random data.
 			</t>
 			<t>
-            The UUIDv8 layout in Figure 3 defines 2 sizes of Node
+            The UUIDv8 layout in Figure 6 defines 2 sizes of Node
             depending on the timestamp size:
 			</t>
 			<ul spacing="compact">
@@ -765,7 +777,7 @@ different systems are in sequence by time.
             As such any UUIDv8 implementations will likely vary among applications.
 			</t>
 			<t>
-            The following algorithm is a generic implementation using Figure 3
+            The following algorithm is a generic implementation using Figure 6
             and the recommendations outlined in this specification.
 			</t>
 			<t>
