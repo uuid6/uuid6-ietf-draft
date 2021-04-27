@@ -946,6 +946,20 @@
 		the data the corresponds to the UUID or the current state of the application as a whole.
         </t>
     </section>
+    <section anchor="Acknowledgements" title="Acknowledgements">
+        <t>The authors gratefully acknowledge the contributions of 
+            Ben Campbell,
+            Ben Ramsey,
+            Fabio Lima,
+            Gonzalo Salgueiro, 
+            Martin Thomson,
+            Murray S. Kucherawy,
+            Rick van Rein,
+            Rob Wilton,
+            Sean Leonard,
+            Theodore Y. Ts'o.
+            As well as all of those in and outside the IETF community to who contributed to the discussions which resulted in this document.</t>
+    </section>
   </middle>
   <back>
     <references title="Normative References">
