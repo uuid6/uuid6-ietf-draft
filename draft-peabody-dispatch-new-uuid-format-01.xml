@@ -150,7 +150,7 @@
 				  there is some variation to this among implementations depending on the application requirements.</t></li>			
 				<li><t>- The ID format SHOULD be Lexicographically sortable while in the textual representation.</t></li>	
 				<li><t>- IDs MUST ensure proper embedded sequencing to facilitate sorting when multiple UUIDs are created during a given timestamp.</t></li>			
-				<li><t>- IDs MUST remove unique network identifiers while still retaining application uniqueness.</t></li>
+				<li><t>- IDs MUST NOT require unique network identifiers as part of achieving uniqueness.</t></li>
 				<li><t>- Distributed nodes MUST be able to create collision resistant Unique IDs 
 				  without a consulting a centralized resource.</t></li>
 			</ul>
