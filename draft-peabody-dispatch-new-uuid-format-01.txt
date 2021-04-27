@@ -5,8 +5,8 @@
 dispatch                                                    BGP. Peabody
 Internet-Draft                                                          
 Updates: 4122 (if approved)                                     K. Davis
-Intended status: Standards Track                           22 April 2021
-Expires: 24 October 2021
+Intended status: Standards Track                           26 April 2021
+Expires: 28 October 2021
 
 
                             New UUID Formats
@@ -42,7 +42,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 24 October 2021.
+   This Internet-Draft will expire on 28 October 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Peabody & Davis          Expires 24 October 2021                [Page 1]
+Peabody & Davis          Expires 28 October 2021                [Page 1]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -95,8 +95,9 @@ Table of Contents
    7.  Distributed UUID Generation . . . . . . . . . . . . . . . . .  24
    8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  25
    9.  Security Considerations . . . . . . . . . . . . . . . . . . .  25
-   10. Normative References  . . . . . . . . . . . . . . . . . . . .  25
-   11. Informative References  . . . . . . . . . . . . . . . . . . .  25
+   10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  25
+   11. Normative References  . . . . . . . . . . . . . . . . . . . .  25
+   12. Informative References  . . . . . . . . . . . . . . . . . . .  26
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  27
 
 1.  Introduction
@@ -108,8 +109,7 @@ Table of Contents
 
 
 
-
-Peabody & Davis          Expires 24 October 2021                [Page 2]
+Peabody & Davis          Expires 28 October 2021                [Page 2]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -165,7 +165,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021                [Page 3]
+Peabody & Davis          Expires 28 October 2021                [Page 3]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -221,7 +221,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021                [Page 4]
+Peabody & Davis          Expires 28 October 2021                [Page 4]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -240,8 +240,8 @@ Internet-Draft               new-uuid-format                  April 2021
       textual representation.
       - IDs MUST ensure proper embedded sequencing to facilitate sorting
       when multiple UUIDs are created during a given timestamp.
-      - IDs MUST remove unique network identifiers while still retaining
-      application uniqueness.
+      - IDs MUST NOT require unique network identifiers as part of
+      achieving uniqueness.
       - Distributed nodes MUST be able to create collision resistant
       Unique IDs without a consulting a centralized resource.
 
@@ -277,7 +277,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021                [Page 5]
+Peabody & Davis          Expires 28 October 2021                [Page 5]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -333,7 +333,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021                [Page 6]
+Peabody & Davis          Expires 28 October 2021                [Page 6]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -389,7 +389,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021                [Page 7]
+Peabody & Davis          Expires 28 October 2021                [Page 7]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -445,7 +445,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021                [Page 8]
+Peabody & Davis          Expires 28 October 2021                [Page 8]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -501,7 +501,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021                [Page 9]
+Peabody & Davis          Expires 28 October 2021                [Page 9]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -557,7 +557,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021               [Page 10]
+Peabody & Davis          Expires 28 October 2021               [Page 10]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -613,7 +613,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021               [Page 11]
+Peabody & Davis          Expires 28 October 2021               [Page 11]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -669,7 +669,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021               [Page 12]
+Peabody & Davis          Expires 28 October 2021               [Page 12]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -725,7 +725,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021               [Page 13]
+Peabody & Davis          Expires 28 October 2021               [Page 13]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -781,7 +781,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021               [Page 14]
+Peabody & Davis          Expires 28 October 2021               [Page 14]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -837,7 +837,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021               [Page 15]
+Peabody & Davis          Expires 28 October 2021               [Page 15]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -893,7 +893,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021               [Page 16]
+Peabody & Davis          Expires 28 October 2021               [Page 16]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -949,7 +949,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021               [Page 17]
+Peabody & Davis          Expires 28 October 2021               [Page 17]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -1005,7 +1005,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021               [Page 18]
+Peabody & Davis          Expires 28 October 2021               [Page 18]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -1061,7 +1061,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021               [Page 19]
+Peabody & Davis          Expires 28 October 2021               [Page 19]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -1117,7 +1117,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021               [Page 20]
+Peabody & Davis          Expires 28 October 2021               [Page 20]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -1173,7 +1173,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021               [Page 21]
+Peabody & Davis          Expires 28 October 2021               [Page 21]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -1229,7 +1229,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021               [Page 22]
+Peabody & Davis          Expires 28 October 2021               [Page 22]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -1285,7 +1285,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021               [Page 23]
+Peabody & Davis          Expires 28 October 2021               [Page 23]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -1341,7 +1341,7 @@ Internet-Draft               new-uuid-format                  April 2021
 
 
 
-Peabody & Davis          Expires 24 October 2021               [Page 24]
+Peabody & Davis          Expires 28 October 2021               [Page 24]
 
 Internet-Draft               new-uuid-format                  April 2021
 
@@ -1374,7 +1374,15 @@ Internet-Draft               new-uuid-format                  April 2021
    not provide any context about the data the corresponds to the UUID or
    the current state of the application as a whole.
 
-10.  Normative References
+10.  Acknowledgements
+
+   The authors gratefully acknowledge the contributions of Ben Campbell,
+   Ben Ramsey, Fabio Lima, Gonzalo Salgueiro, Martin Thomson, Murray S.
+   Kucherawy, Rick van Rein, Rob Wilton, Sean Leonard, Theodore Y.
+   Ts'o.  As well as all of those in and outside the IETF community to
+   who contributed to the discussions which resulted in this document.
+
+11.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -1386,21 +1394,20 @@ Internet-Draft               new-uuid-format                  April 2021
               DOI 10.17487/RFC4122, July 2005,
               <https://www.rfc-editor.org/info/rfc4122>.
 
-11.  Informative References
+
+
+
+Peabody & Davis          Expires 28 October 2021               [Page 25]
+
+Internet-Draft               new-uuid-format                  April 2021
+
+
+12.  Informative References
 
    [LexicalUUID]
               Twitter, "A Scala client for Cassandra", commit f6da4e0,
               November 2012,
               <https://github.com/twitter-archive/cassie>.
-
-
-
-
-
-Peabody & Davis          Expires 24 October 2021               [Page 25]
-
-Internet-Draft               new-uuid-format                  April 2021
-
 
    [Snowflake]
               Twitter, "Snowflake is a network service for generating
@@ -1443,6 +1450,14 @@ Internet-Draft               new-uuid-format                  April 2021
               PostgreSql", Commit 2759820, December 2020,
               <https://github.com/richardtallent/RT.Comb>.
 
+
+
+
+Peabody & Davis          Expires 28 October 2021               [Page 26]
+
+Internet-Draft               new-uuid-format                  April 2021
+
+
    [ULID]     Feerasta, A., "Universally Unique Lexicographically
               Sortable Identifier", Commit d0c7170, May 2019,
               <https://github.com/ulid/spec>.
@@ -1450,13 +1465,6 @@ Internet-Draft               new-uuid-format                  April 2021
    [SID]      Chilton, A., "sid : generate sortable identifiers",
               Commit 660e947, June 2019,
               <https://github.com/chilts/sid>.
-
-
-
-Peabody & Davis          Expires 24 October 2021               [Page 26]
-
-Internet-Draft               new-uuid-format                  April 2021
-
 
    [pushID]   Google, "The 2^120 Ways to Ensure Unique Identifiers",
               February 2015, <https://firebase.googleblog.com/2015/02/
@@ -1501,12 +1509,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-Peabody & Davis          Expires 24 October 2021               [Page 27]
+Peabody & Davis          Expires 28 October 2021               [Page 27]
