@@ -1,6 +1,6 @@
 # Update
 
-A new draft was submitted 26 April 2021: https://tools.ietf.org/html/draft-peabody-dispatch-new-uuid-format-01
+A new draft was submitted 26 April 2021: https://tools.ietf.org/html/draft-peabody-dispatch-new-uuid-format-01 Feedback welcome :)
 
 # New UUID Formats
 This is the github repo for the IETF draft surrounding the topic of new time-based UUID formats.
