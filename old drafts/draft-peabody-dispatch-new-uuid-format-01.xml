@@ -173,7 +173,7 @@
 		<t>
 		Next, UUIDv7 introduces an entirely new time-based UUID bit layout utilizing a variable length timestamp sourced from the 
 		widely implemented and well known Unix Epoch timestamp source.
-        The timestamp is broken into a 36 bit integer sections part, and is followed by a field of variable length which
+        The timestamp is broken into a 36-bit integer sections part, and is followed by a field of variable length which
         represents the sub-second timestamp portion, encoded so that each bit from most to least significant adds more precision. See <xref target="uuidv7layout"/>
 		</t>
 		<t>
@@ -183,28 +183,6 @@
 		lots of flexibility to create an implementation specific RFC compliant time-based UUID while retaining the 
 		properties that make UUID great. See <xref target="uuidv8layout"/>
         </t>
-		<section anchor="changelog" title="changelog">
-			<t>RFC EDITOR PLEASE DELETE THIS SECTION.</t>
-			<t>draft-02</t>
-			<ul spacing="compact" empty="true">
-				<li><t>- Added Changelog</t></li>
-				<li><t>- Fixed misc. grammatical errors</t></li>
-				<li><t>- Fixed section numbering issue</t></li>
-				<li><t>- Fixed some UUIDvX reference issues</t></li>
-				<li><t>- Changed all instances of "motonic" to "monotonic"</t></li>
-				<li><t>- Changed all instances of "#-bit" to "# bit"</t></li>
-				<li><t>- Revised UUIDv6 Clock Sequence Usage from random start to monotonic increment starting at 0</t></li>
-				
-			</ul>
-			<t>draft-01</t>
-			<ul spacing="compact" empty="true">
-				<li><t>- Complete rewrite of entire document.</t></li>
-				<li><t>- The format, flow and verbiage used in the specification has been reworked to mirror the original RFC 4122 and current IETF standards.</t></li>
-				<li><t>- Removed the topics of UUID length modification, alternate UUID text formats, and alternate UUID encoding techniques.</t></li>
-				<li><t>- Research into 16 different historical and current implementations of time-based universal identifiers was completed at the end of 2020 in attempt to identify trends which have directly influenced design decisions in this draft document (https://github.com/uuid6/uuid6-ietf-draft/tree/master/research)</t></li>
-				<li><t>- Prototype implementation have been completed for UUIDv6, UUIDv7, and UUIDv8 in various languages by many GitHub community members. (https://github.com/uuid6/prototypes)</t></li>
-			</ul>
-		</section>
     </section>
     <section anchor="format" title="Format">
         <t>
@@ -214,7 +192,7 @@
         </t>
 		<section anchor="versions" title="Versions">
 			<t>
-			Table 1 defines the 4 bit version found in Bits 48 through 51 within a given UUID.
+			Table 1 defines the 4-bit version found in Bits 48 through 51 within a given UUID.
 			</t>
 			<table>
 			<name>UUID versions defined by this specification</name>
@@ -255,12 +233,12 @@
 			Where UUIDv1 splits the timestamp bits into three distinct parts and orders them as
 			time_low, time_mid, time_high_and_version. UUIDv6 instead keeps the source bits
 			from the timestamp intact and changes the order to time_high, time_mid, and time_low.
-			Incidentally this will match the original 60 bit Gregorian timestamp source.
-			The 14 bit clock sequence has been altered slightly to start at zero and increase monotonically for each UUID created on a given timestamp but remain in the position as <xref target="RFC4122"/>.
-			The 48 bit node MUST be set to a pseudo-random value.
+			Incidentally this will match the original 60-bit Gregorian timestamp source.
+			The clock sequence bits remain unchanged from their usage and position in <xref target="RFC4122"/>.
+			The 48-bit node MUST be set to a pseudo-random value.
 			</t>
 			<t>
-			The format for the 16-octet, 128 bit UUIDv6 is shown in Figure 1
+			The format for the 16-octet, 128-bit UUIDv6 is shown in Figure 1
 			</t>
 <figure>
 <name>UUIDv6 Field and Bit Layout</name>
@@ -279,15 +257,15 @@
 </artwork>
 </figure>
 		<dl newline="true">
-        <dt>time_high:</dt> <dd>The most significant 32 bits of the 60 bit starting timestamp.
+        <dt>time_high:</dt> <dd>The most significant 32 bits of the 60-bit starting timestamp.
             Occupies bits 0 through 31 (octets 0-3)</dd>
 			
-        <dt>time_mid:</dt> <dd>The middle 16 bits of the 60 bit starting timestamp.
+        <dt>time_mid:</dt> <dd>The middle 16 bits of the 60-bit starting timestamp.
             Occupies bits 32 through 47 (octets 4-5)</dd>
 			
         <dt>time_low_and_version:</dt> <dd>The first four most significant bits MUST contain
             the UUIDv6 version (0110) while the remaining 12 bits will contain
-            the least significant 12 bits from the 60 bit starting timestamp.
+            the least significant 12 bits from the 60-bit starting timestamp.
             Occupies bits 48 through 63 (octets 6-7)</dd>
 			
         <dt>clk_seq_hi_res:</dt> <dd>The first two bits MUST be set to the UUID variant (10)
@@ -297,37 +275,23 @@
         <dt>clock_seq_low:</dt> <dd>The 8 bit low portion of the clock sequence.
             Occupies bits 72 through 79 (octet 9)</dd>
 			
-        <dt>node:</dt> <dd>48 bit pseudo-random number used as a spatially unique identifier
+        <dt>node:</dt> <dd>48-bit pseudo-random number used as a spatially unique identifier
             Occupies bits 80 through 127 (octets 10-15)</dd>
 		</dl>
             <section anchor="uuidv6timestamp" title="UUIDv6 Timestamp Usage">
 				<t>
-				UUIDv6 reuses the 60 bit Gregorian timestamp with 100-nanosecond
+				UUIDv6 reuses the 60-bit Gregorian timestamp with 100-nanosecond
 				precision defined in <xref target="RFC4122" sectionFormat="comma" section="4.1.4"/>.
 				</t>
 			</section>
             <section anchor="uuidv6sequence" title="UUIDv6 Clock Sequence  Usage">
 				<t>
-				Historically UUIDv1 Clock Sequence usage, defined by <xref target="RFC4122" sectionFormat="comma" section="4.1.5"/>, is used for a few purposes.
-				Firstly as collision avoidance mechanism by ensuring that when a timestamp is reused during UUIDv1 creation the clock sequence is incremented.
-				Secondly as added random data to help ensure global uniqueness. This is achieved by starting the clock sequence at random value.
-				This added random is a needed due to the node ID possibly utilizing a static MAC address which could be similar across systems.
-				</t>
-				<t>
-				With UUIDv6 the aggregate 14 bits of clk_seq_hi_res (lower 6 bits) and clock_seq_low (all 8 bits) MUST be treated as one clock sequence value and references as the "UUIDv6 Clock Sequence" for this section.
-				The UUIDv6 clock sequence MUST start at zero and increment monotonically for each new UUID created on by the application on the same timestamp. 
-				When the timestamp increments the UUIDv6 clock sequence MUST be reset to zero.
-				The UUIDv6 clock sequence MUST NOT rollover or reset to zero unless the timestamp has incremented.
-				</t>
-				<t>
-				The 48 bit pseudo-random node defined in the next section provides enough random data to ensure global uniqueness such that the extra random provided by a randomized starting UUIDv6 clock sequence is not required.
-				Additionally, the current 14 bit length of both clk_seq_hi_res and clock_seq_low maximizes the usage of these bits and ensures up to 16383 UUIDv6 values can be created for a given timestamp and then ordered by explicitly by creation sequence.
-				Furthermore, 16383 total values for UUIDv6 clock sequence is sufficiently high for the given UUIDv6 timestamp accuracy resulting in a very low chance of a clock sequence rollover event.
+				UUIDv6 makes no change to the Clock Sequence usage defined by <xref target="RFC4122" sectionFormat="comma" section="4.1.5"/>.
 				</t>
             </section>
             <section anchor="uuidv6node" title="UUIDv6 Node Usage">
 				<t>
-				UUIDv6 node bits SHOULD be set to a 48 bit random or pseudo-random number.
+				UUIDv6 node bits SHOULD be set to a 48-bit random or pseudo-random number.
 				UUIDv6 nodes SHOULD NOT utilize an IEEE 802 MAC address or the
 				<xref target="RFC4122" sectionFormat="comma" section="4.5"/> method of generating a random multicast IEEE 802 MAC address.
 				</t>
@@ -341,25 +305,25 @@
 					<li><t>From a system-wide shared stable store (e.g., a file) or global variable, read the
 					  UUID generator state: the values of the timestamp and clock sequence
 					  used to generate the last UUID.</t></li>
-					<li><t>Obtain the current time as a 60 bit count of 100-nanosecond intervals
+					<li><t>Obtain the current time as a 60-bit count of 100-nanosecond intervals
 					  since 00:00:00.00, 15 October 1582.</t></li>
 					<li><t>Set the time_low field to the 12 least significant bits
-					  of the starting 60 bit timestamp.</t></li>
+					  of the starting 60-bit timestamp.</t></li>
 					<li><t>Truncate the timestamp to the 48 most significant bits
 					  in order to create time_high_and_time_mid.</t></li>
 					<li><t>Set the time_high field to the 32 most significant bits of the truncated timestamp.</t></li>
 					<li><t>Set the time_mid field to the 16 least significant bits of the truncated timestamp.</t></li>
-					<li><t>Create the 16 bit time_low_and_version by concatenating the 4 bit UUIDv6 version
-					  with the 12 bit time_low.</t></li>
+					<li><t>Create the 16-bit time_low_and_version by concatenating the 4-bit UUIDv6 version
+					  with the 12-bit time_low.</t></li>
 					<li><t>If the state was unavailable (e.g., non-existent or corrupted)
 					  or the timestamp is greater than the current timestamp generate
-					  a random 14 bit clock sequence value.</t></li>
+					  a random 14-bit clock sequence value.</t></li>
 					<li><t>If the state was available, but the saved timestamp is less than or equal to the current
 					  timestamp, increment the clock sequence value.</t></li>
-					<li><t>Complete the 16 bit clock sequence high, low and reserved creation
+					<li><t>Complete the 16-bit clock sequence high, low and reserved creation
 					  by concatenating the clock sequence onto UUID variant bits which take
-					  the most significant position in the 16 bit value.</t></li>
-					<li><t>Generate a 48 bit pseudo-random node.</t></li>
+					  the most significant position in the 16-bit value.</t></li>
+					<li><t>Generate a 48-bit psuedo-random node.</t></li>
 					<li><t>Format by concatenating the 128 bits from each parts:
 					  time_high|time_mid|time_low_and_version|variant_clk_seq|node</t></li>
 					<li><t>Save the state (current timestamp and clock sequence)
@@ -367,7 +331,7 @@
 				</ol>  	
 				<t>
 				The steps for splitting time_high_and_time_mid into time_high and time_mid are optional
-				since the 48 bits of time_high and time_mid will remain in the same order as time_high_and_time_mid
+				since the 48-bits of time_high and time_mid will remain in the same order as time_high_and_time_mid
 				during the final concatenation. This extra step of splitting into the most significant
 				32 bits and least significant 16 bits proves useful when reusing an existing UUIDv1 implementation.
 				In which the following logic can be applied to reshuffle the bits with minimal modifications.
@@ -390,13 +354,13 @@
 			<t>
 			The UUIDv7 format is designed to encode a Unix timestamp with arbitrary sub-second precision.
 			The key property provided by UUIDv7 is that timestamp values generated by one system and parsed by
-			another are guaranteed to have sub-second precision of either the generator or the parser,
+			another are guaranteed to have sub-section precision of either the generator or the parser,
 			whichever is less. Additionally, the system parsing the UUIDv7 value does not need to know which precision
 			was used during encoding in order to function correctly.
 			</t>
 			
 			<t>
-			The format for the 16-octet, 128 bit UUIDv6 is shown in Figure 2
+			The format for the 16-octet, 128-bit UUIDv6 is shown in Figure 2
 			</t>
 <figure>
 <name>UUIDv7 Field and Bit Layout</name>
@@ -415,33 +379,33 @@
 </artwork>
 </figure>
 		<dl newline="true">
-			<dt>unixts:</dt> <dd>36 bit big-endian unsigned Unix Timestamp value</dd>
-			<dt>subsec_a:</dt> <dd>12 bits allocated to sub-second precision values.</dd>
-			<dt>ver:</dt> <dd>The 4 bit UUIDv7 version (0111)</dd>
-			<dt>subsec_b:</dt> <dd>12 bits allocated to sub-second precision values.</dd>
-			<dt>var:</dt> <dd>2 bit UUID variant (10)</dd>
-			<dt>subsec_seq_node:</dt> <dd>The remaining 62 bits which MAY be allocated to any combination of additional sub-second precision, sequence counter, or pseudo-random data.</dd>
+			<dt>unixts:</dt> <dd>36-bit big-endian unsigned Unix Timestamp value</dd>
+			<dt>subsec_a:</dt> <dd>12-bits allocated to sub-section precision values.</dd>
+			<dt>ver:</dt> <dd>The 4 bit UUIDv8 version (0111)</dd>
+			<dt>subsec_b:</dt> <dd>12-bits allocated to sub-section precision values.</dd>
+			<dt>var:</dt> <dd>2-bit UUID variant (10)</dd>
+			<dt>subsec_seq_node:</dt> <dd>The remaining 62 bits which MAY be allocated to any combination of additional sub-section precision, sequence counter, or pseudo-random data.</dd>
 		</dl>
 
 			<section anchor="uuidv7timestamp" title="UUIDv7 Timestamp Usage">
-				<t>UUIDv7 utilizes a 36 bit big-endian unsigned Unix Timestamp value (number of seconds since the epoch of 1 Jan 1970, leap seconds excluded so each hour is exactly 3600 seconds long).</t>
+				<t>UUIDv7 utilizes a 36-bit big-endian unsigned Unix Timestamp value (number of seconds since the epoch of 1 Jan 1970, leap seconds excluded so each hour is exactly 3600 seconds long).</t>
 				<t>Additional sub-second precision (millisecond, nanosecond, microsecond, etc) MAY be provided for encoding and decoding in the remaining bits in the layout.</t>
 			</section>
 			
 			<section anchor="uuidv7sequence" title="UUIDv7 Clock Sequence Usage">
 				<t>
-				UUIDv7 SHOULD utilize a monotonic sequence counter to provide additional sequencing guarantees when multiple UUIDv7 values are created in the same UNIXTS and SUBSEC timestamp.
+				UUIDv7 SHOULD utilize a motonic sequence counter to provide additional sequencing guarantees when multiple UUIDv7 values are created in the same UNIXTS and SUBSEC timestamp.
 				The amount of bits allocates to the sequence counter depend on the precision of the timestamp. For example, a more accurate timestamp source using nanosecond precision will require less clock sequence bits than a timestamp source utilizing seconds for precision.
 				For best sequencing results the sequence counter SHOULD be placed immediately after available sub-second bits.
 				</t>
 				<t>
 				The clock sequence MUST start at zero and increment monotonically
-				for each new UUIDv7 created on by the application on the same timestamp.
+				for each new UUID created on by the application on the same timestamp.
 				When the timestamp increments the clock sequence MUST be reset to zero.
 				The clock sequence MUST NOT rollover or reset to zero unless the timestamp
 				has incremented. Care MUST be given to ensure that an adequate sized
 				clock sequence is selected for a given application based on expected
-				timestamp precision and expected UUIDv7 generation rates.
+				timestamp precision and expected UUID generation rates.
 				</t>
 			</section>
 			
@@ -479,7 +443,7 @@
 						<li><t>The first 36 bits have been dedicated to the Unix Timestamp (unixts)</t></li>
 						<li><t>All 12 bits of scenario subsec_a is fully dedicated to millisecond information (msec).</t></li>
 						<li><t>The 4 Version bits remain unchanged (ver).</t></li>
-						<li><t>All 12 bits of subsec_b have been dedicated to a monotonic clock sequence counter (seq).</t></li>
+						<li><t>All 12 bits of subsec_b have been dedicated to a motonic clock sequence counter (seq).</t></li>
 						<li><t>The 2 Variant bits remain unchanged (var).</t></li>
 						<li><t>Finally the remaining 62 bits in the subsec_seq_node section are layout is filled out with random data to pad the length and provide guaranteed uniqueness (rand).</t></li>
 					</ul>
@@ -512,7 +476,7 @@
 						<li><t>The 4 Version bits remain unchanged (ver).</t></li>
 						<li><t>All 12 bits of subsec_b have been dedicated to providing sub-second encoding for the Microsecond precision (usec).</t></li>
 						<li><t>The 2 Variant bits remain unchanged (var).</t></li>
-						<li><t>A 14 bit monotonic clock sequence counter (seq) has been embedded in the most significant position of subsec_seq_node </t></li>
+						<li><t>A 14 bit motonic clock sequence counter (seq) has been embedded in the most significant position of subsec_seq_node </t></li>
 						<li><t>Finally the remaining 48 bits in the subsec_seq_node section are layout is filled out with random data to pad the length and provide guaranteed uniqueness (rand).</t></li>
 					</ul>
 
@@ -546,7 +510,7 @@
 						<li><t>All 12 bits of subsec_b have been dedicated to providing sub-second encoding for the Nanosecond precision (nsec).</t></li>
 						<li><t>The 2 Variant bits remain unchanged (var).</t></li>
 						<li><t>The first 14 bit of the subsec_seq_node dedicated to providing sub-second encoding for the Nanosecond precision (nsec).</t></li>
-						<li><t>The next 8 bits of subsec_seq_node dedicated a monotonic clock sequence counter (seq).</t></li>
+						<li><t>The next 8 bits of subsec_seq_node dedicated a motonic clock sequence counter (seq).</t></li>
 						<li><t>Finally the remaining 40 bits in the subsec_seq_node section are layout is filled out with random data to pad the length and provide guaranteed uniqueness (rand).</t></li>
 					</ul>
 
@@ -626,7 +590,7 @@
         which allow for a highly customizable UUID that fits a given application needs.
 		</t>
 		<t>
-        UUIDv8 SHOULD only be utilized if an implementation cannot utilize UUIDv1, UUIDv6, or UUIDv7.
+        UUIDv8 SHOULD only be utilized if an implementation cannot utilize UUIDv1, UUIDv6, or UUIDv8.
         Some situations in which UUIDv8 usage could occur:
 		</t>
 		<ul>
@@ -643,7 +607,7 @@
 		</ul>
 		<t>
         Roughly speaking a properly formatted UUIDv8 SHOULD contain
-        the following sections adding up to a total of 128 bits.
+        the following sections adding up to a total of 128-bits.
 		</t>
 		<ul spacing="compact" empty="true">
             <li><t>- Timestamp Bits (Variable Length)</t></li>
@@ -663,7 +627,7 @@
 		</t>
 		<t>
         A sample format in Figure 6 is used to further illustrate the point
-        for the 16-octet, 128 bit UUIDv8.
+        for the 16-octet, 128-bit UUIDv8.
 		</t>
 <figure>
 <name>UUIDv8 Field and Bit Layout</name>
@@ -683,18 +647,18 @@
 		<dl newline="true">
         <dt>timestamp_32:</dt> <dd>The most significant 32 bits of the desired timestamp source.
             Occupies bits 0 through 31 (octets 0-3).</dd>
-        <dt>timestamp_48:</dt> <dd>The next 16 bits of the timestamp source when a timestamp
-            source with at least 48 bits is used. When a 32 bit timestamp source
+        <dt>timestamp_48:</dt> <dd>The next 16-bits of the timestamp source when a timestamp
+            source with at least 48 bits is used. When a 32-bit timestamp source
             is utilized, these bits are set to 0. Occupies bits 32 through 47</dd>
         <dt>ver:</dt> <dd>The 4 bit UUIDv8 version (1000). Occupies bits 48 through 51.</dd>
-        <dt>time_or_seq:</dt> <dd>If a 60 bit, or larger, timestamp is used these 12 bits are used to
-            fill out the remaining timestamp. If a 32 or 48 bit timestamp
-            is leveraged a 12 bit clock sequence MAY be used. 
+        <dt>time_or_seq:</dt> <dd>If a 60-bit, or larger, timestamp is used these 12-bits are used to
+            fill out the remaining timestamp. If a 32 or 48-bit timestamp
+            is leveraged a 12-bit clock sequence MAY be used. 
 			Together ver and time_or_seq occupy bits 48 through 63 (octets 6-7)</dd>
-        <dt>var:</dt> <dd>2 bit UUID variant (10)</dd>
-        <dt>seq_or_node:</dt> <dd>If a 60 bit, or larger, timestamp source is leverages these 8 bits
-            SHOULD be allocated for an 8 bit clock sequence counter. If
-            a 32 or 48 bit timestamp source is used these 8 bits SHOULD be set to random.</dd>
+        <dt>var:</dt> <dd>2-bit UUID variant (10)</dd>
+        <dt>seq_or_node:</dt> <dd>If a 60-bit, or larger, timestamp source is leverages these 8 bits
+            SHOULD be allocated for an 8-bit clock sequence counter. If
+            a 32 or 48 bit timestamp source is used these 8-bits SHOULD be set to random.</dd>
         <dt>node:</dt> <dd>In most implementations these bits will likely be set to
             pseudo-random data. However, implementations utilize the node as they see fit.
             Together var, seq_or_node, and node occupy Bits 64 through 127 (octets 8-15)</dd>
@@ -723,14 +687,14 @@
             that can easily used for the majority of timestamp lengths:
 			</t>
 			<ul>
-                <li><t>32 bit timestamp: using timestamp_32 and setting timestamp_48 to 0s</t></li>
-                <li><t>48 bit timestamp: using timestamp_32 and timestamp_48 entirely</t></li>
-                <li><t>60 bit timestamp: using timestamp_32, timestamp_48, and time_or_seq</t></li>
-                <li><t>64 bit timestamp: using timestamp_32, timestamp_48, and time_or_seq
+                <li><t>32-bit timestamp: using timestamp_32 and setting timestamp_48 to 0s</t></li>
+                <li><t>48-bit timestamp: using timestamp_32 and timestamp_48 entirely</t></li>
+                <li><t>60-bit timestamp: using timestamp_32, timestamp_48, and time_or_seq</t></li>
+                <li><t>64-bit timestamp: using timestamp_32, timestamp_48, and time_or_seq
                   and truncating the timestamp the 60 most significant bits.</t></li>
 			</ul>
 			<t>
-            Although it is possible to create a timestamp larger than 64 bits in size
+            Although it is possible to create a timestamp larger than 64-bits in size
             The usage and bit layout of that timestamp format is up to the implementation.
             When a timestamp exceeds the 64th bit (octet 7), extra care must be taken to
             ensure the Variant bits are properly inserted at their respective location
@@ -740,9 +704,9 @@
 			<t>
             Any timestamps that does not entirely fill the timestamp_32, timestamp_48
             or time_or_seq MUST set all leftover bits in the least significant position
-            of the respective field to 0. For example a 36 bit timestamp source would
-            fully utilize timestamp_32 and 4 bits of timestamp_48.
-            The remaining 12 bits in timestamp_48 MUST be set to 0.
+            of the respective field to 0. For example a 36-bit timestamp source would
+            fully utilize timestamp_32 and 4-bits of timestamp_48.
+            The remaining 12-bits in timestamp_48 MUST be set to 0.
 			</t>
 			<t>
             By using implementation-specific timestamp sources it is not
@@ -765,25 +729,25 @@
             clock sequence values that can leveraged:
 			</t>
 			<ul spacing="compact">
-                <li><t>12 bit clock sequence using time_or_seq for use when the timestamp
-                  is less than 48 bits which allows for 4095 UUIDs per clock tick.</t></li>
-                <li><t>8 bit clock sequence using seq_or_node when the timestamp uses
-                  more than 48 bits which allows for 255 UUIDs per clock tick.</t></li>
+                <li><t>12-bit clock sequence using time_or_seq for use when the timestamp
+                  is less than 48-bits which allows for 4095 UUIDs per clock tick.</t></li>
+                <li><t>8-bit clock sequence using seq_or_node when the timestamp uses
+                  more than 48-bits which allows for 255 UUIDs per clock tick.</t></li>
 			</ul>
 			<t>
             An implementation MAY use both time_or_seq and seq_or_node for clock sequencing
-            however it is highly unlikely that 20 bits of clock sequence are needed
+            however it is highly unlikely that 20-bits of clock sequence are needed
             for a given clock tick. Furthermore, more bits from the node MAY be used
-            for clock sequencing in the event that 8 bits is not sufficient.
+            for clock sequencing in the event that 8-bits is not sufficient.
 			</t>
 			<t>
             The clock sequence MUST start at zero and increment monotonically
-            for each new UUIDv8 created on by the application on the same timestamp.
+            for each new UUID created on by the application on the same timestamp.
             When the timestamp increments the clock sequence MUST be reset to zero.
             The clock sequence MUST NOT rollover or reset to zero unless the timestamp
             has incremented. Care MUST be given to ensure that an adequate sized
             clock sequence is selected for a given application based on expected
-            timestamp precision and expected UUIDv8 generation rates.
+            timestamp precision and expected UUID generation rates.
 			</t>
             </section>
             <section anchor="uuidv8node" title="UUIDv8 Node Usage">
@@ -797,19 +761,19 @@
             depending on the timestamp size:
 			</t>
 			<ul spacing="compact">
-                <li><t>62 bit node encompassing seq_or_node and node
-                  Used when a timestamp of 48 bits or less is leveraged.</t></li>
-                <li><t>54 bit node when all 60 bits of the timestamp are
+                <li><t>62-bit node encompassing seq_or_node and node
+                  Used when a timestamp of 48-bits or less is leveraged.</t></li>
+                <li><t>54-bit node when all 60-bits of the timestamp are
                   in use and the seq_or_node is used as clock sequencing.</t></li>
 			</ul>
 			<t>
             An implementation MAY choose to allocate bits from the node to the timestamp,
             clock sequence or application-specific embedded field.
-            It is recommended that implementation utilize a node of at least 48 bits to
+            It is recommended that implementation utilize a node of at least 48-bits to
             ensure global uniqueness can be guaranteed.
 			</t>
             </section>
-            <section anchor="uuidv8pseudo" title="UUIDv8 Basic Creation Algorithm">
+            <section anchor="uuidv8pseudo" title="UUIDv6 Basic Creation Algorithm">
 			<t>
             The entire usage of UUIDv8 is meant to be variable
             and allow as much customization as possible to meet
@@ -821,76 +785,76 @@
             and the recommendations outlined in this specification.
 			</t>
 			<t>
-            <strong>32 bit timestamp, 12 bit sequence counter, 62 bit node:</strong>
+            <strong>32-bit timestamp, 12-bit sequence counter, 62-bit node:</strong>
 			</t>
 			<ol>
 				<li><t>From a system-wide shared stable store (e.g., a file) or global variable,
 				  read the UUID generator state: the values of the timestamp
 				  and clock sequence used to generate the last UUID.</t></li>
 				<li><t>Obtain the current time from the selected clock source as 32 bits.</t></li>
-				<li><t>Set the 32 bit field timestamp_32 to the 32 bits from the timestamp</t></li>
-				<li><t>Set 16 bit timestamp_48 to all 0s</t></li>
+				<li><t>Set the 32-bit field timestamp_32 to the 32 bits from the timestamp</t></li>
+				<li><t>Set 16-bit timestamp_48 to all 0s</t></li>
 				<li><t>Set the version to 8 (1000)</t></li>
 				<li><t>If the state was unavailable (e.g., non-existent or corrupted) or
 				  the timestamp is greater than the current timestamp;
-				  set the 12 bit clock sequence value (time_or_node) to 0</t></li>
+				  set the 12-bit clock sequence value (time_or_node) to 0</t></li>
 				<li><t>If the state was available, but the saved timestamp is less than
 				  or equal to the current timestamp, increment the clock sequence
 				  value (time_or_node).</t></li>
 				<li><t>Set the variant to binary 10</t></li>
-				<li><t>Generate 62 random bits and fill in 8 bits for seq_or_node and
-				  54 bits for the node.</t></li>
-				<li><t>Format by concatenating the 128 bits as:
+				<li><t>Generate 62 random bits and fill in 8-bits for seq_or_node and
+				  54-bits for the node.</t></li>
+				<li><t>Format by concatenating the 128-bits as:
 				  timestamp_32|timestamp_48|version|time_or_node|variant|seq_or_node|node</t></li>
 				<li><t>Save the state (current timestamp and clock sequence)
 				  back to the stable store</t></li>
 			</ol>
 			<t>
-            <strong>48 bit timestamp, 12 bit sequence counter, 62 bit node:</strong>
+            <strong>48-bit timestamp, 12-bit sequence counter, 62-bit node:</strong>
 			</t>
 			<ol>
 				<li><t>From a system-wide shared stable store (e.g., a file) or global variable,
 				  read the UUID generator state: the values of the timestamp
 				  and clock sequence used to generate the last UUID.</t></li>
 				<li><t>Obtain the current time from the selected clock source as 32 bits.</t></li>
-				<li><t>Set the 32 bit field timestamp_32 to the 32 most significant bits
+				<li><t>Set the 32-bit field timestamp_32 to the 32 most significant bits
 				  from the timestamp</t></li>
-				<li><t>Set 16 bit timestamp_48 to the 16 least significant bits
+				<li><t>Set 16-bit timestamp_48 to the 16 least significant bits
 				  from the timestamp</t></li>
 				<li><t>The rest of the steps are the same as the previous example.</t></li>
 			</ol>
 			<t>
-            <strong>60 bit timestamp, 8 bit sequence counter, 54 bit node:</strong>
+            <strong>60-bit timestamp, 8-bit sequence counter, 54-bit node:</strong>
 			</t>
 			<ol>
 				<li><t>From a system-wide shared stable store (e.g., a file) or global variable,
 				  read the UUID generator state: the values of the timestamp
 				  and clock sequence used to generate the last UUID.</t></li>
 				<li><t>Obtain the current time from the selected clock source as 32 bits.</t></li>
-				<li><t>Set the 32 bit field timestamp_32 to the 32 bits from the timestamp</t></li>
-				<li><t>Set 16 bit timestamp_48 to the 16 middle bits from the timestamp</t></li>
+				<li><t>Set the 32-bit field timestamp_32 to the 32 bits from the timestamp</t></li>
+				<li><t>Set 16-bit timestamp_48 to the 16 middle bits from the timestamp</t></li>
 				<li><t>Set the version to 8 (1000)</t></li>
-				<li><t>Set 12 bit time_or_node to the 12 least significant bits from the timestamp</t></li>
+				<li><t>Set 12-bit time_or_node to the 12 least significant bits from the timestamp</t></li>
 				<li><t>Set the variant to 10</t></li>
 				<li><t>If the state was unavailable (e.g., non-existent or corrupted)
 				  or the timestamp is greater than the current timestamp;
-				  set the 12 bit clock sequence value (seq_or_node) to 0</t></li>
+				  set the 12-bit clock sequence value (seq_or_node) to 0</t></li>
 				<li><t>If the state was available, but the saved timestamp is less than
 				  or equal to the current timestamp, increment the clock sequence
 				  value (seq_or_node).</t></li>
 				<li><t>Generate 54 random bits and fill in the node</t></li>
-				<li><t>Format by concatenating the 128 bits as:
+				<li><t>Format by concatenating the 128-bits as:
 				  timestamp_32|timestamp_48|version|time_or_node|variant|seq_or_node|node</t></li>
 				<li><t>Save the state (current timestamp and clock sequence) back to the stable store</t></li>
 			</ol>
 			<t>
-            <strong>64 bit timestamp, 8 bit sequence counter, 54 bit node:</strong>
+            <strong>64-bit timestamp, 8-bit sequence counter, 54-bit node:</strong>
 			</t>
 			<ol>
-				<li><t>The same steps as the 60 bit timestamp can be utilized
-				  if the 64 bit timestamp is truncated to 60 bits.</t></li>
+				<li><t>The same steps as the 60-bit timestamp can be utilized
+				  if the 64-bit timestamp is truncated to 60-bits.</t></li>
 				<li><t>Implementations MAY chose to truncate the most or least significant
-				  bits but it is recommended to utilize the most significant 60 bits
+				  bits but it is recommended to utilize the most significant 60-bits
 				  and lose 4 bits of precision in the nanoseconds or microseconds position.</t></li>
 			</ol>
 			<t>
@@ -902,7 +866,7 @@
 				  and clock sequence used to generate the last UUID.</t></li>
 				<li><t>Obtain the current time from the selected clock source as desired bit total</t></li>
 				<li><t>Set total amount of bits for timestamp as required in the most significant
-				  positions of the 128 bit UUID</t></li>
+				  positions of the 128-bit UUID</t></li>
 				<li><t>Care MUST be taken to ensure that the UUID Version and UUID Variant are in the correct bit positions.</t>
 				  <t>UUID Version: Bits 48 through 51</t>
 				  <t>UUID Variant: Bits 64 and 65</t></li>
@@ -912,7 +876,7 @@
 				<li><t>If the state was available, but the saved timestamp is less than
 				  or equal to the current timestamp, increment the clock sequence value.</t></li>
 				<li><t>Set the remaining bits to the node as pseudo-random data</t></li>
-				<li><t>Format by concatenating the 128 bits together</t></li>
+				<li><t>Format by concatenating the 128-bits together</t></li>
 				<li><t>Save the state (current timestamp and clock sequence)
 				  back to the stable store</t></li>
 			</ol>  
@@ -929,12 +893,12 @@
         this format is unnecessarily verbose totaling 288 bits.
 		</t>
 		<ul spacing="compact">
-			<li><t>8 bits for each of the 32 hex characters = 256 bits</t></li>
-			<li><t>8 bits for each of the 4 hyphens = 32 bits</t></li>
+			<li><t>8-bits for each of the 32 hex characters = 256 bits</t></li>
+			<li><t>8-bits for each of the 4 hyphens = 32 bits</t></li>
 		</ul>
 		<t>
         Where possible UUIDs SHOULD be stored within
-        database applications as the underlying 128 bit binary value.
+        database applications as the underlying 128-bit binary value.
         </t>
     </section>
     <section anchor="uniquness" title="Global Uniqueness">
