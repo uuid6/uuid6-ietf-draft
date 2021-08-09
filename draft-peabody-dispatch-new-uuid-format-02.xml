@@ -156,7 +156,7 @@
 				<li><t>- IDs MUST ensure proper embedded sequencing to facilitate sorting when multiple UUIDs are created during a given timestamp.</t></li>			
 				<li><t>- IDs MUST NOT require unique network identifiers as part of achieving uniqueness.</t></li>
 				<li><t>- Distributed nodes MUST be able to create collision resistant Unique IDs 
-				  without a consulting a centralized resource.</t></li>
+				  without consulting a centralized resource.</t></li>
 			</ul>
     </section>
     <section anchor="Changes" title="Summary of Changes">
@@ -194,6 +194,8 @@
 				<li><t>- Changed all instances of "motonic" to "monotonic"</t></li>
 				<li><t>- Changed all instances of "#-bit" to "# bit"</t></li>
 				<li><t>- Revised UUIDv6 Clock Sequence Usage from random start to monotonic increment starting at 0</t></li>
+				<li><t>- Changed "proceeding" veriage to "after" in section 7</t></li>
+				<li><t>- Added details on how to pad 32 bit unix timestamp to 36 bits in UUIDv7</t></li>
 				
 			</ul>
 			<t>draft-01</t>
@@ -396,7 +398,7 @@
 			</t>
 			
 			<t>
-			The format for the 16-octet, 128 bit UUIDv6 is shown in Figure 2
+			The format for the 16-octet, 128 bit UUIDv7 is shown in Figure 2
 			</t>
 <figure>
 <name>UUIDv7 Field and Bit Layout</name>
@@ -425,6 +427,7 @@
 
 			<section anchor="uuidv7timestamp" title="UUIDv7 Timestamp Usage">
 				<t>UUIDv7 utilizes a 36 bit big-endian unsigned Unix Timestamp value (number of seconds since the epoch of 1 Jan 1970, leap seconds excluded so each hour is exactly 3600 seconds long).</t>
+				<t>In the event that 32 bit Unix Timestamp are in use; four zeros SHOULD be appended after the least significant (right-most) bits of the 32 bit Unix timestamp creating the 36 bit Unix timestamp.</t>
 				<t>Additional sub-second precision (millisecond, nanosecond, microsecond, etc) MAY be provided for encoding and decoding in the remaining bits in the layout.</t>
 			</section>
 			
@@ -955,7 +958,7 @@
 		UUIDs created by a given node. This works to add an extra layer of collision avoidance.
 		</t>
 		<t>
-		This machine ID MUST be placed in the UUID proceeding the timestamp and sequence counter bits. 
+		This machine ID MUST be placed in the UUID after the timestamp and sequence counter bits. 
 		This position is selected to ensure that the sorting by timestamp and clock sequence is still possible. 
 		The machineID MUST NOT be an IEEE 802 MAC address. The creation and negotiation of the machineID 
 		among distributed nodes is out of scope for this specification.
