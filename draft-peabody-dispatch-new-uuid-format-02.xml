@@ -196,7 +196,9 @@
 				<li><t>- Revised UUIDv6 Clock Sequence Usage from random start to monotonic increment starting at 0</t></li>
 				<li><t>- Changed "proceeding" veriage to "after" in section 7</t></li>
 				<li><t>- Added details on how to pad 32 bit unix timestamp to 36 bits in UUIDv7</t></li>
-				
+				<li><t>- Added details on how to truncate 64 bit unix timestamp to 36 bits in UUIDv7</t></li>
+				<li><t>- Added forward reference and bullet to UUIDv8 if truncating 64 bit Unix Epoch is not an option.</t></li>
+				<li><t>- Fixed bad reference to non-existent "time_or_node" in section 4.5.4</t></li>
 			</ul>
 			<t>draft-01</t>
 			<ul spacing="compact" empty="true">
@@ -426,9 +428,11 @@
 		</dl>
 
 			<section anchor="uuidv7timestamp" title="UUIDv7 Timestamp Usage">
-				<t>UUIDv7 utilizes a 36 bit big-endian unsigned Unix Timestamp value (number of seconds since the epoch of 1 Jan 1970, leap seconds excluded so each hour is exactly 3600 seconds long).</t>
-				<t>In the event that 32 bit Unix Timestamp are in use; four zeros SHOULD be appended after the least significant (right-most) bits of the 32 bit Unix timestamp creating the 36 bit Unix timestamp.</t>
+				<t>UUIDv7 utilizes a 36 bit big-endian unsigned Unix Timestamp value (number of seconds since the epoch of 1 Jan 1970, leap seconds excluded so each hour is exactly 3600 seconds long). The 36 bit value was selected in order to provide more available time to the unix timestamp and avoid the Year 2038 problem by extending the maximum timestamp to the year 4147.</t>
+				<t>To achieve a 36 bit UUIDv7 timestamp, the lower 36 bits of a 64 bit unix time are extracted verbatim into UUIDv7</t>
+				<t>In the event that 32 bit Unix Timestamp are in use; four zeros MUST be appended at the start in the most significant (left-most) bits of the 32 bit Unix timestamp creating the 36 bit Unix timestamp. This ensures sorting compatibility with 64 bit unix timestamp which have been truncated to 36 bits.</t>
 				<t>Additional sub-second precision (millisecond, nanosecond, microsecond, etc) MAY be provided for encoding and decoding in the remaining bits in the layout.</t>
+				<t>UUIDv8 SHOULD be used in place of UUIDv7 if an application or implementation does not want to truncate a 64 bit Unix Epoch to the lower 36 bits.</t>
 			</section>
 			
 			<section anchor="uuidv7sequence" title="UUIDv7 Clock Sequence Usage">
@@ -637,6 +641,7 @@
               not defined by the current time-based UUIDs.</t></li>
             <li><t>An implementation would like to utilize a timestamp bit layout
               not defined by the current time-based UUIDs.</t></li>
+			<li><t>An implementation would like to avoid truncating a 64 bit Unix to 36 bits as defined by UUIDv7.</t></li>
             <li><t>An implementation would like a specific level of precision
               within the timestamp not offered by current time-based UUIDs.</t></li>
             <li><t>An implementation would like to embed extra information
@@ -713,8 +718,9 @@
 			</t>
 			<ul spacing="compact"  empty="true">
                 <li><t>- Custom Epoch</t></li>
-                <li><t>- NTP Timestamp</t></li>
+                <li><t>- NTP timestamp</t></li>
                 <li><t>- ISO 8601 timestamp</t></li>
+                <li><t>- Full, Non-truncated 64 bit Unix Epoch timestamp</t></li>
 			</ul>
 			<t>
             The relaxed nature UUIDv8 timestamps also works to future proof
@@ -836,15 +842,15 @@
 				<li><t>Set the version to 8 (1000)</t></li>
 				<li><t>If the state was unavailable (e.g., non-existent or corrupted) or
 				  the timestamp is greater than the current timestamp;
-				  set the 12 bit clock sequence value (time_or_node) to 0</t></li>
+				  set the 12 bit clock sequence value (time_or_seq) to 0</t></li>
 				<li><t>If the state was available, but the saved timestamp is less than
 				  or equal to the current timestamp, increment the clock sequence
-				  value (time_or_node).</t></li>
+				  value (time_or_seq).</t></li>
 				<li><t>Set the variant to binary 10</t></li>
 				<li><t>Generate 62 random bits and fill in 8 bits for seq_or_node and
 				  54 bits for the node.</t></li>
 				<li><t>Format by concatenating the 128 bits as:
-				  timestamp_32|timestamp_48|version|time_or_node|variant|seq_or_node|node</t></li>
+				  timestamp_32|timestamp_48|version|time_or_seq|variant|seq_or_node|node</t></li>
 				<li><t>Save the state (current timestamp and clock sequence)
 				  back to the stable store</t></li>
 			</ol>
@@ -873,7 +879,7 @@
 				<li><t>Set the 32 bit field timestamp_32 to the 32 bits from the timestamp</t></li>
 				<li><t>Set 16 bit timestamp_48 to the 16 middle bits from the timestamp</t></li>
 				<li><t>Set the version to 8 (1000)</t></li>
-				<li><t>Set 12 bit time_or_node to the 12 least significant bits from the timestamp</t></li>
+				<li><t>Set 12 bit time_or_seq to the 12 least significant bits from the timestamp</t></li>
 				<li><t>Set the variant to 10</t></li>
 				<li><t>If the state was unavailable (e.g., non-existent or corrupted)
 				  or the timestamp is greater than the current timestamp;
@@ -883,7 +889,7 @@
 				  value (seq_or_node).</t></li>
 				<li><t>Generate 54 random bits and fill in the node</t></li>
 				<li><t>Format by concatenating the 128 bits as:
-				  timestamp_32|timestamp_48|version|time_or_node|variant|seq_or_node|node</t></li>
+				  timestamp_32|timestamp_48|version|time_or_seq|variant|seq_or_node|node</t></li>
 				<li><t>Save the state (current timestamp and clock sequence) back to the stable store</t></li>
 			</ol>
 			<t>
