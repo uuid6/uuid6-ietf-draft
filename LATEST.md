@@ -26,11 +26,13 @@
 - For v7 and v8 we can add the capabiliy of variable length.  For existing implementations that expect 128-bits, it should be valid to zero-pad shorter values, and longer values obviously will break.  128-bits should still probably be the recommended default unless there is a VERY compelling reason to do otherwise.  Reason: Additional (or less) random bytes allowed, based on application's requirements for uniqueness.
   - Minimum is 9 bytes (up to the variant+version byte)
   - Should we specify a maximum, e.g 64 or 128 or 256 bytes?  It would almost certainly be useful for implementations to know what the upper limit is.
+  - Implementations are not forced to support non-128-bit values.  It is perfectly valid for an implementation to say that it implements the spec but choses not to implement variable length for whatever reason (legacy code, performance/size considerations, etc.)
 - Introduce Crockford base32 as a standard text encoding (variable length).  Existing hex encoding stays as-is, although a definition of what to do with variable length UUIDs encoded as hex is needed.). This has the added benefit of being able to use the "-" character to positively identify which text format is in used (hex always has them, crockford base32 never does)
 
 ## UUIDv6
 
 - Is just the re-arranged byte sequence as originally described at http://gh.peabody.io/uuidv6/
+- But recommendation is to not use MAC address but CSPRNG bytes instead.
 - The point is to be easy to adapt from an existing UUIDv1 implementation.
 - Anything more complicated or different goes elsewhere.
 
@@ -81,5 +83,4 @@ Layout:
 
 * Do we need three new formats?  Yes. They each have different tradeoffs.  6 is easy to implement given a v1 implementaitons.  7 is more time precision but simpler and provides variable length.  8 lets you do whatever you want.
 * Do we need to introduce a new variant?  Need... hard to say, but the point is to make the spec simpler by tucking the variant and version fields into a single byte.  Compare the UUIDv7 layout above to RFC4122 - is it worth it?  I think so, but it's also subjective.  Also, by doing this we introduce another bit which is technically unused (the most significant bit of the version field will always be 0 for now) - so we have some flexibility for the future if later it is decided this specification messed everything up and should have never been born.
-* Why do we need/want to introduce variable length? The basic problem is there is no one-size-fits-all level of uniqueness and collision resistance.  There will always be some applications that want more bytes to increase the level of uniqueness/unguessability/collision-resistance.  So if we introduce the concept here that UUIDs can be longer and implementations adapt to that idea - while still being compatible with existing 128-bit implementations where possible (i.e. I can still make a 128-bit ID with v6, 7 or 8 and chuck it in Cassandra and it's UUID thing will at least not break).
-* 
+* Why do we need/want to introduce variable length? The basic problem is there is no one-size-fits-all level of uniqueness and collision resistance.  There will always be some applications that want more bytes to increase the level of uniqueness/unguessability/collision-resistance.  So if we introduce the concept here that UUIDs can be longer and implementations adapt to that idea - while still being compatible with existing 128-bit implementations where possible (i.e. I can still make a 128-bit ID with v6, 7 or 8 and chuck it in Cassandra and it's UUID code will at least not break - I've actually tested this on Cassandra for v6 but not for this new v7 or v8 proposal). 
