@@ -18,13 +18,13 @@
   - Reading the version is an example.
   - I think we should make an exception for the timestamp, because it is useful for practical purposes to know when a UUID was generated.
   - If you want to obfuscate the timestamp because you don't want this property, just use UUIDv8 where you can do whatever you want.
-  - Things like the sequence counter and random bytes should be considered opaque, I can't think of any reason an external application would read the sequence counter from a UUID generated somewhere else and do anything useful with it.  It's only needed internally by the implementation.
+  - Things like the sequence counter and random bytes should be considered opaque, I can't think of any reason an external application would read the sequence counter from a UUID generated somewhere else and do anything useful with it.  It's only used internally by the implementation, and even then implementations should be compared against a strict criteria of what is needed to produce a valid UUID, not fiddly rules about sequence counters that may or may not be useful/applicable to every scenario.
 - For v7 and v8 merge variant and version fields into one single 8-bit field. (new variant value = 0b111 means version field immediately follows in the next 5 bits). Reason: simplicity.  I don't see any practical reason to keep the version field where it is other than fear of breaking backward compatability with BROKEN implementations.  Correct RFC4122 implementations should be checking the var field and if it doesn't match an expecting value not interpreting anything else.  (See RFC4122 section 4.1.1)
-- Backward compatability: Specifically what this means is:
-  - Will new UUIDs break existing implementations and if so how often/bad.
-  - Can we add new things in a way that breaks as little as possible (obvoiusly UUID implementations will be
+- Mention backward compatability: Specifically what this means is:
+  - Will new UUIDs break existing implementations and if so how often/bad.  (In general I think the changes described here are acceptable because they will not break correct implementations - I realize the real world is more complicated though.)
+  - Can we add new things in a way that breaks as little as possible (like allowing variable length but still having 128-bits as the default).
 - For v7 and v8 we can add the capabiliy of variable length.  For existing implementations that expect 128-bits, it should be valid to zero-pad shorter values, and longer values obviously will break.  128-bits should still probably be the recommended default unless there is a VERY compelling reason to do otherwise.  Reason: Additional (or less) random bytes allowed, based on application's requirements for uniqueness.
-- Introduce Crockford base32 as a standard text encoding (variable length).  Existing hex encoding stays as-is, although a definition of what to do with variable length UUIDs encoded as hex is needed.)
+- Introduce Crockford base32 as a standard text encoding (variable length).  Existing hex encoding stays as-is, although a definition of what to do with variable length UUIDs encoded as hex is needed.). This has the added benefit of being able to use the "-" character to positively identify which text format is in used (hex always has them, crockford base32 never does)
 
 ## UUIDv6
 
