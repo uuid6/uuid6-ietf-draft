@@ -54,10 +54,10 @@ New layout:
 ```
 
 - Goal: Allow nanosecond-precise timestamps with a familiar unix epoch and in a simpler format than UUIDv6 and earlier UUIDs.
-- Timestamp is nanoseconds since the Unix epoch as an unsigned int64 - max date is 2554-07-21T23:34:33.999999999Z
+- Timestamp is nanoseconds since the Unix epoch as an unsigned int64 (big endian) - max date is 2554-07-21T23:34:33.999999999Z
 - Uses new combined var_ver byte for simplicity.
 - Doesn't have strict requirements for sequence counter and "node", etc. but will provide implementation recommendations.
-- Implementations like JS that don't have (or others that don't want) more than ms (or second or whatever lower) time precision can just fill in the least significant bytes with random data.  If this breaks monotonicity (some numbers generated will be out of sequence for the same millisecond unless you guarantee the random data you insert always counts up), then that's up to the implementation.  Monotonicity is a SHOULD, not a MUST, with implementation recommendations.
+- Implementations like JS that don't have (or others that don't want) more than ms (or second or whatever lower) time precision can just fill in the least significant bytes with random data.  If this breaks monotonicity (some numbers generated will be out of sequence for the same millisecond unless you guarantee the random data you insert always counts up within a given timestamp), then that's up to the implementation.  Monotonicity is a SHOULD, not a MUST, with implementation recommendations.
 - All the way down to the var-ver byte can be truncated or it can be made longer (9 bytes would be the minimum otherwise the var-ver field disappears).  Since the exact contents of everything after the 9th byte are implementation-specific, I think this would work.
 
 ## UUIDv8
