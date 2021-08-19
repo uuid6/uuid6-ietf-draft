@@ -4,7 +4,7 @@
 
 - Goals:
   - Introduce new UUIDs which make good database or other keys.
-  - Sorts by time (and ideally monotonically when generated from one environment) as a set of raw bytes (this is part of being able to treat UUIDs as opaque values in as many situations as possible and reducing implementation complexity).
+  - Sorts by time (and ideally monotonically - "always counts up" - when generated from one environment) as a set of raw bytes (this is part of being able to treat UUIDs as opaque values in as many situations as possible and reducing implementation complexity).
   - Reduce complexity in the spec and implementations
   - Remove MUSTs where they are not needed - there is a lot of implementation detail in RFC4122 which does not need to be forced on every implementation and then leaving people wondering if their implementation that is close but they cheated on one thing is correct or not
   - Make UUIDs as opaque as possible (but 100% opaque is not practical or desirable, more below)
