@@ -29,6 +29,13 @@
   - Implementations are not forced to support non-128-bit values.  It is perfectly valid for an implementation to say that it implements the spec but choses not to implement variable length for whatever reason (legacy code, performance/size considerations, etc.)
 - Introduce Crockford base32 as a standard text encoding (variable length).  Existing hex encoding stays as-is, although a definition of what to do with variable length UUIDs encoded as hex is needed.). This has the added benefit of being able to use the "-" character to positively identify which text format is in used (hex always has them, crockford base32 never does)
 
+Added 20 Aug:
+- We should clarify what "compatible" means and simplify this way down.  During generation there are all kinds of concerns, and a lot of what people bring up is during this step - sequence counters, collision probably, unguessability, global vs local uniqueness, etc.  However, once a UUID is generated and returned from whatever "make me a UUID" function, the requirements are very basic and simple.  "Backward compatability" with an existing implementation I don't think has anything to do at all with all of the existing code that fiddles with sequence counters, etc.  The thing that matters is once this is done and it gets stored somewhere in a database, in a file, etc. - if we introduce a new spec and people are generating these new UUID values, what will actually break?  UUIDs are largely opaque - this makes "backward compatability" fairly simple. The main issues I see that could be sources of pain are:
+  - New text format would break existing string parse methods
+  - New var+ver field technically shouldn't but may break implementations which are checking the RFC4122 version field without checking the variant as well.
+  - UUID code that expects 128-bit values obviously won't work as-is with other lengths (however, variable length is optional, and I think it could be incrementallyed added by implementations that want it).
+- The rest of the various fields I don't think have any practical impact on existing implementations and we should just do whatever is a good idea now and not worry about what someone wrote in RFC4122 16 years ago.
+
 ## UUIDv6
 
 - Is just the re-arranged byte sequence as originally described at http://gh.peabody.io/uuidv6/
