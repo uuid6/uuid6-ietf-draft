@@ -35,6 +35,7 @@ Added 20 Aug:
   - New var+ver field technically shouldn't but may break implementations which are checking the RFC4122 version field without checking the variant as well.
   - UUID code that expects 128-bit values obviously won't work as-is with other lengths (however, variable length is optional, and I think it could be incrementallyed added by implementations that want it).
 - The rest of the various fields I don't think have any practical impact on existing implementations and we should just do whatever is a good idea now and not worry about what someone wrote in RFC4122 16 years ago.
+- It's also worth noting that UUID implementations break into two parts: generating values, and storing them.  For the storing part, anything that can hold a chunk of bytes is technically a correct implementation - there sholud be no obligation to introspect the data at all.  In fact, the only practical reasons I've run into personally to look at what's in a UUID (other than debugging a UUID library) are 1. to determine the version so I know what strange sorting code I should write, or 2. to extract the timestamp because it was no otherwise available.  Sorting is addressed in UUIDv6 and 7 by making an opaque sort as raw bytes be time-ordered, and the extracting the timestamp is essentially just an optional debugging facility - not required and not guaranteed to be correct except as stated by a particular implementation.
 
 ## UUIDv6
 
