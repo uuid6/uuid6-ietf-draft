@@ -1,5 +1,7 @@
 # Latest
 
+See [LATEST-OUTLINE.md](LATEST-OUTLINE.md) for corresponding outline.
+
 ## Overall
 
 - Goals:
