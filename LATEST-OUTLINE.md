@@ -22,7 +22,7 @@ Here's what I'm thinking for another outline.  Instead of going down more or les
 - UUIDs SHOULD be treated as opaque values unless there is a good reason to do otherwise (i.e. never examine the bits in a UUID unless you really have no other choice)
 - As such, any storage mechanism capable of storing a series of bytes (minimum 9, maximum 64) is a valid storage mechanism for UUIDs.  If an implementation chooses to only support 128-bit UUIDs, then anything that can store 16 bytes is valid.  THERE IS NO REQUIREMENT ABOUT IMPLEMENTATIONS STORING UUIDS TO HAVE AN UNDERSTANDING OF THEIR CONTENTS.
 - If you really must inspect a UUID, the procedure for determining the version is (see RFC4122 for normative reference on UUIDs version <= 5):
-  - Read the two most significant bits from the octect 8 (zero-based) and if it's 0x10 the check the most significant 4 bits octect 6 for the version number (per RFC4122)
+  - Read the two most significant bits from the octect 8 (zero-based) and if it's 0x10 the check the most significant 4 bits of octect 6 for the version number (per RFC4122)
   - Otherwise, per this new spec, check octect 8 for the value 0xE7 meaning version 7 or 0xE8 meaning version 8 (we can mention that we're using variant = 0b111 here and refer to RFC4122 section 4.1.1 for the background)
   - Once you know the version refer to the spec of that particular version about the contents.
 
@@ -31,7 +31,7 @@ Here's what I'm thinking for another outline.  Instead of going down more or les
 - Default is stil 128-bits, 16 bytes.  Implementations SHOULD default to this.
 - Implementations MAY choose to allow generation UUIDs of anywhere from 9 to 64 bytes.  (decide if we want to elaborate on the various possible motivations for this here, e.g. shorter for better human use, longer for lower collision probability)
 - Implementations that store UUIDs of variable length SHOULD support any length from 9 to 64 bytes (decide if this is the right range - <9 bytes and we lose the variant/version, and 64 is arbitrary but we should have some upper limit in case it has an impact on physical storage requirements)
-- Variable length is optional and implementations opt-out and only support 128-bits.
+- Variable length is optional and implementations MAY opt-out and only support 128-bits.
 
 ## Text Format
 
