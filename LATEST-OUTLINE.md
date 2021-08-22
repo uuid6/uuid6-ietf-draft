@@ -69,6 +69,7 @@ Here's what I'm thinking for another outline.  Instead of going down more or les
        |                         node (2-5)                            |
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
+FIXME: I think this would be easier to read if we split out the bit fields, e.g. "var" as it's own few bits, "ver" as 4 bits, etc.
 
 - Anything else is the same as RFC4122.  (Don't bother describing the old fields in detail - the old RFC does that)
 
@@ -132,8 +133,7 @@ Here's what I'm thinking for another outline.  Instead of going down more or les
 
 - This is really just for v7:
 - defined simply as "each value returned is greater than the last"
-- Implementations SHOULD return monotonic values where it is feasible.
-- E.g. in a single library, effort should be made to, if two values are 
+- Implementations SHOULD return monotonic values where it is feasible. E.g. in a single library, effort should be made to return successive values that count up.
 - You can do this with an emedded sequence counter, by waiting for the next clock tick, or by checking that in case of next value has same timestamp see that the random bytes part is greater than prior value and generate new random bytes and check again.  Describe trade offs of these approaches, but it's implemenatation-specific - no mandedated sequence counter.
 - Provide a clear suggestion of a recommended way (e.g. something as simple as: "if next UUID is <= last, generate again until timestamp or random bytes provide a value that is higher" - maybe consider a max limit for cases where the system clock rolls back).
 - The monotonicity properties of an particular UUID generator SHOULD stated in it's documentation.
@@ -211,4 +211,5 @@ Give examples of the bit layout and/or algorithm used to address various situati
 - Monotonic guarantee: Retry method  - algorithm for generator to retry when it gets a value with the same clock tick (motivation: ease of implementation, (describe why monontoicity is desirable, i forget but there are cases))
 - Monotonic guarantee: Sequence counter method - assign 12 or maybe 16 bits of the random area as a sequence counter.  (motivation: monotonicity is vital and you want to be able to generate up to X values per clock tick without waiting)
 - 160-bit values - example of bit layout with more random bytes at the end, generation is trivial (motivation: reduce collision probability)
+- Shared-knowledge approach to guarantee uniquness - embedded database node number.
 TODO: more examples?
