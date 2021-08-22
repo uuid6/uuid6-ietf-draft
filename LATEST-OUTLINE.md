@@ -39,8 +39,8 @@ Here's what I'm thinking for another outline.  Instead of going down more or les
 - Existing hex format is still valid.  Shorter or longer values just omit or add hex characters (give some examples at different lengths)
 - Crockford base32 is allowed also (briefly summarize reasons - shorter, more compact if UUIDs are stored as text, crockford version's benefits vs).
 - Parsers can use the presence of '-' to determine if it's hex or crockford base32 format.
-- Compatible parsers MUST support crockford base32 with or without padding (the checksum feature is optional, not required)
-- Base32 text encoder SHOULD output crockford base32 values without padding.
+- Compatible parsers MUST support crockford base32 with or without padding, and allow a checksum part (verifyin the checksum is optional)
+- Base32 text encoder SHOULD output crockford base32 values without padding or checksum by default.  The padding or checksum features MAY be used if warranted for a specific application.
 
 ## UUIDv6
 
