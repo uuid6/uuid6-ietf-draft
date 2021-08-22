@@ -157,6 +157,7 @@ Here's what I'm thinking for another outline.  Instead of going down more or les
 - Examples: A section of the "random" part gets devoted to: database node number, MAC or IP address, manually entered ID, etc.  Or it could be something like the UUID generator in a database implementation simply checks to ensure the UUID is not in use before generating.  Regardless, the concept is that an implementation MAY just make up a rule that ensures uniqueness, at the cost of some guessability.
 - Using a shared knowledge pattern with the same length of UUID increases guessability (the more bits that fit a known value or pattern, the easier a value is to guess).
 - Shared knowledge solutions are okay and MAY be done as long as this is stated in the UUID implementation docs.
+- Talk a bit about the cost of collision, e.g. https://github.com/uuid6/uuid6-ietf-draft/issues/36#issuecomment-903295070
 
 ## Documentation
 
