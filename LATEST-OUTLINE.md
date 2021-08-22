@@ -6,6 +6,13 @@ Here's what I'm thinking for another outline.  Instead of going down more or les
 
 (more or less what is in the current -02 draft, edit as needed)
 
+## Motivation
+
+- The need for unique IDs in applications is great
+- It really shouldn't be over-specified.  Application requirements are vastly different.  Generated values should generally just be opaque.
+- But, it is helpful to have a document which explains the tradeoffs and gives guidance
+- And provides for backward compatability with RFC4122.
+
 ## Summary of Changes
 
 - Three new UUIDs with different tradeoffs:
@@ -33,6 +40,7 @@ Here's what I'm thinking for another outline.  Instead of going down more or les
 - Implementations that store UUIDs of variable length SHOULD support any length from 9 to 64 bytes (decide if this is the right range - <9 bytes and we lose the variant/version, and 64 is arbitrary but we should have some upper limit in case it has an impact on physical storage requirements)
 - Variable length is optional and implementations MAY opt-out and only support 128-bits.
 - Recommendation is for implementations to start defining UUID as an array of bytes (length + pointer or whatever language mechanism) instead of a fixed set of 16 bytes.
+- I think we need a table in here that gives bit/byte lengths and collision probability.  So someone can look down the numbers and pick the one that is right for their app.
 
 ## Text Format
 
