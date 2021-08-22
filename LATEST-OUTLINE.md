@@ -158,6 +158,7 @@ Here's what I'm thinking for another outline.  Instead of going down more or les
 - Using a shared knowledge pattern with the same length of UUID increases guessability (the more bits that fit a known value or pattern, the easier a value is to guess).
 - Shared knowledge solutions are okay and MAY be done as long as this is stated in the UUID implementation docs.
 - Talk a bit about the cost of collision, e.g. https://github.com/uuid6/uuid6-ietf-draft/issues/36#issuecomment-903295070
+- Mention that the reason this spec does not endorse any specific global registry is because if something goes wrong with it (like the fact that MAC addresses used to be more or less unique but with cloud computing and software network interfaces being commonplace that assumption changed) - in this case random data results in lower collision probability.  So basically we're saying: Global registries, aside from being inconvenient, can still have problems and thus the collision probability jumps way up above the random data approach - so let's not even bother.  If an application wants a "perfect, guaranteed unique" solution, it provide it within it's own application via shared knowledge.
 
 ## Documentation
 
