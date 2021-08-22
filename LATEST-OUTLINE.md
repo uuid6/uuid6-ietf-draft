@@ -9,8 +9,9 @@ Here's what I'm thinking for another outline.  Instead of going down more or les
 ## Motivation
 
 - The need for unique IDs in applications is great
+- Time-ordered values are useful as database keys and important for performance (more in section ...)
 - It really shouldn't be over-specified.  Application requirements are vastly different.  Generated values should generally just be opaque.
-- But, it is helpful to have a document which explains the tradeoffs and gives guidance
+- But, it is helpful to have a document which explains the tradeoffs and gives guidance.  (Picking a good unique value generation scheme is non-trivial.)
 - And provides for backward compatability with RFC4122.
 
 ## Summary of Changes
