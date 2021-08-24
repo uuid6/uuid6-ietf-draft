@@ -32,7 +32,7 @@ Here's what I'm thinking for another outline.  Instead of going down more or les
 - A UUID with all zero bytes is never valid (per this doc and the allowed values per RFC4122), so instead of checking "is this UUID valid", compare against all zeros.  THE LESS UUID INSPECTION IS DONE, THE BETTER (resulting code is simpler, more obvious, less likely to be broken and probably faster).
 - If you really must inspect a UUID, the procedure for determining the version is (see RFC4122 for normative reference on UUIDs version <= 5):
   - Read the two most significant bits from the octect 8 (zero-based) and if it's 0x10 the check the most significant 4 bits of octect 6 for the version number (per RFC4122)
-  - Otherwise, per this new spec, check octect 8 for the value 0xE7 meaning version 7 or 0xE8 meaning version 8 (we can mention that we're using variant = 0b111 here and refer to RFC4122 section 4.1.1 for the background)
+  - Otherwise, per this new spec, check octect 8 for the value 0xE7 meaning version 7 or 0xE8 meaning version 8 (we can mention that we're using variant = 0b111 here and refer to RFC4122 section 4.1.1 for the background). (note that this is the only step needed if you only care about versions 7 or 8)
   - Once you know the version refer to the spec of that particular version about the contents.
 
 ## Length
