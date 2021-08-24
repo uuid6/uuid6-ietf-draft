@@ -22,7 +22,7 @@ Here's what I'm thinking for another outline.  Instead of going down more or les
   - v8 allows you to do whatever you want
 - Crockford base32 text format
 - Variable length is allowed (optional, 128-bits remains the default)
-- Requirements for storing vs generating UUIDs are separated out for clarity and simplicity.
+- Requirements for storing vs generating UUIDs are separated out for clarity and simplicity (and because they are different)
 - Other related implementation concerns are each covered separately.
 
 ## Storing UUIDs
