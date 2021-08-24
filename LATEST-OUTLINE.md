@@ -211,7 +211,7 @@ bytes[9] = 0xE8
 Give examples of the bit layout and/or algorithm used to address various situations that have come up.  Briefly cover the motivation for each case as the first thing.
 - Only millisecond clock precision available (JS) - algo to fill in the rest with random (motivation: no choice, environment limitation OR precise clock readings present security risk)
 - Monotonic guarantee: Retry method  - algorithm for generator to retry when it gets a value with the same clock tick (motivation: ease of implementation, (describe why monontoicity is desirable, i forget but there are cases))
-- Monotonic guarantee: Sequence counter method - assign 12 or maybe 16 bits of the random area as a sequence counter.  (motivation: monotonicity is vital and you want to be able to generate up to X values per clock tick without waiting)
+- Monotonic guarantee: Sequence counter method - assign 12 or maybe 16 bits of the random area as a sequence counter.  (motivation: you have a case where monotonicity is vital (e.g. an algorithm that depends on looking at a prior value and comparing greater than to determine if something is new) and you want to be able to generate up to X values per clock tick without waiting)
 - 160-bit values - example of bit layout with more random bytes at the end, generation is trivial (motivation: reduce collision probability)
 - Shared-knowledge approach to guarantee uniquness - embedded database node number.
 TODO: more examples?
