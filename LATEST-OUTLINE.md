@@ -56,6 +56,8 @@ Here's what I'm thinking for another outline.  Instead of going down more or les
 
 - Recommended for implementations that already implement UUIDv1 and want a low-impact way to implement time-ordered values.
 - Refer to RFC4122 for v1, timestamp bits reordered (describe in more detail)
+- Recommend "Node" field be filled with random bytes instead of MAC address for the same reasons stated in Shared Knoweldge section, but this is optional.
+- Be sure to remove any new language related to the sequence counter, we want to keep that as it was https://github.com/uuid6/uuid6-ietf-draft/issues/38
 
 (from the existing draft, might tweak it a bit)
 ```
