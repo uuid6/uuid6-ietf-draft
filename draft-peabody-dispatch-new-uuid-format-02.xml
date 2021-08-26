@@ -193,7 +193,6 @@
 				<li><t>- Fixed some UUIDvX reference issues</t></li>
 				<li><t>- Changed all instances of "motonic" to "monotonic"</t></li>
 				<li><t>- Changed all instances of "#-bit" to "# bit"</t></li>
-				<li><t>- Revised UUIDv6 Clock Sequence Usage from random start to monotonic increment starting at 0</t></li>
 				<li><t>- Changed "proceeding" veriage to "after" in section 7</t></li>
 				<li><t>- Added details on how to pad 32 bit unix timestamp to 36 bits in UUIDv7</t></li>
 				<li><t>- Added details on how to truncate 64 bit unix timestamp to 36 bits in UUIDv7</t></li>
@@ -260,7 +259,7 @@
 			time_low, time_mid, time_high_and_version. UUIDv6 instead keeps the source bits
 			from the timestamp intact and changes the order to time_high, time_mid, and time_low.
 			Incidentally this will match the original 60 bit Gregorian timestamp source.
-			The 14 bit clock sequence has been altered slightly to start at zero and increase monotonically for each UUID created on a given timestamp but remain in the position as <xref target="RFC4122"/>.
+			The clock sequence bits remain unchanged from their usage and position in <xref target="RFC4122"/>.
 			The 48 bit node MUST be set to a pseudo-random value.
 			</t>
 			<t>
@@ -312,21 +311,7 @@
 			</section>
             <section anchor="uuidv6sequence" title="UUIDv6 Clock Sequence  Usage">
 				<t>
-				Historically UUIDv1 Clock Sequence usage, defined by <xref target="RFC4122" sectionFormat="comma" section="4.1.5"/>, is used for a few purposes.
-				Firstly as collision avoidance mechanism by ensuring that when a timestamp is reused during UUIDv1 creation the clock sequence is incremented.
-				Secondly as added random data to help ensure global uniqueness. This is achieved by starting the clock sequence at random value.
-				This added random is a needed due to the node ID possibly utilizing a static MAC address which could be similar across systems.
-				</t>
-				<t>
-				With UUIDv6 the aggregate 14 bits of clk_seq_hi_res (lower 6 bits) and clock_seq_low (all 8 bits) MUST be treated as one clock sequence value and references as the "UUIDv6 Clock Sequence" for this section.
-				The UUIDv6 clock sequence MUST start at zero and increment monotonically for each new UUID created on by the application on the same timestamp. 
-				When the timestamp increments the UUIDv6 clock sequence MUST be reset to zero.
-				The UUIDv6 clock sequence MUST NOT rollover or reset to zero unless the timestamp has incremented.
-				</t>
-				<t>
-				The 48 bit pseudo-random node defined in the next section provides enough random data to ensure global uniqueness such that the extra random provided by a randomized starting UUIDv6 clock sequence is not required.
-				Additionally, the current 14 bit length of both clk_seq_hi_res and clock_seq_low maximizes the usage of these bits and ensures up to 16383 UUIDv6 values can be created for a given timestamp and then ordered by explicitly by creation sequence.
-				Furthermore, 16383 total values for UUIDv6 clock sequence is sufficiently high for the given UUIDv6 timestamp accuracy resulting in a very low chance of a clock sequence rollover event.
+				UUIDv6 makes no change to the Clock Sequence usage defined by <xref target="RFC4122" sectionFormat="comma" section="4.1.5"/>.
 				</t>
             </section>
             <section anchor="uuidv6node" title="UUIDv6 Node Usage">
