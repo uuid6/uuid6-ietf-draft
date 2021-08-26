@@ -258,9 +258,9 @@
 			Where UUIDv1 splits the timestamp bits into three distinct parts and orders them as
 			time_low, time_mid, time_high_and_version. UUIDv6 instead keeps the source bits
 			from the timestamp intact and changes the order to time_high, time_mid, and time_low.
-			Incidentally this will match the original 60 bit Gregorian timestamp source.
-			The clock sequence bits remain unchanged from their usage and position in <xref target="RFC4122"/>.
-			The 48 bit node MUST be set to a pseudo-random value.
+			Incidentally this will match the original 60 bit Gregorian timestamp source with 100-nanosecond precision defined in <xref target="RFC4122" sectionFormat="comma" section="4.1.4"/> 
+			The clock sequence bits remain unchanged from their usage and position in <xref target="RFC4122" sectionFormat="comma" section="4.1.5"/>.
+			The 48 bit node SHOULD be set to a pseudo-random value however implementations MAY choose retain the old MAC address behavior from <xref target="RFC4122" sectionFormat="comma" section="4.1.6"/> and <xref target="RFC4122" sectionFormat="comma" section="4.5"/>
 			</t>
 			<t>
 			The format for the 16-octet, 128 bit UUIDv6 is shown in Figure 1
@@ -300,27 +300,9 @@
         <dt>clock_seq_low:</dt> <dd>The 8 bit low portion of the clock sequence.
             Occupies bits 72 through 79 (octet 9)</dd>
 			
-        <dt>node:</dt> <dd>48 bit pseudo-random number used as a spatially unique identifier
+        <dt>node:</dt> <dd>48 bit spatially unique identifier
             Occupies bits 80 through 127 (octets 10-15)</dd>
 		</dl>
-            <section anchor="uuidv6timestamp" title="UUIDv6 Timestamp Usage">
-				<t>
-				UUIDv6 reuses the 60 bit Gregorian timestamp with 100-nanosecond
-				precision defined in <xref target="RFC4122" sectionFormat="comma" section="4.1.4"/>.
-				</t>
-			</section>
-            <section anchor="uuidv6sequence" title="UUIDv6 Clock Sequence  Usage">
-				<t>
-				UUIDv6 makes no change to the Clock Sequence usage defined by <xref target="RFC4122" sectionFormat="comma" section="4.1.5"/>.
-				</t>
-            </section>
-            <section anchor="uuidv6node" title="UUIDv6 Node Usage">
-				<t>
-				UUIDv6 node bits SHOULD be set to a 48 bit random or pseudo-random number.
-				UUIDv6 nodes SHOULD NOT utilize an IEEE 802 MAC address or the
-				<xref target="RFC4122" sectionFormat="comma" section="4.5"/> method of generating a random multicast IEEE 802 MAC address.
-				</t>
-            </section>
             <section anchor="uuidv6pseudo" title="UUIDv6 Basic Creation Algorithm">
 				<t>
 				The following implementation algorithm is based on <xref target="RFC4122"/>
