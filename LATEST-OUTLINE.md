@@ -209,6 +209,7 @@ bytes[9] = 0xE8
 ```
 
 TODO: decide if we should add in a more complete set of psuedocode with options. E.g. monotonicity, what to do when you run out of sequence numbers, a "shared knowledge" portion - while these are all implementation-specific points, it could be really helpful to have a pseudocode recommendation that gives a suggested set of options and generation logic.  People trying to implement would probably really appreciate this and it would encourage implementations to act similarly while allowing whatever necessary variation.
+TODO: decide how this explanation fits in: https://github.com/uuid6/uuid6-ietf-draft/issues/41#issuecomment-907517063
 
 ## Implementation Scenarios
 
