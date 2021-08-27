@@ -208,6 +208,8 @@ bytes[0:end] = crypto_rand()
 bytes[9] = 0xE8
 ```
 
+TODO: decide if we should add in a more complete set of psuedocode with options. E.g. monotonicity, what to do when you run out of sequence numbers, a "shared knowledge" portion - while these are all implementation-specific points, it could be really helpful to have a pseudocode recommendation that gives a suggested set of options and generation logic.  People trying to implement would probably really appreciate this and it would encourage implementations to act similarly while allowing whatever necessary variation.
+
 ## Implementation Scenarios
 
 Give examples of the bit layout and/or algorithm used to address various situations that have come up.  Briefly cover the motivation for each case as the first thing.
