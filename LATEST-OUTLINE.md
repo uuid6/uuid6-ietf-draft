@@ -10,6 +10,7 @@ Here's what I'm thinking for another outline.  Instead of going down more or les
 
 - The need for unique IDs in applications is great
 - Time-ordered values are useful as database keys and important for performance (more in section ...)
+- By having values that are time-ordered when sorted as raw bytes, it allows them to have a useful sort order while still being opaque.
 - It really shouldn't be over-specified.  Application requirements are vastly different.  Generated values should generally just be opaque.
 - But, it is helpful to have a document which explains the tradeoffs and gives guidance.  (Picking a good unique value generation scheme is non-trivial.)
 - And provides for backward compatability with RFC4122.
