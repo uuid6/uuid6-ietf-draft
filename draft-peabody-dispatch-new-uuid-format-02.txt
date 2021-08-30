@@ -5,8 +5,8 @@
 dispatch                                                    BGP. Peabody
 Internet-Draft                                                          
 Updates: 4122 (if approved)                                     K. Davis
-Intended status: Standards Track                          10 August 2021
-Expires: 11 February 2022
+Intended status: Standards Track                          26 August 2021
+Expires: 27 February 2022
 
 
                             New UUID Formats
@@ -43,7 +43,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 February 2022.
+   This Internet-Draft will expire on 27 February 2022.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Peabody & Davis         Expires 11 February 2022                [Page 1]
+Peabody & Davis         Expires 27 February 2022                [Page 1]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -77,29 +77,26 @@ Table of Contents
      4.1.  Versions  . . . . . . . . . . . . . . . . . . . . . . . .   7
      4.2.  Variant . . . . . . . . . . . . . . . . . . . . . . . . .   7
      4.3.  UUIDv6 Layout and Bit Order . . . . . . . . . . . . . . .   7
-       4.3.1.  UUIDv6 Timestamp Usage  . . . . . . . . . . . . . . .   9
-       4.3.2.  UUIDv6 Clock Sequence Usage . . . . . . . . . . . . .   9
-       4.3.3.  UUIDv6 Node Usage . . . . . . . . . . . . . . . . . .   9
-       4.3.4.  UUIDv6 Basic Creation Algorithm . . . . . . . . . . .   9
-     4.4.  UUIDv7 Layout and Bit Order . . . . . . . . . . . . . . .  11
-       4.4.1.  UUIDv7 Timestamp Usage  . . . . . . . . . . . . . . .  12
+       4.3.1.  UUIDv6 Basic Creation Algorithm . . . . . . . . . . .   9
+     4.4.  UUIDv7 Layout and Bit Order . . . . . . . . . . . . . . .  10
+       4.4.1.  UUIDv7 Timestamp Usage  . . . . . . . . . . . . . . .  11
        4.4.2.  UUIDv7 Clock Sequence Usage . . . . . . . . . . . . .  12
-       4.4.3.  UUIDv7 Node Usage . . . . . . . . . . . . . . . . . .  13
-       4.4.4.  UUIDv7 Encoding and Decoding  . . . . . . . . . . . .  13
-     4.5.  UUIDv8 Layout and Bit Order . . . . . . . . . . . . . . .  18
-       4.5.1.  UUIDv8 Timestamp Usage  . . . . . . . . . . . . . . .  20
-       4.5.2.  UUIDv8 Clock Sequence Usage . . . . . . . . . . . . .  21
-       4.5.3.  UUIDv8 Node Usage . . . . . . . . . . . . . . . . . .  22
-       4.5.4.  UUIDv8 Basic Creation Algorithm . . . . . . . . . . .  22
-   5.  Encoding and Storage  . . . . . . . . . . . . . . . . . . . .  25
-   6.  Global Uniqueness . . . . . . . . . . . . . . . . . . . . . .  26
-   7.  Distributed UUID Generation . . . . . . . . . . . . . . . . .  26
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  26
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  26
-   10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  27
-   11. Normative References  . . . . . . . . . . . . . . . . . . . .  27
-   12. Informative References  . . . . . . . . . . . . . . . . . . .  27
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  29
+       4.4.3.  UUIDv7 Node Usage . . . . . . . . . . . . . . . . . .  12
+       4.4.4.  UUIDv7 Encoding and Decoding  . . . . . . . . . . . .  12
+     4.5.  UUIDv8 Layout and Bit Order . . . . . . . . . . . . . . .  17
+       4.5.1.  UUIDv8 Timestamp Usage  . . . . . . . . . . . . . . .  19
+       4.5.2.  UUIDv8 Clock Sequence Usage . . . . . . . . . . . . .  20
+       4.5.3.  UUIDv8 Node Usage . . . . . . . . . . . . . . . . . .  21
+       4.5.4.  UUIDv8 Basic Creation Algorithm . . . . . . . . . . .  21
+   5.  Encoding and Storage  . . . . . . . . . . . . . . . . . . . .  24
+   6.  Global Uniqueness . . . . . . . . . . . . . . . . . . . . . .  25
+   7.  Distributed UUID Generation . . . . . . . . . . . . . . . . .  25
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  25
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  25
+   10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  26
+   11. Normative References  . . . . . . . . . . . . . . . . . . . .  26
+   12. Informative References  . . . . . . . . . . . . . . . . . . .  26
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  28
 
 1.  Introduction
 
@@ -109,7 +106,10 @@ Table of Contents
 
 
 
-Peabody & Davis         Expires 11 February 2022                [Page 2]
+
+
+
+Peabody & Davis         Expires 27 February 2022                [Page 2]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -165,7 +165,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022                [Page 3]
+Peabody & Davis         Expires 27 February 2022                [Page 3]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -221,7 +221,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022                [Page 4]
+Peabody & Davis         Expires 27 February 2022                [Page 4]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -277,7 +277,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022                [Page 5]
+Peabody & Davis         Expires 27 February 2022                [Page 5]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -294,8 +294,6 @@ Internet-Draft               new-uuid-format                 August 2021
       - Fixed some UUIDvX reference issues
       - Changed all instances of "motonic" to "monotonic"
       - Changed all instances of "#-bit" to "# bit"
-      - Revised UUIDv6 Clock Sequence Usage from random start to
-      monotonic increment starting at 0
       - Changed "proceeding" veriage to "after" in section 7
       - Added details on how to pad 32 bit unix timestamp to 36 bits in
       UUIDv7
@@ -333,7 +331,9 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022                [Page 6]
+
+
+Peabody & Davis         Expires 27 February 2022                [Page 6]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -385,18 +385,20 @@ Internet-Draft               new-uuid-format                 August 2021
    time_high_and_version.  UUIDv6 instead keeps the source bits from the
    timestamp intact and changes the order to time_high, time_mid, and
    time_low.  Incidentally this will match the original 60 bit Gregorian
-   timestamp source.  The 14 bit clock sequence has been altered
+   timestamp source with 100-nanosecond precision defined in [RFC4122],
 
 
 
-Peabody & Davis         Expires 11 February 2022                [Page 7]
+Peabody & Davis         Expires 27 February 2022                [Page 7]
 
 Internet-Draft               new-uuid-format                 August 2021
 
 
-   slightly to start at zero and increase monotonically for each UUID
-   created on a given timestamp but remain in the position as [RFC4122].
-   The 48 bit node MUST be set to a pseudo-random value.
+   Section 4.1.4 The clock sequence bits remain unchanged from their
+   usage and position in [RFC4122], Section 4.1.5.  The 48 bit node
+   SHOULD be set to a pseudo-random value however implementations MAY
+   choose retain the old MAC address behavior from [RFC4122],
+   Section 4.1.6 and [RFC4122], Section 4.5
 
    The format for the 16-octet, 128 bit UUIDv6 is shown in Figure 1
 
@@ -438,73 +440,20 @@ Internet-Draft               new-uuid-format                 August 2021
       through 79 (octet 9)
 
    node:
-      48 bit pseudo-random number used as a spatially unique identifier
-      Occupies bits 80 through 127 (octets 10-15)
+      48 bit spatially unique identifier Occupies bits 80 through 127
+      (octets 10-15)
 
 
 
-
-
-Peabody & Davis         Expires 11 February 2022                [Page 8]
+Peabody & Davis         Expires 27 February 2022                [Page 8]
 
 Internet-Draft               new-uuid-format                 August 2021
 
 
-4.3.1.  UUIDv6 Timestamp Usage
-
-   UUIDv6 reuses the 60 bit Gregorian timestamp with 100-nanosecond
-   precision defined in [RFC4122], Section 4.1.4.
-
-4.3.2.  UUIDv6 Clock Sequence Usage
-
-   Historically UUIDv1 Clock Sequence usage, defined by [RFC4122],
-   Section 4.1.5, is used for a few purposes.  Firstly as collision
-   avoidance mechanism by ensuring that when a timestamp is reused
-   during UUIDv1 creation the clock sequence is incremented.  Secondly
-   as added random data to help ensure global uniqueness.  This is
-   achieved by starting the clock sequence at random value.  This added
-   random is a needed due to the node ID possibly utilizing a static MAC
-   address which could be similar across systems.
-
-   With UUIDv6 the aggregate 14 bits of clk_seq_hi_res (lower 6 bits)
-   and clock_seq_low (all 8 bits) MUST be treated as one clock sequence
-   value and references as the "UUIDv6 Clock Sequence" for this section.
-   The UUIDv6 clock sequence MUST start at zero and increment
-   monotonically for each new UUID created on by the application on the
-   same timestamp.  When the timestamp increments the UUIDv6 clock
-   sequence MUST be reset to zero.  The UUIDv6 clock sequence MUST NOT
-   rollover or reset to zero unless the timestamp has incremented.
-
-   The 48 bit pseudo-random node defined in the next section provides
-   enough random data to ensure global uniqueness such that the extra
-   random provided by a randomized starting UUIDv6 clock sequence is not
-   required.  Additionally, the current 14 bit length of both
-   clk_seq_hi_res and clock_seq_low maximizes the usage of these bits
-   and ensures up to 16383 UUIDv6 values can be created for a given
-   timestamp and then ordered by explicitly by creation sequence.
-   Furthermore, 16383 total values for UUIDv6 clock sequence is
-   sufficiently high for the given UUIDv6 timestamp accuracy resulting
-   in a very low chance of a clock sequence rollover event.
-
-4.3.3.  UUIDv6 Node Usage
-
-   UUIDv6 node bits SHOULD be set to a 48 bit random or pseudo-random
-   number.  UUIDv6 nodes SHOULD NOT utilize an IEEE 802 MAC address or
-   the [RFC4122], Section 4.5 method of generating a random multicast
-   IEEE 802 MAC address.
-
-4.3.4.  UUIDv6 Basic Creation Algorithm
+4.3.1.  UUIDv6 Basic Creation Algorithm
 
    The following implementation algorithm is based on [RFC4122] but with
    changes specific to UUIDv6:
-
-
-
-
-Peabody & Davis         Expires 11 February 2022                [Page 9]
-
-Internet-Draft               new-uuid-format                 August 2021
-
 
    1.   From a system-wide shared stable store (e.g., a file) or global
         variable, read the UUID generator state: the values of the
@@ -549,19 +498,19 @@ Internet-Draft               new-uuid-format                 August 2021
    13.  Save the state (current timestamp and clock sequence) back to
         the stable store
 
+
+
+
+Peabody & Davis         Expires 27 February 2022                [Page 9]
+
+Internet-Draft               new-uuid-format                 August 2021
+
+
    The steps for splitting time_high_and_time_mid into time_high and
    time_mid are optional since the 48 bits of time_high and time_mid
    will remain in the same order as time_high_and_time_mid during the
    final concatenation.  This extra step of splitting into the most
    significant 32 bits and least significant 16 bits proves useful when
-
-
-
-Peabody & Davis         Expires 11 February 2022               [Page 10]
-
-Internet-Draft               new-uuid-format                 August 2021
-
-
    reusing an existing UUIDv1 implementation.  In which the following
    logic can be applied to reshuffle the bits with minimal
    modifications.
@@ -605,18 +554,19 @@ Internet-Draft               new-uuid-format                 August 2021
 
                    Figure 2: UUIDv7 Field and Bit Layout
 
+
+
+
+Peabody & Davis         Expires 27 February 2022               [Page 10]
+
+Internet-Draft               new-uuid-format                 August 2021
+
+
    unixts:
       36 bit big-endian unsigned Unix Timestamp value
 
    subsec_a:
       12 bits allocated to sub-second precision values.
-
-
-
-Peabody & Davis         Expires 11 February 2022               [Page 11]
-
-Internet-Draft               new-uuid-format                 August 2021
-
 
    ver:
       The 4 bit UUIDv7 version (0111)
@@ -658,6 +608,16 @@ Internet-Draft               new-uuid-format                 August 2021
    implementation does not want to truncate a 64 bit Unix Epoch to the
    lower 36 bits.
 
+
+
+
+
+
+Peabody & Davis         Expires 27 February 2022               [Page 11]
+
+Internet-Draft               new-uuid-format                 August 2021
+
+
 4.4.2.  UUIDv7 Clock Sequence Usage
 
    UUIDv7 SHOULD utilize a monotonic sequence counter to provide
@@ -666,14 +626,6 @@ Internet-Draft               new-uuid-format                 August 2021
    allocates to the sequence counter depend on the precision of the
    timestamp.  For example, a more accurate timestamp source using
    nanosecond precision will require less clock sequence bits than a
-
-
-
-Peabody & Davis         Expires 11 February 2022               [Page 12]
-
-Internet-Draft               new-uuid-format                 August 2021
-
-
    timestamp source utilizing seconds for precision.  For best
    sequencing results the sequence counter SHOULD be placed immediately
    after available sub-second bits.
@@ -712,6 +664,16 @@ Internet-Draft               new-uuid-format                 August 2021
    guidelines but implementations are not limited to just these three
    examples.
 
+
+
+
+
+
+Peabody & Davis         Expires 27 February 2022               [Page 12]
+
+Internet-Draft               new-uuid-format                 August 2021
+
+
    All of these fields are only used during encoding, and during
    decoding the system is unaware of the bit layout used for them and
    considers this information opaque.  As such, implementations
@@ -721,14 +683,6 @@ Internet-Draft               new-uuid-format                 August 2021
    to stay where they are, and clock sequence counter (seq), random
    (random) or other implementation specific values must follow the sub-
    second encoding).
-
-
-
-
-Peabody & Davis         Expires 11 February 2022               [Page 13]
-
-Internet-Draft               new-uuid-format                 August 2021
-
 
    In Figure 3 the UUIDv7 has been created with millisecond precision
    with the available sub-second precision bits.
@@ -767,6 +721,15 @@ Internet-Draft               new-uuid-format                 August 2021
    Figure 3: UUIDv7 Field and Bit Layout - Encoding Example (Millisecond
                                  Precision)
 
+
+
+
+
+Peabody & Davis         Expires 27 February 2022               [Page 13]
+
+Internet-Draft               new-uuid-format                 August 2021
+
+
    In Figure 4 the UUIDv7 has been created with Microsecond precision
    with the available sub-second precision bits.
 
@@ -777,14 +740,6 @@ Internet-Draft               new-uuid-format                 August 2021
 
    *  All 12 bits of scenario subsec_a is fully dedicated to providing
       sub-second encoding for the Microsecond precision (usec).
-
-
-
-
-Peabody & Davis         Expires 11 February 2022               [Page 14]
-
-Internet-Draft               new-uuid-format                 August 2021
-
 
    *  The 4 Version bits remain unchanged (ver).
 
@@ -823,6 +778,14 @@ Internet-Draft               new-uuid-format                 August 2021
    *  The first 36 bits have been dedicated to the Unix Timestamp
       (unixts)
 
+
+
+
+Peabody & Davis         Expires 27 February 2022               [Page 14]
+
+Internet-Draft               new-uuid-format                 August 2021
+
+
    *  All 12 bits of scenario subsec_a is fully dedicated to providing
       sub-second encoding for the Nanosecond precision (nsec).
 
@@ -832,15 +795,6 @@ Internet-Draft               new-uuid-format                 August 2021
       second encoding for the Nanosecond precision (nsec).
 
    *  The 2 Variant bits remain unchanged (var).
-
-
-
-
-
-Peabody & Davis         Expires 11 February 2022               [Page 15]
-
-Internet-Draft               new-uuid-format                 August 2021
-
 
    *  The first 14 bit of the subsec_seq_node dedicated to providing
       sub-second encoding for the Nanosecond precision (nsec).
@@ -883,17 +837,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-
-
-
-
-
-
-
-
-
-
-Peabody & Davis         Expires 11 February 2022               [Page 16]
+Peabody & Davis         Expires 27 February 2022               [Page 15]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -949,7 +893,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022               [Page 17]
+Peabody & Davis         Expires 27 February 2022               [Page 16]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -1005,7 +949,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022               [Page 18]
+Peabody & Davis         Expires 27 February 2022               [Page 17]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -1061,7 +1005,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022               [Page 19]
+Peabody & Davis         Expires 27 February 2022               [Page 18]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -1117,7 +1061,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022               [Page 20]
+Peabody & Davis         Expires 27 February 2022               [Page 19]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -1173,7 +1117,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022               [Page 21]
+Peabody & Davis         Expires 27 February 2022               [Page 20]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -1229,7 +1173,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022               [Page 22]
+Peabody & Davis         Expires 27 February 2022               [Page 21]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -1285,7 +1229,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022               [Page 23]
+Peabody & Davis         Expires 27 February 2022               [Page 22]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -1341,7 +1285,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022               [Page 24]
+Peabody & Davis         Expires 27 February 2022               [Page 23]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -1397,7 +1341,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022               [Page 25]
+Peabody & Davis         Expires 27 February 2022               [Page 24]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -1453,7 +1397,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022               [Page 26]
+Peabody & Davis         Expires 27 February 2022               [Page 25]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -1509,7 +1453,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022               [Page 27]
+Peabody & Davis         Expires 27 February 2022               [Page 26]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -1565,7 +1509,7 @@ Internet-Draft               new-uuid-format                 August 2021
 
 
 
-Peabody & Davis         Expires 11 February 2022               [Page 28]
+Peabody & Davis         Expires 27 February 2022               [Page 27]
 
 Internet-Draft               new-uuid-format                 August 2021
 
@@ -1621,4 +1565,4 @@ Authors' Addresses
 
 
 
-Peabody & Davis         Expires 11 February 2022               [Page 29]
+Peabody & Davis         Expires 27 February 2022               [Page 28]
