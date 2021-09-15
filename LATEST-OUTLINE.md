@@ -80,6 +80,8 @@ FIXME: I think this would be easier to read if we split out the bit fields, e.g.
 
 ## UUIDv7
 
+FIXME: decide if we want to change this to be 6 bytes for millisecond unix timestamp, and thus be basically ULID with a variant+version field.
+
 - Recommended for NEW implementations that are not concerned with existing UUIDv1 code.
 - Bit layout:
 
