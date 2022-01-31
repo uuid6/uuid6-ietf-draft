@@ -16,12 +16,12 @@
 <!-- end of popular PIs -->
 <!--
     <rfc version="3" category="std" updates="4122" submissionType="IETF" consensus="true" ipr="trust200902"
-    docName="draft-peabody-dispatch-new-uuid-format-01">
+    docName="draft-peabody-dispatch-new-uuid-format-02">
 -->
-<rfc version="3" category="std" updates="4122" submissionType="IETF" consensus="true" ipr="trust200902" docName="draft-peabody-dispatch-new-uuid-format-01">
+<rfc version="3" category="std" updates="4122" submissionType="IETF" consensus="true" ipr="trust200902" docName="draft-peabody-dispatch-new-uuid-format-02">
   <front>
     <title abbrev="new-uuid-format">New UUID Formats</title>
-    <seriesInfo name="Internet-Draft" value="draft-peabody-dispatch-new-uuid-format-01" stream="IETF"/>
+    <seriesInfo name="Internet-Draft" value="draft-peabody-dispatch-new-uuid-format-02" stream="IETF"/>
     <author fullname="Brad G. Peabody" initials="BGP" surname="Peabody">
 <!-- <organization/> -->
       <address>
