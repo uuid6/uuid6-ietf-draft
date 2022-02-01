@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# ietf-tools API docs at https://author-tools.ietf.org/doc/
+API_ORIGIN="https://author-tools.ietf.org/api2" 
+
+SRC="draft-peabody-dispatch-new-uuid-format-02.xml"
+
+DST_HTML="draft-peabody-dispatch-new-uuid-format-02.html"
+DST_TEXT="draft-peabody-dispatch-new-uuid-format-02.txt"
+
+# Note: Passing referer circumvents the need for an API key
+REFERER="Referer: https://author-tools.ietf.org/"
+
+function usage() {
+  echo "Usage: build [command]
+
+Available commands:  
+  lint - validate document
+  html - render html format
+  text - render text format
+  all - lint (then render all formats)"
+}
+
+
+case $1 in 
+  lint)
+    if ! command -v jq &> /dev/null; then
+      echo "\`jq\` command not found. See https://stedolan.github.io/jq/download/"
+      exit 1
+    fi
+    curl -s -X POST -H "${REFERER}" -F "file=@${SRC}" "${API_ORIGIN}/validate" | jq '.errors'
+    ;;
+
+  text)
+    curl -s -X POST -H "${REFERER}" -F "file=@${SRC}" "${API_ORIGIN}/render/text" > ${DST_TEXT}
+    ;;
+
+  html)
+    curl -s -X POST -H "${REFERER}" -F "file=@${SRC}" "${API_ORIGIN}/render/html" > ${DST_HTML}
+    ;;
+
+  all)
+    build lint && build text && build html
+    ;;
+
+  *)
+    usage
+    ;;
+esac
