@@ -5,8 +5,8 @@
 dispatch                                                    BGP. Peabody
 Internet-Draft                                                          
 Updates: 4122 (if approved)                                     K. Davis
-Intended status: Standards Track                          7 October 2021
-Expires: 10 April 2022
+Intended status: Standards Track                         1 February 2022
+Expires: 5 August 2022
 
 
                             New UUID Formats
@@ -43,19 +43,19 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 10 April 2022.
+   This Internet-Draft will expire on 5 August 2022.
 
 Copyright Notice
 
-   Copyright (c) 2021 IETF Trust and the persons identified as the
+   Copyright (c) 2022 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
 
 
 
-Peabody & Davis           Expires 10 April 2022                 [Page 1]
+Peabody & Davis           Expires 5 August 2022                 [Page 1]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -63,9 +63,9 @@ Internet-Draft               new-uuid-format                October 2021
    license-info) in effect on the date of publication of this document.
    Please review these documents carefully, as they describe your rights
    and restrictions with respect to this document.  Code Components
-   extracted from this document must include Simplified BSD License text
-   as described in Section 4.e of the Trust Legal Provisions and are
-   provided without warranty as described in the Simplified BSD License.
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
 
 Table of Contents
 
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Peabody & Davis           Expires 10 April 2022                 [Page 2]
+Peabody & Davis           Expires 5 August 2022                 [Page 2]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
 2.  Background
@@ -165,9 +165,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                 [Page 3]
+Peabody & Davis           Expires 5 August 2022                 [Page 3]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    Furthermore, UUIDv1 utilizes a non-standard timestamp epoch derived
@@ -221,9 +221,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                 [Page 4]
+Peabody & Davis           Expires 5 August 2022                 [Page 4]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    An inspection of these implementations details the following trends
@@ -277,9 +277,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                 [Page 5]
+Peabody & Davis           Expires 5 August 2022                 [Page 5]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
 3.1.  changelog
@@ -333,9 +333,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                 [Page 6]
+Peabody & Davis           Expires 5 August 2022                 [Page 6]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
 4.1.  Versions
@@ -389,9 +389,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                 [Page 7]
+Peabody & Davis           Expires 5 August 2022                 [Page 7]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    Section 4.1.4 The clock sequence bits remain unchanged from their
@@ -445,9 +445,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                 [Page 8]
+Peabody & Davis           Expires 5 August 2022                 [Page 8]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
 4.3.1.  UUIDv6 Basic Creation Algorithm
@@ -501,9 +501,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                 [Page 9]
+Peabody & Davis           Expires 5 August 2022                 [Page 9]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    The steps for splitting time_high_and_time_mid into time_high and
@@ -557,9 +557,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 10]
+Peabody & Davis           Expires 5 August 2022                [Page 10]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    unixts:
@@ -613,9 +613,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 11]
+Peabody & Davis           Expires 5 August 2022                [Page 11]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
 4.4.2.  UUIDv7 Clock Sequence Usage
@@ -669,9 +669,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 12]
+Peabody & Davis           Expires 5 August 2022                [Page 12]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    All of these fields are only used during encoding, and during
@@ -725,9 +725,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 13]
+Peabody & Davis           Expires 5 August 2022                [Page 13]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    In Figure 4 the UUIDv7 has been created with Microsecond precision
@@ -781,9 +781,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 14]
+Peabody & Davis           Expires 5 August 2022                [Page 14]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    *  All 12 bits of scenario subsec_a is fully dedicated to providing
@@ -837,9 +837,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 15]
+Peabody & Davis           Expires 5 August 2022                [Page 15]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    Similarly as per Figure 2, the sub-second precision values lie within
@@ -893,9 +893,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 16]
+Peabody & Davis           Expires 5 August 2022                [Page 16]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    1.  System B parses the timestamp with nanosecond precision.  (More
@@ -949,9 +949,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 17]
+Peabody & Davis           Expires 5 August 2022                [Page 17]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    filled with random data.  UUIDv8's 128 bits (including the version
@@ -1005,9 +1005,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 18]
+Peabody & Davis           Expires 5 August 2022                [Page 18]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    seq_or_node:
@@ -1061,9 +1061,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 19]
+Peabody & Davis           Expires 5 August 2022                [Page 19]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    extra care must be taken to ensure the Variant bits are properly
@@ -1117,9 +1117,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 20]
+Peabody & Davis           Expires 5 August 2022                [Page 20]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    The clock sequence MUST start at zero and increment monotonically for
@@ -1173,9 +1173,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 21]
+Peabody & Davis           Expires 5 August 2022                [Page 21]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    3.   Set the 32 bit field timestamp_32 to the 32 bits from the
@@ -1229,9 +1229,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 22]
+Peabody & Davis           Expires 5 August 2022                [Page 22]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    2.   Obtain the current time from the selected clock source as 32
@@ -1285,9 +1285,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 23]
+Peabody & Davis           Expires 5 August 2022                [Page 23]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    2.  Obtain the current time from the selected clock source as desired
@@ -1341,9 +1341,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 24]
+Peabody & Davis           Expires 5 August 2022                [Page 24]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
 6.  Global Uniqueness
@@ -1397,9 +1397,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 25]
+Peabody & Davis           Expires 5 August 2022                [Page 25]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    The machineID portion of node, described in Section 7, does provide
@@ -1453,9 +1453,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 26]
+Peabody & Davis           Expires 5 August 2022                [Page 26]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    [ShardingID]
@@ -1509,9 +1509,9 @@ Internet-Draft               new-uuid-format                October 2021
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 27]
+Peabody & Davis           Expires 5 August 2022                [Page 27]
 
-Internet-Draft               new-uuid-format                October 2021
+Internet-Draft               new-uuid-format               February 2022
 
 
    [CUID]     Elliott, E., "Collision-resistant ids optimized for
@@ -1565,4 +1565,4 @@ Authors' Addresses
 
 
 
-Peabody & Davis           Expires 10 April 2022                [Page 28]
+Peabody & Davis           Expires 5 August 2022                [Page 28]
