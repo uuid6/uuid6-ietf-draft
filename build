@@ -3,10 +3,10 @@
 # ietf-tools API docs at https://author-tools.ietf.org/doc/
 API_ORIGIN="https://author-tools.ietf.org/api2" 
 
-SRC="draft-peabody-dispatch-new-uuid-format-02.xml"
+SRC="draft-peabody-dispatch-new-uuid-format-03.xml"
 
-DST_HTML="draft-peabody-dispatch-new-uuid-format-02.html"
-DST_TEXT="draft-peabody-dispatch-new-uuid-format-02.txt"
+DST_HTML=${SRC/xml/html}
+DST_TEXT==${SRC/xml/txt}
 
 # Note: Passing referer circumvents the need for an API key
 REFERER="Referer: https://author-tools.ietf.org/"
@@ -21,6 +21,11 @@ Available commands:
   all - lint (then render all formats)"
 }
 
+if ! test -f "${SRC}"; then
+    echo "${SRC} not found"
+    exit 1
+fi
+
 
 case $1 in 
   lint)
@@ -28,7 +33,24 @@ case $1 in
       echo "\`jq\` command not found. See https://stedolan.github.io/jq/download/"
       exit 1
     fi
-    curl -s -X POST -H "${REFERER}" -F "file=@${SRC}" "${API_ORIGIN}/validate" | jq '.errors'
+
+    results=$(curl -s -X POST -H "${REFERER}" -F "file=@${SRC}" "${API_ORIGIN}/validate")
+
+    errors=$(echo $results | jq '.errors')
+    if [[ $errors != "[]" ]]; then
+      echo "Lint errors: $errors"
+    fi
+
+    warnings=$(echo $results | jq '.warnings')
+    if [[ $warnings != "[]" ]]; then
+      echo "Lint warnings: $warnings"
+    fi
+
+    if [[ $errors != "[]" || $warnings != "[]" ]]; then
+      exit 1
+    fi
+
+    echo "No lint issues"
     ;;
 
   text)
