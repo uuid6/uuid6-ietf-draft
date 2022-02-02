@@ -1,0 +1,2891 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>New UUID Formats</title>
+<meta content="Brad G. Peabody" name="author">
+<meta content="Kyzer R. Davis" name="author">
+<meta content="
+       
+            This document presents new time-based UUID formats which are suited for use as a database key.
+       
+       
+            A common case for modern applications is to create a unique identifier for use as a primary key in a database table.
+ This identifier usually implements an embedded timestamp that is sortable using the monotonic creation time in the most significant bits. 
+ In addition the identifier is highly collision resistant, difficult to guess, and provides minimal security attack surfaces.
+ None of the existing UUID versions, including UUIDv1, fulfill each of these requirements in the most efficient possible way.
+ This document is a proposal to update   with three new UUID versions that address these concerns, each with different trade-offs.
+       
+    " name="description">
+<meta content="xml2rfc 3.12.0" name="generator">
+<meta content="uuid" name="keyword">
+<meta content="draft-peabody-dispatch-new-uuid-format-02" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.12.0
+    Python 3.8.10
+    appdirs 1.4.4
+    ConfigArgParse 1.5.3
+    google-i18n-address 2.5.0
+    html5lib 1.1
+    intervaltree 3.1.0
+    Jinja2 3.0.3
+    kitchen 1.2.6
+    lxml 4.7.1
+    pycairo 1.19.1
+    pycountry 22.1.10
+    pyflakes 2.4.0
+    PyYAML 6.0
+    requests 2.27.1
+    setuptools 45.2.0
+    six 1.14.0
+    WeasyPrint 52.5
+-->
+<link href="/usr/src/app/tmp/e885ece9-f182-413b-bf55-2e17ee8ae5f6/draft-peabody-dispatch-new-uuid-format-02.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">/*
+
+  NOTE: Changes at the bottom of this file overrides some earlier settings.
+
+  Once the style has stabilized and has been adopted as an official RFC style,
+  this can be consolidated so that style settings occur only in one place, but
+  for now the contents of this file consists first of the initial CSS work as
+  provided to the RFC Formatter (xml2rfc) work, followed by itemized and
+  commented changes found necssary during the development of the v3
+  formatters.
+
+*/
+
+/* fonts */
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans'); /* Sans-serif */
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif'); /* Serif (print) */
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono'); /* Monospace */
+
+@viewport {
+  zoom: 1.0;
+  width: extend-to-zoom;
+}
+@-ms-viewport {
+  width: extend-to-zoom;
+  zoom: 1.0;
+}
+/* general and mobile first */
+html {
+}
+body {
+  max-width: 90%;
+  margin: 1.5em auto;
+  color: #222;
+  background-color: #fff;
+  font-size: 14px;
+  font-family: 'Noto Sans', Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+  scroll-behavior: smooth;
+}
+.ears {
+  display: none;
+}
+
+/* headings */
+#title, h1, h2, h3, h4, h5, h6 {
+  margin: 1em 0 0.5em;
+  font-weight: bold;
+  line-height: 1.3;
+}
+#title {
+  clear: both;
+  border-bottom: 1px solid #ddd;
+  margin: 0 0 0.5em 0;
+  padding: 1em 0 0.5em;
+}
+.author {
+  padding-bottom: 4px;
+}
+h1 {
+  font-size: 26px;
+  margin: 1em 0;
+}
+h2 {
+  font-size: 22px;
+  margin-top: -20px;  /* provide offset for in-page anchors */
+  padding-top: 33px;
+}
+h3 {
+  font-size: 18px;
+  margin-top: -36px;  /* provide offset for in-page anchors */
+  padding-top: 42px;
+}
+h4 {
+  font-size: 16px;
+  margin-top: -36px;  /* provide offset for in-page anchors */
+  padding-top: 42px;
+}
+h5, h6 {
+  font-size: 14px;
+}
+#n-copyright-notice {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+}
+/* general structure */
+p {
+  padding: 0;
+  margin: 0 0 1em 0;
+  text-align: left;
+}
+div, span {
+  position: relative;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  padding: 1em 1em 0;
+  margin-bottom: 1.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+.alignCenter.art-text {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  padding: 1em 1em 0;
+  margin-bottom: 1.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 1em 2em;
+}
+ol ol, ul ul, ol ul, ul ol {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+ul.ulBare, li.ulBare {
+  margin-left: 0em !important;
+}
+ul.compact, .ulCompact,
+ol.compact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+/* 
+dl.nohang > dt {
+  float: none;
+}
+*/
+dl > dd {
+  margin-bottom: .8em;
+  min-height: 1.3em;
+}
+dl.compact > dd, .dlCompact > dd {
+  margin-bottom: 0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+}
+
+/* links */
+a {
+  text-decoration: none;
+}
+a[href] {
+  color: #22e; /* Arlen: WCAG 2019 */
+}
+a[href]:hover {
+  background-color: #f2f2f2;
+}
+figcaption a[href],
+a[href].selfRef {
+  color: #222;
+}
+/* XXX probably not this:
+a.selfRef:hover {
+  background-color: transparent;
+  cursor: default;
+} */
+
+/* Figures */
+tt, code, pre, code {
+  background-color: #f9f9f9;
+  font-family: 'Roboto Mono', monospace;
+}
+pre {
+  border: 1px solid #eee;
+  margin: 0;
+  padding: 1em;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption {
+  font-style: italic;
+  margin: 0 0 1em 0;
+}
+@media screen {
+  pre {
+    overflow-x: auto;
+    max-width: 100%;
+    max-width: calc(100% - 22px);
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 1.2em 2em;
+}
+blockquote {
+  background-color: #f9f9f9;
+  color: #111; /* Arlen: WCAG 2019 */
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+  border: 1px solid #eee;
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.5em 0.75em;
+}
+th {
+  text-align: left;
+  background-color: #e9e9e9;
+}
+tr:nth-child(2n+1) > td {
+  background-color: #f5f5f5;
+}
+table caption {
+  font-style: italic;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+table p {
+  /* XXX to avoid bottom margin on table row signifiers. If paragraphs should
+     be allowed within tables more generally, it would be far better to select on a class. */
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  color: #666; /* Arlen: AHDJ 2019 */
+  text-decoration: none;
+  visibility: hidden;
+  user-select: none;
+  -ms-user-select: none;
+  -o-user-select:none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+@media screen {
+  aside:hover > a.pilcrow,
+  p:hover > a.pilcrow,
+  blockquote:hover > a.pilcrow,
+  div:hover > a.pilcrow,
+  li:hover > a.pilcrow,
+  pre:hover > a.pilcrow {
+    visibility: visible;
+  }
+  a.pilcrow:hover {
+    background-color: transparent;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+}
+.bcp14 {
+  font-variant: small-caps;
+}
+
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: 0.9em;
+}
+#identifiers dt {
+  width: 3em;
+  clear: left;
+}
+#identifiers dd {
+  float: left;
+  margin-bottom: 0;
+}
+/* Fix PDF info block run off issue */
+@media print {
+  #identifiers dd {
+    float: none;
+  }
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #666; /* Arlen: WCAG 2019 */
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc  {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+nav.toc ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+nav.toc li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dd {
+  margin-left: 8em;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+.index ul {
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.index ul ul {
+  margin: 0;
+}
+.index li {
+  margin: 0;
+  text-indent: -2em;
+  padding-left: 2em;
+  padding-bottom: 5px;
+}
+.indexIndex {
+  margin: 0.5em 0 1em;
+}
+.index a {
+  font-weight: 700;
+}
+/* make the index two-column on all but the smallest screens */
+@media (min-width: 600px) {
+  .index ul {
+    -moz-column-count: 2;
+    -moz-column-gap: 20px;
+  }
+  .index ul ul {
+    -moz-column-count: 1;
+    -moz-column-gap: 0;
+  }
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  font-family: "Noto Sans",Arial,Helvetica,sans-serif;
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+
+/* temporary notes */
+.rfcEditorRemove::before {
+  position: absolute;
+  top: 0.2em;
+  right: 0.2em;
+  padding: 0.2em;
+  content: "The RFC Editor will remove this note";
+  color: #9e2a00; /* Arlen: WCAG 2019 */
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+}
+.rfcEditorRemove {
+  position: relative;
+  padding-top: 1.8em;
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+  border-radius: 3px;
+}
+.cref {
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 1023px) {
+  body {
+    padding-top: 2em;
+  }
+  #title {
+    padding: 1em 0;
+  }
+  h1 {
+    font-size: 24px;
+  }
+  h2 {
+    font-size: 20px;
+    margin-top: -18px;  /* provide offset for in-page anchors */
+    padding-top: 38px;
+  }
+  #identifiers dd {
+    max-width: 60%;
+  }
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    background-color: inherit;
+    border-bottom: 1px solid #ccc;
+  }
+  #toc h2 {
+    margin: -1px 0 0 0;
+    padding: 4px 0 4px 6px;
+    padding-right: 1em;
+    min-width: 190px;
+    font-size: 1.1em;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 6px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 1024px) {
+  body {
+    max-width: 724px;
+    margin: 42px auto;
+    padding-left: 1.5em;
+    padding-right: 29em;
+  }
+  #toc {
+    position: fixed;
+    top: 42px;
+    right: 42px;
+    width: 25%;
+    margin: 0;
+    padding: 0 1em;
+    z-index: 1;
+  }
+  #toc h2 {
+    border-top: none;
+    border-bottom: 1px solid #ddd;
+    font-size: 1em;
+    font-weight: normal;
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 0;
+    overflow: auto;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+/* This is commented out here, as the string-set: doesn't
+   pass W3C validation currently */
+/*
+.ears thead .left {
+  string-set: ears-top-left content();
+}
+
+.ears thead .center {
+  string-set: ears-top-center content();
+}
+
+.ears thead .right {
+  string-set: ears-top-right content();
+}
+
+.ears tfoot .left {
+  string-set: ears-bottom-left content();
+}
+
+.ears tfoot .center {
+  string-set: ears-bottom-center content();
+}
+
+.ears tfoot .right {
+  string-set: ears-bottom-right content();
+}
+*/
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+  /* The follwing is commented out here, but set appropriately by in code, as
+     the content depends on the document */
+  /*
+  @top-left {
+    content: 'Internet-Draft';
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-left {
+    content: string(ears-top-left);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-center {
+    content: string(ears-top-center);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-right {
+    content: string(ears-top-right);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @bottom-left {
+    content: string(ears-bottom-left);
+    vertical-align: top;
+    border-top: solid 1px #ccc;
+  }
+  @bottom-center {
+    content: string(ears-bottom-center);
+    vertical-align: top;
+    border-top: solid 1px #ccc;
+  }
+  @bottom-right {
+      content: '[Page ' counter(page) ']';
+      vertical-align: top;
+      border-top: solid 1px #ccc;
+  }
+  */
+
+}
+
+/* Changes introduced to fix issues found during implementation */
+/* Make sure links are clickable even if overlapped by following H* */
+a {
+  z-index: 2;
+}
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Leave room in document info to show Internet-Draft on one line */
+#identifiers dt {
+  width: 8em;
+}
+
+/* Don't waste quite as much whitespace between label and value in doc info */
+#identifiers dd {
+  margin-left: 1em;
+}
+
+/* Give floating toc a background color (needed when it's a div inside section */
+#toc {
+  background-color: white;
+}
+
+/* Make the collapsed ToC header render white on gray also when it's a link */
+@media screen and (max-width: 1023px) {
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+}
+
+/* Give the bottom of the ToC some whitespace */
+@media screen and (min-width: 1024px) {
+  #toc {
+    padding: 0 0 1em 1em;
+  }
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* prevent monospace from becoming overly large */
+tt, code, pre, code {
+  font-size: 95%;
+}
+
+/* Fix the height/width aspect for ascii art*/
+pre.sourcecode,
+.art-text pre {
+  line-height: 1.12;
+}
+
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin-right: 0.5em;
+}
+
+/* Fix the dl styling to match the RFC 7992 attributes */
+dl > dt,
+dl.dlParallel > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+
+/* Provide styling for table cell text alignment */
+table td.text-left,
+table th.text-left {
+  text-align: left;
+}
+table td.text-center,
+table th.text-center {
+  text-align: center;
+}
+table td.text-right,
+table th.text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact informatio look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 30em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Provide table alignment support.  We can't use the alignX classes above
+   since they do unwanted things with caption and other styling. */
+table.right {
+ margin-left: auto;
+ margin-right: 0;
+}
+table.center {
+ margin-left: auto;
+ margin-right: auto;
+}
+table.left {
+ margin-left: 0;
+ margin-right: auto;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+caption a[href] {
+  color: #222;
+}
+
+@media print {
+  .toplink {
+    display: none;
+  }
+
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
+  }
+
+  /* Avoid page breaks inside dl and author address entries */
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+/* Tweak the bcp14 keyword presentation */
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+/* Tweak the invisible space above H* in order not to overlay links in text above */
+ h2 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 31px;
+ }
+ h3 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 24px;
+ }
+ h4 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 24px;
+ }
+/* Float artwork pilcrow to the right */
+@media screen {
+  .artwork a.pilcrow {
+    display: block;
+    line-height: 0.7;
+    margin-top: 0.15em;
+  }
+}
+/* Make pilcrows on dd visible */
+@media screen {
+  dd:hover > a.pilcrow {
+    visibility: visible;
+  }
+}
+/* Make the placement of figcaption match that of a table's caption
+   by removing the figure's added bottom margin */
+.alignLeft.art-text,
+.alignCenter.art-text,
+.alignRight.art-text {
+   margin-bottom: 0;
+}
+.alignLeft,
+.alignCenter,
+.alignRight {
+  margin: 1em 0 0 0;
+}
+/* In print, the pilcrow won't show on hover, so prevent it from taking up space,
+   possibly even requiring a new line */
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+/* Styling for the external metadata */
+div#external-metadata {
+  background-color: #eee;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+  display: none;
+}
+div#internal-metadata {
+  padding: 0.5em;                       /* to match the external-metadata padding */
+}
+/* Styling for title RFC Number */
+h1#rfcnum {
+  clear: both;
+  margin: 0 0 -1em;
+  padding: 1em 0 0 0;
+}
+/* Make .olPercent look the same as <ol><li> */
+dl.olPercent > dd {
+  margin-bottom: 0.25em;
+  min-height: initial;
+}
+/* Give aside some styling to set it apart */
+aside {
+  border-left: 1px solid #ddd;
+  margin: 1em 0 1em 2em;
+  padding: 0.2em 2em;
+}
+aside > dl,
+aside > ol,
+aside > ul,
+aside > table,
+aside > p {
+  margin-bottom: 0.5em;
+}
+/* Additional page break settings */
+@media print {
+  figcaption, table caption {
+    page-break-before: avoid;
+  }
+}
+/* Font size adjustments for print */
+@media print {
+  body  { font-size: 10pt;      line-height: normal; max-width: 96%; }
+  h1    { font-size: 1.72em;    padding-top: 1.5em; } /* 1*1.2*1.2*1.2 */
+  h2    { font-size: 1.44em;    padding-top: 1.5em; } /* 1*1.2*1.2 */
+  h3    { font-size: 1.2em;     padding-top: 1.5em; } /* 1*1.2 */
+  h4    { font-size: 1em;       padding-top: 1.5em; }
+  h5, h6 { font-size: 1em;      margin: initial; padding: 0.5em 0 0.3em; }
+}
+/* Sourcecode margin in print, when there's no pilcrow */
+@media print {
+  .artwork,
+  .sourcecode {
+    margin-bottom: 1em;
+  }
+}
+/* Avoid narrow tables forcing too narrow table captions, which may render badly */
+table {
+  min-width: 20em;
+}
+/* ol type a */
+ol.type-a { list-style-type: lower-alpha; }
+ol.type-A { list-style-type: upper-alpha; }
+ol.type-i { list-style-type: lower-roman; }
+ol.type-I { list-style-type: lower-roman; }
+/* Apply the print table and row borders in general, on request from the RPC,
+and increase the contrast between border and odd row background sligthtly */
+table {
+  border: 1px solid #ddd;
+}
+td {
+  border-top: 1px solid #ddd;
+}
+tr:nth-child(2n+1) > td {
+  background-color: #f8f8f8;
+}
+/* Use style rules to govern display of the TOC. */
+@media screen and (max-width: 1023px) {
+  #toc nav { display: none; }
+  #toc.active nav { display: block; }
+}
+/* Add support for keepWithNext */
+.keepWithNext {
+  break-after: avoid-page;
+  break-after: avoid-page;
+}
+/* Add support for keepWithPrevious */
+.keepWithPrevious {
+  break-before: avoid-page;
+}
+/* Change the approach to avoiding breaks inside artwork etc. */
+figure, pre, table, .artwork, .sourcecode  {
+  break-before: auto;
+  break-after: auto;
+}
+/* Avoid breaks between <dt> and <dd> */
+dl {
+  break-before: auto;
+  break-inside: auto;
+}
+dt {
+  break-before: auto;
+  break-after: avoid-page;
+}
+dd {
+  break-before: avoid-page;
+  break-after: auto;
+  orphans: 3;
+  widows: 3
+}
+span.break, dd.break {
+  margin-bottom: 0;
+  min-height: 0;
+  break-before: auto;
+  break-inside: auto;
+  break-after: auto;
+}
+/* Undo break-before ToC */
+@media print {
+  #toc {
+    break-before: auto;
+  }
+}
+/* Text in compact lists should not get extra bottim margin space,
+   since that would makes the list not compact */
+ul.compact p, .ulCompact p,
+ol.compact p, .olCompact p {
+ margin: 0;
+}
+/* But the list as a whole needs the extra space at the end */
+section ul.compact,
+section .ulCompact,
+section ol.compact,
+section .olCompact {
+  margin-bottom: 1em;                    /* same as p not within ul.compact etc. */
+}
+/* The tt and code background above interferes with for instance table cell
+   backgrounds.  Changed to something a bit more selective. */
+tt, code {
+  background-color: transparent;
+}
+p tt, p code, li tt, li code {
+  background-color: #f8f8f8;
+}
+/* Tweak the pre margin -- 0px doesn't come out well */
+pre {
+   margin-top: 0.5px;
+}
+/* Tweak the comact list text */
+ul.compact, .ulCompact,
+ol.compact, .olCompact,
+dl.compact, .dlCompact {
+  line-height: normal;
+}
+/* Don't add top margin for nested lists */
+li > ul, li > ol, li > dl,
+dd > ul, dd > ol, dd > dl,
+dl > dd > dl {
+  margin-top: initial;
+}
+/* Elements that should not be rendered on the same line as a <dt> */
+/* This should match the element list in writer.text.TextWriter.render_dl() */
+dd > div.artwork:first-child,
+dd > aside:first-child,
+dd > figure:first-child,
+dd > ol:first-child,
+dd > div:first-child > pre.sourcecode,
+dd > table:first-child,
+dd > ul:first-child {
+  clear: left;
+}
+/* fix for weird browser behaviour when <dd/> is empty */
+dt+dd:empty::before{
+  content: "\00a0";
+}
+/* Make paragraph spacing inside <li> smaller than in body text, to fit better within the list */
+li > p {
+  margin-bottom: 0.5em
+}
+/* Don't let p margin spill out from inside list items */
+li > p:last-of-type {
+  margin-bottom: 0;
+}
+</style>
+<link href="rfc-local.css" rel="stylesheet" type="text/css">
+<script type="application/javascript">async function addMetadata(){try{const e=document.styleSheets[0].cssRules;for(let t=0;t<e.length;t++)if(/#identifiers/.exec(e[t].selectorText)){const a=e[t].cssText.replace("#identifiers","#external-updates");document.styleSheets[0].insertRule(a,document.styleSheets[0].cssRules.length)}}catch(e){console.log(e)}const e=document.getElementById("external-metadata");if(e)try{var t,a="",o=function(e){const t=document.getElementsByTagName("meta");for(let a=0;a<t.length;a++)if(t[a].getAttribute("name")===e)return t[a].getAttribute("content");return""}("rfc.number");if(o){t="https://www.rfc-editor.org/rfc/rfc"+o+".json";try{const e=await fetch(t);a=await e.json()}catch(e){t=document.URL.indexOf("html")>=0?document.URL.replace(/html$/,"json"):document.URL+".json";const o=await fetch(t);a=await o.json()}}if(!a)return;e.style.display="block";const s="",d="https://datatracker.ietf.org/doc",n="https://datatracker.ietf.org/ipr/search",c="https://www.rfc-editor.org/info",l=a.doc_id.toLowerCase(),i=a.doc_id.slice(0,3).toLowerCase(),f=a.doc_id.slice(3).replace(/^0+/,""),u={status:"Status",obsoletes:"Obsoletes",obsoleted_by:"Obsoleted By",updates:"Updates",updated_by:"Updated By",see_also:"See Also",errata_url:"Errata"};let h="<dl style='overflow:hidden' id='external-updates'>";["status","obsoletes","obsoleted_by","updates","updated_by","see_also","errata_url"].forEach(e=>{if("status"==e){a[e]=a[e].toLowerCase();var t=a[e].split(" "),o=t.length,w="",p=1;for(let e=0;e<o;e++)p<o?w=w+r(t[e])+" ":w+=r(t[e]),p++;a[e]=w}else if("obsoletes"==e||"obsoleted_by"==e||"updates"==e||"updated_by"==e){var g,m="",b=1;g=a[e].length;for(let t=0;t<g;t++)a[e][t]&&(a[e][t]=String(a[e][t]).toLowerCase(),m=b<g?m+"<a href='"+s+"/rfc/".concat(a[e][t])+"'>"+a[e][t].slice(3)+"</a>, ":m+"<a href='"+s+"/rfc/".concat(a[e][t])+"'>"+a[e][t].slice(3)+"</a>",b++);a[e]=m}else if("see_also"==e){var y,L="",C=1;y=a[e].length;for(let t=0;t<y;t++)if(a[e][t]){a[e][t]=String(a[e][t]);var _=a[e][t].slice(0,3),v=a[e][t].slice(3).replace(/^0+/,"");L=C<y?"RFC"!=_?L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+_+" "+v+"</a>, ":L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+v+"</a>, ":"RFC"!=_?L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+_+" "+v+"</a>":L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+v+"</a>",C++}a[e]=L}else if("errata_url"==e){var R="";R=a[e]?R+"<a href='"+a[e]+"'>Errata exist</a> | <a href='"+d+"/"+l+"'>Datatracker</a>| <a href='"+n+"/?"+i+"="+f+"&submit="+i+"'>IPR</a> | <a href='"+c+"/"+l+"'>Info page</a>":"<a href='"+d+"/"+l+"'>Datatracker</a> | <a href='"+n+"/?"+i+"="+f+"&submit="+i+"'>IPR</a> | <a href='"+c+"/"+l+"'>Info page</a>",a[e]=R}""!=a[e]?"Errata"==u[e]?h+=`<dt>More info:</dt><dd>${a[e]}</dd>`:h+=`<dt>${u[e]}:</dt><dd>${a[e]}</dd>`:"Errata"==u[e]&&(h+=`<dt>More info:</dt><dd>${a[e]}</dd>`)}),h+="</dl>",e.innerHTML=h}catch(e){console.log(e)}else console.log("Could not locate metadata <div> element");function r(e){return e.charAt(0).toUpperCase()+e.slice(1)}}window.removeEventListener("load",addMetadata),window.addEventListener("load",addMetadata);</script>
+</head>
+<body>
+<script src="metadata.min.js"></script>
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">new-uuid-format</td>
+<td class="right">February 2022</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Peabody &amp; Davis</td>
+<td class="center">Expires 5 August 2022</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">dispatch</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-peabody-dispatch-new-uuid-format-02</dd>
+<dt class="label-updates">Updates:</dt>
+<dd class="updates">
+<a href="https://www.rfc-editor.org/rfc/rfc4122" class="eref">4122</a> (if approved)</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2022-02-01" class="published">1 February 2022</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Standards Track</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2022-08-05">5 August 2022</time></dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">BGP. Peabody</div>
+</div>
+<div class="author">
+      <div class="author-name">K. Davis</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">New UUID Formats</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">
+            This document presents new time-based UUID formats which are suited for use as a database key.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">
+            A common case for modern applications is to create a unique identifier for use as a primary key in a database table.
+ This identifier usually implements an embedded timestamp that is sortable using the monotonic creation time in the most significant bits. 
+ In addition the identifier is highly collision resistant, difficult to guess, and provides minimal security attack surfaces.
+ None of the existing UUID versions, including UUIDv1, fulfill each of these requirements in the most efficient possible way.
+ This document is a proposal to update <span>[<a href="#RFC4122" class="xref">RFC4122</a>]</span> with three new UUID versions that address these concerns, each with different trade-offs.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 5 August 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2022 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="xref">2</a>.  <a href="#name-background" class="xref">Background</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-summary-of-changes" class="xref">Summary of Changes</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1" class="keepWithNext"><a href="#section-3.1" class="xref">3.1</a>.  <a href="#name-changelog" class="xref">changelog</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-format" class="xref">Format</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="xref">4.1</a>.  <a href="#name-versions" class="xref">Versions</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="xref">4.2</a>.  <a href="#name-variant" class="xref">Variant</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="xref">4.3</a>.  <a href="#name-uuidv6-layout-and-bit-order" class="xref">UUIDv6 Layout and Bit Order</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3.2.1">
+                    <p id="section-toc.1-1.4.2.3.2.1.1"><a href="#section-4.3.1" class="xref">4.3.1</a>.  <a href="#name-uuidv6-basic-creation-algor" class="xref">UUIDv6 Basic Creation Algorithm</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4">
+                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="xref">4.4</a>.  <a href="#name-uuidv7-layout-and-bit-order" class="xref">UUIDv7 Layout and Bit Order</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4.2.1">
+                    <p id="section-toc.1-1.4.2.4.2.1.1"><a href="#section-4.4.1" class="xref">4.4.1</a>.  <a href="#name-uuidv7-timestamp-usage" class="xref">UUIDv7 Timestamp Usage</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4.2.2">
+                    <p id="section-toc.1-1.4.2.4.2.2.1"><a href="#section-4.4.2" class="xref">4.4.2</a>.  <a href="#name-uuidv7-clock-sequence-usage" class="xref">UUIDv7 Clock Sequence Usage</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4.2.3">
+                    <p id="section-toc.1-1.4.2.4.2.3.1"><a href="#section-4.4.3" class="xref">4.4.3</a>.  <a href="#name-uuidv7-node-usage" class="xref">UUIDv7 Node Usage</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4.2.4">
+                    <p id="section-toc.1-1.4.2.4.2.4.1"><a href="#section-4.4.4" class="xref">4.4.4</a>.  <a href="#name-uuidv7-encoding-and-decodin" class="xref">UUIDv7 Encoding and Decoding</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.5">
+                <p id="section-toc.1-1.4.2.5.1"><a href="#section-4.5" class="xref">4.5</a>.  <a href="#name-uuidv8-layout-and-bit-order" class="xref">UUIDv8 Layout and Bit Order</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.5.2.1">
+                    <p id="section-toc.1-1.4.2.5.2.1.1"><a href="#section-4.5.1" class="xref">4.5.1</a>.  <a href="#name-uuidv8-timestamp-usage" class="xref">UUIDv8 Timestamp Usage</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.5.2.2">
+                    <p id="section-toc.1-1.4.2.5.2.2.1"><a href="#section-4.5.2" class="xref">4.5.2</a>.  <a href="#name-uuidv8-clock-sequence-usage" class="xref">UUIDv8 Clock Sequence Usage</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.5.2.3">
+                    <p id="section-toc.1-1.4.2.5.2.3.1"><a href="#section-4.5.3" class="xref">4.5.3</a>.  <a href="#name-uuidv8-node-usage" class="xref">UUIDv8 Node Usage</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.5.2.4">
+                    <p id="section-toc.1-1.4.2.5.2.4.1"><a href="#section-4.5.4" class="xref">4.5.4</a>.  <a href="#name-uuidv8-basic-creation-algor" class="xref">UUIDv8 Basic Creation Algorithm</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-encoding-and-storage" class="xref">Encoding and Storage</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-global-uniqueness" class="xref">Global Uniqueness</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-distributed-uuid-generation" class="xref">Distributed UUID Generation</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="xref">9</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="xref">10</a>. <a href="#name-acknowledgements" class="xref">Acknowledgements</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="xref">11</a>. <a href="#name-normative-references" class="xref">Normative References</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="xref">12</a>. <a href="#name-informative-references" class="xref">Informative References</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#appendix-A" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">
+        The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+        "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in
+        this document are to be interpreted as described in
+        <span>[<a href="#RFC2119" class="xref">RFC2119</a>]</span>.<a href="#section-1-1" class="pilcrow">¶</a></p>
+</section>
+<div id="Background">
+<section id="section-2">
+      <h2 id="name-background">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-background" class="section-name selfRef">Background</a>
+      </h2>
+<p id="section-2-1">
+            A lot of things have changed in the time since UUIDs were originally created.
+            Modern applications have a need to use (and many have already implemented) UUIDs
+            as database primary keys.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">
+            The motivation for using UUIDs as database keys stems primarily from the fact that applications
+            are increasingly distributed in nature. Simplistic "auto increment" schemes
+            with integers in sequence do not work well in a distributed system since the effort required to
+            synchronize such numbers across a network can easily become a burden.  
+            The fact that UUIDs can be used to create unique and reasonably short values in 
+ distributed systems without requiring synchronization makes them a good candidate 
+ for use as a database key in such environments.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<p id="section-2-3">
+            However some properties of <span>[<a href="#RFC4122" class="xref">RFC4122</a>]</span> UUIDs are not well suited to this task.
+ First, most of the existing UUID versions such as UUIDv4 have poor database index locality.
+ Meaning new values created in succession are not close to each other in the index and thus require 
+            inserts to be performed at random locations. The negative performance effects of which on 
+            common structures used for this (B-tree and its variants) can be dramatic. As such newly inserted 
+            values SHOULD be time-ordered to address this.<a href="#section-2-3" class="pilcrow">¶</a></p>
+<p id="section-2-4">
+ While it is true that UUIDv1 does contain an embedded timestamp
+ and can be time-ordered; UUIDv1 has other issues. It is possible to sort 
+            Version 1 UUIDs by time but it is a laborious task. The process requires breaking the bytes of the UUID 
+ into various pieces, re-ordering the bits, and then determining the order from the reconstructed timestamp. This 
+ is not efficient in very large systems. Implementations would be simplified with a sort order where the
+ UUID can simply be treated as an opaque sequence of bytes and ordered as such.<a href="#section-2-4" class="pilcrow">¶</a></p>
+<p id="section-2-5">
+            After the embedded timestamp, the remaining 64 bits are in essence used to provide uniqueness both on a global scale and
+ within a given timestamp tick. The clock sequence value ensures that when multiple UUIDs are 
+ generated for the same timestamp value are given a monotonic sequence value. This explicit sequencing 
+ helps further facilitate sorting. The remaining random bits ensure collisions are minimal.<a href="#section-2-5" class="pilcrow">¶</a></p>
+<p id="section-2-6">
+ Furthermore, UUIDv1 utilizes a non-standard timestamp epoch derived from the Gregorian Calendar. More 
+ specifically, the Coordinated Universal Time (UTC) as a count of 100-nanosecond intervals since 
+ 00:00:00.00, 15 October 1582. Implementations and many languages may find it easier to implement the widely adopted and well known 
+ Unix Epoch, a custom epoch, or another timestamp source with various levels of timestamp precision required by the application.<a href="#section-2-6" class="pilcrow">¶</a></p>
+<p id="section-2-7">
+            Lastly, privacy and network security issues arise from using a MAC address in the node field of Version 1 UUIDs.
+            Exposed MAC addresses can be used as an attack surface to locate machines and reveal various other
+            information about such machines (minimally manufacturer, potentially other details). Instead 
+ "cryptographically secure" pseudo-random number generators (CSPRNGs) or pseudo-random number generators (PRNG) 
+ SHOULD be used within an application context to provide uniqueness and unguessability.<a href="#section-2-7" class="pilcrow">¶</a></p>
+<p id="section-2-8">
+ Due to the shortcomings of UUIDv1 and UUIDv4 details so far, many widely distributed database applications 
+ and large application vendors have sought to solve the problem of creating a better 
+ time-based, sortable unique identifier for use as a database key. This has lead to numerous implementations 
+ over the past 10+ years solving the same problem in slightly different ways.<a href="#section-2-8" class="pilcrow">¶</a></p>
+<p id="section-2-9">
+    While preparing this specification the following 16 different implementations were analyzed for trends in total ID length, bit Layout, lexical formatting/encoding, timestamp type, timestamp format, timestamp accuracy, node format/components, collision handling and multi-timestamp tick generation sequencing.<a href="#section-2-9" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="compact type-1" id="section-2-10">
+ <li id="section-2-10.1">
+          <p id="section-2-10.1.1"><span>[<a href="#LexicalUUID" class="xref">LexicalUUID</a>]</span> by Twitter<a href="#section-2-10.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-2-10.2">
+          <p id="section-2-10.2.1"><span>[<a href="#Snowflake" class="xref">Snowflake</a>]</span> by Twitter<a href="#section-2-10.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-2-10.3">
+          <p id="section-2-10.3.1"><span>[<a href="#Flake" class="xref">Flake</a>]</span> by Boundary<a href="#section-2-10.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-2-10.4">
+          <p id="section-2-10.4.1"><span>[<a href="#ShardingID" class="xref">ShardingID</a>]</span> by Instagram<a href="#section-2-10.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-2-10.5">
+          <p id="section-2-10.5.1"><span>[<a href="#KSUID" class="xref">KSUID</a>]</span> by Segment<a href="#section-2-10.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-2-10.6">
+          <p id="section-2-10.6.1"><span>[<a href="#Elasticflake" class="xref">Elasticflake</a>]</span> by P. Pearcy<a href="#section-2-10.6.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-2-10.7">
+          <p id="section-2-10.7.1"><span>[<a href="#FlakeID" class="xref">FlakeID</a>]</span> by T. Pawlak<a href="#section-2-10.7.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-2-10.8">
+          <p id="section-2-10.8.1"><span>[<a href="#Sonyflake" class="xref">Sonyflake</a>]</span> by Sony<a href="#section-2-10.8.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-2-10.9">
+          <p id="section-2-10.9.1"><span>[<a href="#orderedUuid" class="xref">orderedUuid</a>]</span> by IT. Cabrera<a href="#section-2-10.9.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-2-10.10">
+          <p id="section-2-10.10.1"><span>[<a href="#COMBGUID" class="xref">COMBGUID</a>]</span> by R. Tallent<a href="#section-2-10.10.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-2-10.11">
+          <p id="section-2-10.11.1"><span>[<a href="#ULID" class="xref">ULID</a>]</span> by A. Feerasta<a href="#section-2-10.11.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-2-10.12">
+          <p id="section-2-10.12.1"><span>[<a href="#SID" class="xref">SID</a>]</span> by A. Chilton<a href="#section-2-10.12.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-2-10.13">
+          <p id="section-2-10.13.1"><span>[<a href="#pushID" class="xref">pushID</a>]</span> by Google<a href="#section-2-10.13.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-2-10.14">
+          <p id="section-2-10.14.1"><span>[<a href="#XID" class="xref">XID</a>]</span> by O. Poitrey<a href="#section-2-10.14.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-2-10.15">
+          <p id="section-2-10.15.1"><span>[<a href="#ObjectID" class="xref">ObjectID</a>]</span> by MongoDB<a href="#section-2-10.15.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-2-10.16">
+          <p id="section-2-10.16.1"><span>[<a href="#CUID" class="xref">CUID</a>]</span> by E. Elliott<a href="#section-2-10.16.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+<p id="section-2-11">
+ An inspection of these implementations details the following trends that help define this standard:<a href="#section-2-11" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty">
+<li class="compact ulEmpty" id="section-2-12.1">
+          <p id="section-2-12.1.1">- Timestamps MUST be k-sortable. That is, values within or close to the same timestamp are ordered properly by sorting algorithms.<a href="#section-2-12.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="compact ulEmpty" id="section-2-12.2">
+          <p id="section-2-12.2.1">- Timestamps SHOULD be big-endian with the most-significant bits of the time embedded as-is without reordering.<a href="#section-2-12.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="compact ulEmpty" id="section-2-12.3">
+          <p id="section-2-12.3.1">- Timestamps SHOULD utilize millisecond precision and Unix Epoch as timestamp source. Although,
+   there is some variation to this among implementations depending on the application requirements.<a href="#section-2-12.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="compact ulEmpty" id="section-2-12.4">
+          <p id="section-2-12.4.1">- The ID format SHOULD be Lexicographically sortable while in the textual representation.<a href="#section-2-12.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="compact ulEmpty" id="section-2-12.5">
+          <p id="section-2-12.5.1">- IDs MUST ensure proper embedded sequencing to facilitate sorting when multiple UUIDs are created during a given timestamp.<a href="#section-2-12.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="compact ulEmpty" id="section-2-12.6">
+          <p id="section-2-12.6.1">- IDs MUST NOT require unique network identifiers as part of achieving uniqueness.<a href="#section-2-12.6.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="compact ulEmpty" id="section-2-12.7">
+          <p id="section-2-12.7.1">- Distributed nodes MUST be able to create collision resistant Unique IDs 
+   without consulting a centralized resource.<a href="#section-2-12.7.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+</section>
+</div>
+<div id="Changes">
+<section id="section-3">
+      <h2 id="name-summary-of-changes">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-summary-of-changes" class="section-name selfRef">Summary of Changes</a>
+      </h2>
+<p id="section-3-1">
+        In order to solve these challenges this specification introduces three new version identifiers assigned 
+ for time-based UUIDs.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">
+ The first, UUIDv6, aims to be the easiest to implement for applications which already
+ implement UUIDv1. The UUIDv6 specification keeps the original Gregorian timestamp source but does not reorder the timestamp bits as per the process  
+ utilized by UUIDv1. UUIDv6 also requires that pseudo-random data MUST be used in place of the MAC address.
+ The rest of the UUIDv1 format remains unchanged in UUIDv6. See <a href="#uuidv6layout" class="xref">Section 4.3</a><a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">
+ Next, UUIDv7 introduces an entirely new time-based UUID bit layout utilizing a variable length timestamp sourced from the 
+ widely implemented and well known Unix Epoch timestamp source.
+        The timestamp is broken into a 36 bit integer sections part, and is followed by a field of variable length which
+        represents the sub-second timestamp portion, encoded so that each bit from most to least significant adds more precision. See <a href="#uuidv7layout" class="xref">Section 4.4</a><a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-4">
+ Finally, UUIDv8 introduces a relaxed time-based UUID format that caters to application implementations
+ that cannot utilize UUIDv1, UUIDv6, or UUIDv7. UUIDv8 also future-proofs this specification by allowing 
+ time-based UUID formats from timestamp sources that are not yet be defined. The variable size timestamp offers
+ lots of flexibility to create an implementation specific RFC compliant time-based UUID while retaining the 
+ properties that make UUID great. See <a href="#uuidv8layout" class="xref">Section 4.5</a><a href="#section-3-4" class="pilcrow">¶</a></p>
+<div id="changelog">
+<section id="section-3.1">
+        <h3 id="name-changelog">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-changelog" class="section-name selfRef">changelog</a>
+        </h3>
+<p id="section-3.1-1">RFC EDITOR PLEASE DELETE THIS SECTION.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">draft-02<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty">
+<li class="compact ulEmpty" id="section-3.1-3.1">
+            <p id="section-3.1-3.1.1">- Added Changelog<a href="#section-3.1-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-3.1-3.2">
+            <p id="section-3.1-3.2.1">- Fixed misc. grammatical errors<a href="#section-3.1-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-3.1-3.3">
+            <p id="section-3.1-3.3.1">- Fixed section numbering issue<a href="#section-3.1-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-3.1-3.4">
+            <p id="section-3.1-3.4.1">- Fixed some UUIDvX reference issues<a href="#section-3.1-3.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-3.1-3.5">
+            <p id="section-3.1-3.5.1">- Changed all instances of "motonic" to "monotonic"<a href="#section-3.1-3.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-3.1-3.6">
+            <p id="section-3.1-3.6.1">- Changed all instances of "#-bit" to "# bit"<a href="#section-3.1-3.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-3.1-3.7">
+            <p id="section-3.1-3.7.1">- Changed "proceeding" veriage to "after" in section 7<a href="#section-3.1-3.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-3.1-3.8">
+            <p id="section-3.1-3.8.1">- Added details on how to pad 32 bit unix timestamp to 36 bits in UUIDv7<a href="#section-3.1-3.8.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-3.1-3.9">
+            <p id="section-3.1-3.9.1">- Added details on how to truncate 64 bit unix timestamp to 36 bits in UUIDv7<a href="#section-3.1-3.9.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-3.1-3.10">
+            <p id="section-3.1-3.10.1">- Added forward reference and bullet to UUIDv8 if truncating 64 bit Unix Epoch is not an option.<a href="#section-3.1-3.10.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-3.1-3.11">
+            <p id="section-3.1-3.11.1">- Fixed bad reference to non-existent "time_or_node" in section 4.5.4<a href="#section-3.1-3.11.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.1-4">draft-01<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty">
+<li class="compact ulEmpty" id="section-3.1-5.1">
+            <p id="section-3.1-5.1.1">- Complete rewrite of entire document.<a href="#section-3.1-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-3.1-5.2">
+            <p id="section-3.1-5.2.1">- The format, flow and verbiage used in the specification has been reworked to mirror the original RFC 4122 and current IETF standards.<a href="#section-3.1-5.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-3.1-5.3">
+            <p id="section-3.1-5.3.1">- Removed the topics of UUID length modification, alternate UUID text formats, and alternate UUID encoding techniques.<a href="#section-3.1-5.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-3.1-5.4">
+            <p id="section-3.1-5.4.1">- Research into 16 different historical and current implementations of time-based universal identifiers was completed at the end of 2020 in attempt to identify trends which have directly influenced design decisions in this draft document (https://github.com/uuid6/uuid6-ietf-draft/tree/master/research)<a href="#section-3.1-5.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-3.1-5.5">
+            <p id="section-3.1-5.5.1">- Prototype implementation have been completed for UUIDv6, UUIDv7, and UUIDv8 in various languages by many GitHub community members. (https://github.com/uuid6/prototypes)<a href="#section-3.1-5.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="format">
+<section id="section-4">
+      <h2 id="name-format">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-format" class="section-name selfRef">Format</a>
+      </h2>
+<p id="section-4-1">
+ The UUID length of 16 octets (128 bits) remains unchanged. The textual representation of a UUID consisting of 36
+        hexadecimal and dash characters in the format 8-4-4-4-12 remains unchanged for human readability.
+        In addition the position of both the Version and Variant bits remain unchanged in the layout.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<div id="versions">
+<section id="section-4.1">
+        <h3 id="name-versions">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-versions" class="section-name selfRef">Versions</a>
+        </h3>
+<p id="section-4.1-1">
+ Table 1 defines the 4 bit version found in Bits 48 through 51 within a given UUID.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<span id="name-uuid-versions-defined-by-th"></span><table class="center" id="table-1">
+          <caption>
+<a href="#table-1" class="selfRef">Table 1</a>:
+<a href="#name-uuid-versions-defined-by-th" class="selfRef">UUID versions defined by this specification</a>
+          </caption>
+<thead>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Msb0</td>
+              <td class="text-left" rowspan="1" colspan="1">Msb1</td>
+              <td class="text-left" rowspan="1" colspan="1">Msb2</td>
+              <td class="text-left" rowspan="1" colspan="1">Msb3</td>
+              <td class="text-left" rowspan="1" colspan="1">Version</td>
+              <td class="text-left" rowspan="1" colspan="1">Description</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0</td>
+              <td class="text-left" rowspan="1" colspan="1">1</td>
+              <td class="text-left" rowspan="1" colspan="1">1</td>
+              <td class="text-left" rowspan="1" colspan="1">0</td>
+              <td class="text-left" rowspan="1" colspan="1">6</td>
+              <td class="text-left" rowspan="1" colspan="1">Reordered Gregorian time-based UUID</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0</td>
+              <td class="text-left" rowspan="1" colspan="1">1</td>
+              <td class="text-left" rowspan="1" colspan="1">1</td>
+              <td class="text-left" rowspan="1" colspan="1">1</td>
+              <td class="text-left" rowspan="1" colspan="1">7</td>
+              <td class="text-left" rowspan="1" colspan="1">Variable length Unix Epoch time-based UUID</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">1</td>
+              <td class="text-left" rowspan="1" colspan="1">0</td>
+              <td class="text-left" rowspan="1" colspan="1">0</td>
+              <td class="text-left" rowspan="1" colspan="1">0</td>
+              <td class="text-left" rowspan="1" colspan="1">8</td>
+              <td class="text-left" rowspan="1" colspan="1">Custom time-based UUID</td>
+            </tr>
+          </tbody>
+        </table>
+</section>
+</div>
+<div id="variant">
+<section id="section-4.2">
+        <h3 id="name-variant">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-variant" class="section-name selfRef">Variant</a>
+        </h3>
+<p id="section-4.2-1">
+ The variant bits utilized by UUIDs in this specification 
+ remains the same as <span>[<a href="#RFC4122" class="xref">RFC4122</a>], <a href="https://rfc-editor.org/rfc/rfc4122#section-4.1.1" class="relref">Section 4.1.1</a></span>.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-2">
+ The Table 2 lists the contents of the variant field, bits 64 and 65,
+ where the letter "x" indicates a "don't-care" value. Common hex values of 
+ 8 (1000), 9 (1001), A (1010), and B (1011) frequent the text representation.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+<span id="name-uuid-variant-defined-by-thi"></span><table class="center" id="table-2">
+          <caption>
+<a href="#table-2" class="selfRef">Table 2</a>:
+<a href="#name-uuid-variant-defined-by-thi" class="selfRef">UUID Variant defined by this specification</a>
+          </caption>
+<thead>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Msb0</td>
+              <td class="text-left" rowspan="1" colspan="1">Msb1</td>
+              <td class="text-left" rowspan="1" colspan="1">Msb2</td>
+              <td class="text-left" rowspan="1" colspan="1">Description</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">1</td>
+              <td class="text-left" rowspan="1" colspan="1">0</td>
+              <td class="text-left" rowspan="1" colspan="1">x</td>
+              <td class="text-left" rowspan="1" colspan="1">The variant specified in this document.</td>
+            </tr>
+          </tbody>
+        </table>
+</section>
+</div>
+<div id="uuidv6layout">
+<section id="section-4.3">
+        <h3 id="name-uuidv6-layout-and-bit-order">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-uuidv6-layout-and-bit-order" class="section-name selfRef">UUIDv6 Layout and Bit Order</a>
+        </h3>
+<p id="section-4.3-1">
+ UUIDv6 aims to be the easiest to implement by reusing most of the layout of bits
+ found in UUIDv1 but with changes to bit ordering for the timestamp.
+ Where UUIDv1 splits the timestamp bits into three distinct parts and orders them as
+ time_low, time_mid, time_high_and_version. UUIDv6 instead keeps the source bits
+ from the timestamp intact and changes the order to time_high, time_mid, and time_low.
+ Incidentally this will match the original 60 bit Gregorian timestamp source with 100-nanosecond precision defined in <span>[<a href="#RFC4122" class="xref">RFC4122</a>], <a href="https://rfc-editor.org/rfc/rfc4122#section-4.1.4" class="relref">Section 4.1.4</a></span> 
+ The clock sequence bits remain unchanged from their usage and position in <span>[<a href="#RFC4122" class="xref">RFC4122</a>], <a href="https://rfc-editor.org/rfc/rfc4122#section-4.1.5" class="relref">Section 4.1.5</a></span>.
+ The 48 bit node SHOULD be set to a pseudo-random value however implementations MAY choose retain the old MAC address behavior from <span>[<a href="#RFC4122" class="xref">RFC4122</a>], <a href="https://rfc-editor.org/rfc/rfc4122#section-4.1.6" class="relref">Section 4.1.6</a></span> and <span>[<a href="#RFC4122" class="xref">RFC4122</a>], <a href="https://rfc-editor.org/rfc/rfc4122#section-4.5" class="relref">Section 4.5</a></span><a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.3-2">
+ The format for the 16-octet, 128 bit UUIDv6 is shown in Figure 1<a href="#section-4.3-2" class="pilcrow">¶</a></p>
+<span id="name-uuidv6-field-and-bit-layout"></span><figure id="figure-1">
+          <div class="alignLeft art-text artwork" id="section-4.3-3.1">
+<pre>
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                           time_high                           |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |           time_mid            |      time_low_and_version     |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |clk_seq_hi_res |  clk_seq_low  |         node (0-1)            |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                         node (2-5)                            |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-uuidv6-field-and-bit-layout" class="selfRef">UUIDv6 Field and Bit Layout</a>
+          </figcaption></figure>
+<span class="break"></span><dl class="dlNewline" id="section-4.3-4">
+          <dt id="section-4.3-4.1">time_high:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.3-4.2">The most significant 32 bits of the 60 bit starting timestamp.
+            Occupies bits 0 through 31 (octets 0-3)<a href="#section-4.3-4.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.3-4.3">time_mid:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.3-4.4">The middle 16 bits of the 60 bit starting timestamp.
+            Occupies bits 32 through 47 (octets 4-5)<a href="#section-4.3-4.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.3-4.5">time_low_and_version:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.3-4.6">The first four most significant bits MUST contain
+            the UUIDv6 version (0110) while the remaining 12 bits will contain
+            the least significant 12 bits from the 60 bit starting timestamp.
+            Occupies bits 48 through 63 (octets 6-7)<a href="#section-4.3-4.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.3-4.7">clk_seq_hi_res:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.3-4.8">The first two bits MUST be set to the UUID variant (10)
+            The remaining 6 bits contain the high portion of the clock sequence.
+            Occupies bits 64 through 71 (octet 8)<a href="#section-4.3-4.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.3-4.9">clock_seq_low:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.3-4.10">The 8 bit low portion of the clock sequence.
+            Occupies bits 72 through 79 (octet 9)<a href="#section-4.3-4.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.3-4.11">node:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.3-4.12">48 bit spatially unique identifier
+            Occupies bits 80 through 127 (octets 10-15)<a href="#section-4.3-4.12" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<div id="uuidv6pseudo">
+<section id="section-4.3.1">
+          <h4 id="name-uuidv6-basic-creation-algor">
+<a href="#section-4.3.1" class="section-number selfRef">4.3.1. </a><a href="#name-uuidv6-basic-creation-algor" class="section-name selfRef">UUIDv6 Basic Creation Algorithm</a>
+          </h4>
+<p id="section-4.3.1-1">
+ The following implementation algorithm is based on <span>[<a href="#RFC4122" class="xref">RFC4122</a>]</span>
+ but with changes specific to UUIDv6:<a href="#section-4.3.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.3.1-2">
+ <li id="section-4.3.1-2.1">
+              <p id="section-4.3.1-2.1.1">From a system-wide shared stable store (e.g., a file) or global variable, read the
+   UUID generator state: the values of the timestamp and clock sequence
+   used to generate the last UUID.<a href="#section-4.3.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.3.1-2.2">
+              <p id="section-4.3.1-2.2.1">Obtain the current time as a 60 bit count of 100-nanosecond intervals
+   since 00:00:00.00, 15 October 1582.<a href="#section-4.3.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.3.1-2.3">
+              <p id="section-4.3.1-2.3.1">Set the time_low field to the 12 least significant bits
+   of the starting 60 bit timestamp.<a href="#section-4.3.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.3.1-2.4">
+              <p id="section-4.3.1-2.4.1">Truncate the timestamp to the 48 most significant bits
+   in order to create time_high_and_time_mid.<a href="#section-4.3.1-2.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.3.1-2.5">
+              <p id="section-4.3.1-2.5.1">Set the time_high field to the 32 most significant bits of the truncated timestamp.<a href="#section-4.3.1-2.5.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.3.1-2.6">
+              <p id="section-4.3.1-2.6.1">Set the time_mid field to the 16 least significant bits of the truncated timestamp.<a href="#section-4.3.1-2.6.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.3.1-2.7">
+              <p id="section-4.3.1-2.7.1">Create the 16 bit time_low_and_version by concatenating the 4 bit UUIDv6 version
+   with the 12 bit time_low.<a href="#section-4.3.1-2.7.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.3.1-2.8">
+              <p id="section-4.3.1-2.8.1">If the state was unavailable (e.g., non-existent or corrupted)
+   or the timestamp is greater than the current timestamp generate
+   a random 14 bit clock sequence value.<a href="#section-4.3.1-2.8.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.3.1-2.9">
+              <p id="section-4.3.1-2.9.1">If the state was available, but the saved timestamp is less than or equal to the current
+   timestamp, increment the clock sequence value.<a href="#section-4.3.1-2.9.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.3.1-2.10">
+              <p id="section-4.3.1-2.10.1">Complete the 16 bit clock sequence high, low and reserved creation
+   by concatenating the clock sequence onto UUID variant bits which take
+   the most significant position in the 16 bit value.<a href="#section-4.3.1-2.10.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.3.1-2.11">
+              <p id="section-4.3.1-2.11.1">Generate a 48 bit pseudo-random node.<a href="#section-4.3.1-2.11.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.3.1-2.12">
+              <p id="section-4.3.1-2.12.1">Format by concatenating the 128 bits from each parts:
+   time_high|time_mid|time_low_and_version|variant_clk_seq|node<a href="#section-4.3.1-2.12.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.3.1-2.13">
+              <p id="section-4.3.1-2.13.1">Save the state (current timestamp and clock sequence)
+   back to the stable store<a href="#section-4.3.1-2.13.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+<p id="section-4.3.1-3">
+ The steps for splitting time_high_and_time_mid into time_high and time_mid are optional
+ since the 48 bits of time_high and time_mid will remain in the same order as time_high_and_time_mid
+ during the final concatenation. This extra step of splitting into the most significant
+ 32 bits and least significant 16 bits proves useful when reusing an existing UUIDv1 implementation.
+ In which the following logic can be applied to reshuffle the bits with minimal modifications.<a href="#section-4.3.1-3" class="pilcrow">¶</a></p>
+<span id="name-uuidv1-to-uuidv6-field-mapp"></span><table class="center" id="table-3">
+            <caption>
+<a href="#table-3" class="selfRef">Table 3</a>:
+<a href="#name-uuidv1-to-uuidv6-field-mapp" class="selfRef">UUIDv1 to UUIDv6 Field Mappings</a>
+            </caption>
+<thead>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">UUIDv1 Field</td>
+                <td class="text-left" rowspan="1" colspan="1">Bits</td>
+                <td class="text-left" rowspan="1" colspan="1">UUIDv6 Field</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">time_low </td>
+                <td class="text-left" rowspan="1" colspan="1">32</td>
+                <td class="text-left" rowspan="1" colspan="1">time_high</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">time_mid </td>
+                <td class="text-left" rowspan="1" colspan="1">16</td>
+                <td class="text-left" rowspan="1" colspan="1">time_mid</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">time_high</td>
+                <td class="text-left" rowspan="1" colspan="1">12</td>
+                <td class="text-left" rowspan="1" colspan="1">time_low</td>
+              </tr>
+            </tbody>
+          </table>
+</section>
+</div>
+</section>
+</div>
+<div id="uuidv7layout">
+<section id="section-4.4">
+        <h3 id="name-uuidv7-layout-and-bit-order">
+<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-uuidv7-layout-and-bit-order" class="section-name selfRef">UUIDv7 Layout and Bit Order</a>
+        </h3>
+<p id="section-4.4-1">
+ The UUIDv7 format is designed to encode a Unix timestamp with arbitrary sub-second precision.
+ The key property provided by UUIDv7 is that timestamp values generated by one system and parsed by
+ another are guaranteed to have sub-second precision of either the generator or the parser,
+ whichever is less. Additionally, the system parsing the UUIDv7 value does not need to know which precision
+ was used during encoding in order to function correctly.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+<p id="section-4.4-2">
+ The format for the 16-octet, 128 bit UUIDv7 is shown in Figure 2<a href="#section-4.4-2" class="pilcrow">¶</a></p>
+<span id="name-uuidv7-field-and-bit-layout"></span><figure id="figure-2">
+          <div class="alignLeft art-text artwork" id="section-4.4-3.1">
+<pre>
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                            unixts                             |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |unixts |       subsec_a        |  ver  |       subsec_b        |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |var|                   subsec_seq_node                         |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                       subsec_seq_node                         |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
+</div>
+<figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
+<a href="#name-uuidv7-field-and-bit-layout" class="selfRef">UUIDv7 Field and Bit Layout</a>
+          </figcaption></figure>
+<span class="break"></span><dl class="dlNewline" id="section-4.4-4">
+          <dt id="section-4.4-4.1">unixts:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.4-4.2">36 bit big-endian unsigned Unix Timestamp value<a href="#section-4.4-4.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.4-4.3">subsec_a:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.4-4.4">12 bits allocated to sub-second precision values.<a href="#section-4.4-4.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.4-4.5">ver:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.4-4.6">The 4 bit UUIDv7 version (0111)<a href="#section-4.4-4.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.4-4.7">subsec_b:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.4-4.8">12 bits allocated to sub-second precision values.<a href="#section-4.4-4.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.4-4.9">var:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.4-4.10">2 bit UUID variant (10)<a href="#section-4.4-4.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.4-4.11">subsec_seq_node:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.4-4.12">The remaining 62 bits which MAY be allocated to any combination of additional sub-second precision, sequence counter, or pseudo-random data.<a href="#section-4.4-4.12" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<div id="uuidv7timestamp">
+<section id="section-4.4.1">
+          <h4 id="name-uuidv7-timestamp-usage">
+<a href="#section-4.4.1" class="section-number selfRef">4.4.1. </a><a href="#name-uuidv7-timestamp-usage" class="section-name selfRef">UUIDv7 Timestamp Usage</a>
+          </h4>
+<p id="section-4.4.1-1">UUIDv7 utilizes a 36 bit big-endian unsigned Unix Timestamp value (number of seconds since the epoch of 1 Jan 1970, leap seconds excluded so each hour is exactly 3600 seconds long). The 36 bit value was selected in order to provide more available time to the unix timestamp and avoid the Year 2038 problem by extending the maximum timestamp to the year 4147.<a href="#section-4.4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.4.1-2">To achieve a 36 bit UUIDv7 timestamp, the lower 36 bits of a 64 bit unix time are extracted verbatim into UUIDv7<a href="#section-4.4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.4.1-3">In the event that 32 bit Unix Timestamp are in use; four zeros MUST be appended at the start in the most significant (left-most) bits of the 32 bit Unix timestamp creating the 36 bit Unix timestamp. This ensures sorting compatibility with 64 bit unix timestamp which have been truncated to 36 bits.<a href="#section-4.4.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.4.1-4">Additional sub-second precision (millisecond, nanosecond, microsecond, etc) MAY be provided for encoding and decoding in the remaining bits in the layout.<a href="#section-4.4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.4.1-5">UUIDv8 SHOULD be used in place of UUIDv7 if an application or implementation does not want to truncate a 64 bit Unix Epoch to the lower 36 bits.<a href="#section-4.4.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="uuidv7sequence">
+<section id="section-4.4.2">
+          <h4 id="name-uuidv7-clock-sequence-usage">
+<a href="#section-4.4.2" class="section-number selfRef">4.4.2. </a><a href="#name-uuidv7-clock-sequence-usage" class="section-name selfRef">UUIDv7 Clock Sequence Usage</a>
+          </h4>
+<p id="section-4.4.2-1">
+ UUIDv7 SHOULD utilize a monotonic sequence counter to provide additional sequencing guarantees when multiple UUIDv7 values are created in the same UNIXTS and SUBSEC timestamp.
+ The amount of bits allocates to the sequence counter depend on the precision of the timestamp. For example, a more accurate timestamp source using nanosecond precision will require less clock sequence bits than a timestamp source utilizing seconds for precision.
+ For best sequencing results the sequence counter SHOULD be placed immediately after available sub-second bits.<a href="#section-4.4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.4.2-2">
+ The clock sequence MUST start at zero and increment monotonically
+ for each new UUIDv7 created on by the application on the same timestamp.
+ When the timestamp increments the clock sequence MUST be reset to zero.
+ The clock sequence MUST NOT rollover or reset to zero unless the timestamp
+ has incremented. Care MUST be given to ensure that an adequate sized
+ clock sequence is selected for a given application based on expected
+ timestamp precision and expected UUIDv7 generation rates.<a href="#section-4.4.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="uuidv7node">
+<section id="section-4.4.3">
+          <h4 id="name-uuidv7-node-usage">
+<a href="#section-4.4.3" class="section-number selfRef">4.4.3. </a><a href="#name-uuidv7-node-usage" class="section-name selfRef">UUIDv7 Node Usage</a>
+          </h4>
+<p id="section-4.4.3-1">
+ UUIDv7 implementations, even with very detailed sub-second precision and the optional sequence counter, MAY have leftover bits that will be identified as the Node for this section.
+ The UUIDv7 Node MAY contain any set of data an implementation desires however the node MUST NOT be set to all 0s which does not ensure global uniqueness. In most scenarios the node SHOULD be filled with pseudo-random data.<a href="#section-4.4.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="uuidv7encodingdecoding">
+<section id="section-4.4.4">
+          <h4 id="name-uuidv7-encoding-and-decodin">
+<a href="#section-4.4.4" class="section-number selfRef">4.4.4. </a><a href="#name-uuidv7-encoding-and-decodin" class="section-name selfRef">UUIDv7 Encoding and Decoding</a>
+          </h4>
+<p id="section-4.4.4-1">
+ The UUIDv7 bit layout for encoding and decoding are described separately in this document.<a href="#section-4.4.4-1" class="pilcrow">¶</a></p>
+<div id="uuidv7encoding">
+<section id="section-4.4.4.1">
+            <h5 id="name-uuidv7-encoding">
+<a href="#section-4.4.4.1" class="section-number selfRef">4.4.4.1. </a><a href="#name-uuidv7-encoding" class="section-name selfRef">UUIDv7 Encoding</a>
+            </h5>
+<p id="section-4.4.4.1-1">
+  Since the UUIDv7 Unix timestamp is fixed at 36 bits in length the exact layout for encoding UUIDv7 depends on the precision (number of bits)
+  used for the sub-second portion and the sizes of the optionally desired sequence counter and node bits.<a href="#section-4.4.4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.4.4.1-2">
+ Three examples of UUIDv7 encoding are given below as a general guidelines but implementations are not limited to just these three examples.<a href="#section-4.4.4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.4.4.1-3">
+ All of these fields are only used during encoding, and during decoding the system is unaware of the bit layout used for them and considers this information opaque.
+ As such, implementations generating these values can assign whatever lengths to each field it deems applicable, as long as it does not break decoding compatibility
+ (i.e. Unix timestamp (unixts), version (ver) and variant (var) have to stay where they are, and clock sequence counter (seq), random (random) or other implementation specific values must follow the sub-second encoding).<a href="#section-4.4.4.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.4.4.1-4">
+ In Figure 3 the UUIDv7 has been created with millisecond precision with the available sub-second precision bits.<a href="#section-4.4.4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.4.4.1-5">
+ Examining Figure 3 one can observe:<a href="#section-4.4.4.1-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.4.4.1-6.1">
+                <p id="section-4.4.4.1-6.1.1">The first 36 bits have been dedicated to the Unix Timestamp (unixts)<a href="#section-4.4.4.1-6.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-6.2">
+                <p id="section-4.4.4.1-6.2.1">All 12 bits of scenario subsec_a is fully dedicated to millisecond information (msec).<a href="#section-4.4.4.1-6.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-6.3">
+                <p id="section-4.4.4.1-6.3.1">The 4 Version bits remain unchanged (ver).<a href="#section-4.4.4.1-6.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-6.4">
+                <p id="section-4.4.4.1-6.4.1">All 12 bits of subsec_b have been dedicated to a monotonic clock sequence counter (seq).<a href="#section-4.4.4.1-6.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-6.5">
+                <p id="section-4.4.4.1-6.5.1">The 2 Variant bits remain unchanged (var).<a href="#section-4.4.4.1-6.5.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-6.6">
+                <p id="section-4.4.4.1-6.6.1">Finally the remaining 62 bits in the subsec_seq_node section are layout is filled out with random data to pad the length and provide guaranteed uniqueness (rand).<a href="#section-4.4.4.1-6.6.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+<span id="name-uuidv7-field-and-bit-layout-"></span><figure id="figure-3">
+              <div class="alignLeft art-text artwork" id="section-4.4.4.1-7.1">
+<pre>
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                            unixts                             |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |unixts |         msec          |  ver  |          seq          |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |var|                         rand                              |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                             rand                              |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
+</div>
+<figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
+<a href="#name-uuidv7-field-and-bit-layout-" class="selfRef">UUIDv7 Field and Bit Layout - Encoding Example (Millisecond Precision)</a>
+              </figcaption></figure>
+<p id="section-4.4.4.1-8">
+ In Figure 4 the UUIDv7 has been created with Microsecond precision with the available sub-second precision bits.<a href="#section-4.4.4.1-8" class="pilcrow">¶</a></p>
+<p id="section-4.4.4.1-9">
+ Examining Figure 4 one can observe:<a href="#section-4.4.4.1-9" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.4.4.1-10.1">
+                <p id="section-4.4.4.1-10.1.1">The first 36 bits have been dedicated to the Unix Timestamp (unixts)<a href="#section-4.4.4.1-10.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-10.2">
+                <p id="section-4.4.4.1-10.2.1">All 12 bits of scenario subsec_a is fully dedicated to providing sub-second encoding for the Microsecond precision (usec).<a href="#section-4.4.4.1-10.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-10.3">
+                <p id="section-4.4.4.1-10.3.1">The 4 Version bits remain unchanged (ver).<a href="#section-4.4.4.1-10.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-10.4">
+                <p id="section-4.4.4.1-10.4.1">All 12 bits of subsec_b have been dedicated to providing sub-second encoding for the Microsecond precision (usec).<a href="#section-4.4.4.1-10.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-10.5">
+                <p id="section-4.4.4.1-10.5.1">The 2 Variant bits remain unchanged (var).<a href="#section-4.4.4.1-10.5.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-10.6">
+                <p id="section-4.4.4.1-10.6.1">A 14 bit monotonic clock sequence counter (seq) has been embedded in the most significant position of subsec_seq_node<a href="#section-4.4.4.1-10.6.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-10.7">
+                <p id="section-4.4.4.1-10.7.1">Finally the remaining 48 bits in the subsec_seq_node section are layout is filled out with random data to pad the length and provide guaranteed uniqueness (rand).<a href="#section-4.4.4.1-10.7.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+<span id="name-uuidv7-field-and-bit-layout-e"></span><figure id="figure-4">
+              <div class="alignLeft art-text artwork" id="section-4.4.4.1-11.1">
+<pre>
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                            unixts                             |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |unixts |         usec          |  ver  |         usec          |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |var|             seq           |            rand               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                             rand                              |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
+</div>
+<figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
+<a href="#name-uuidv7-field-and-bit-layout-e" class="selfRef">UUIDv7 Field and Bit Layout - Encoding Example (Microsecond Precision)</a>
+              </figcaption></figure>
+<p id="section-4.4.4.1-12">
+ In Figure 5 the UUIDv7 has been created with Nanosecond precision with the available sub-second precision bits.<a href="#section-4.4.4.1-12" class="pilcrow">¶</a></p>
+<p id="section-4.4.4.1-13">
+ Examining Figure 5 one can observe:<a href="#section-4.4.4.1-13" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.4.4.1-14.1">
+                <p id="section-4.4.4.1-14.1.1">The first 36 bits have been dedicated to the Unix Timestamp (unixts)<a href="#section-4.4.4.1-14.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-14.2">
+                <p id="section-4.4.4.1-14.2.1">All 12 bits of scenario subsec_a is fully dedicated to providing sub-second encoding for the Nanosecond precision (nsec).<a href="#section-4.4.4.1-14.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-14.3">
+                <p id="section-4.4.4.1-14.3.1">The 4 Version bits remain unchanged (ver).<a href="#section-4.4.4.1-14.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-14.4">
+                <p id="section-4.4.4.1-14.4.1">All 12 bits of subsec_b have been dedicated to providing sub-second encoding for the Nanosecond precision (nsec).<a href="#section-4.4.4.1-14.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-14.5">
+                <p id="section-4.4.4.1-14.5.1">The 2 Variant bits remain unchanged (var).<a href="#section-4.4.4.1-14.5.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-14.6">
+                <p id="section-4.4.4.1-14.6.1">The first 14 bit of the subsec_seq_node dedicated to providing sub-second encoding for the Nanosecond precision (nsec).<a href="#section-4.4.4.1-14.6.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-14.7">
+                <p id="section-4.4.4.1-14.7.1">The next 8 bits of subsec_seq_node dedicated a monotonic clock sequence counter (seq).<a href="#section-4.4.4.1-14.7.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.4.4.1-14.8">
+                <p id="section-4.4.4.1-14.8.1">Finally the remaining 40 bits in the subsec_seq_node section are layout is filled out with random data to pad the length and provide guaranteed uniqueness (rand).<a href="#section-4.4.4.1-14.8.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+<span id="name-uuidv7-field-and-bit-layout-en"></span><figure id="figure-5">
+              <div class="alignLeft art-text artwork" id="section-4.4.4.1-15.1">
+<pre>
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                            unixts                             |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |unixts |         nsec          |  ver  |         nsec          |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |var|             nsec          |      seq      |     rand      |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                             rand                              |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
+</div>
+<figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
+<a href="#name-uuidv7-field-and-bit-layout-en" class="selfRef">UUIDv7 Field and Bit Layout - Encoding Example (Nanosecond Precision)</a>
+              </figcaption></figure>
+</section>
+</div>
+<div id="uuidv7decoding">
+<section id="section-4.4.4.2">
+            <h5 id="name-uuidv7-decoding">
+<a href="#section-4.4.4.2" class="section-number selfRef">4.4.4.2. </a><a href="#name-uuidv7-decoding" class="section-name selfRef">UUIDv7 Decoding</a>
+            </h5>
+<p id="section-4.4.4.2-1">
+ When decoding or parsing a UUIDv7 value there are only two values to be considered:<a href="#section-4.4.4.2-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.4.4.2-2">
+ <li id="section-4.4.4.2-2.1">
+                <p id="section-4.4.4.2-2.1.1">The unix timestamp defined as unixts<a href="#section-4.4.4.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li id="section-4.4.4.2-2.2">
+                <p id="section-4.4.4.2-2.2.1">The sub-second precision values defined as subsec_a, subsec_b, and subsec_seq_node<a href="#section-4.4.4.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ol>
+<p id="section-4.4.4.2-3">As detailed in Figure 2 the unix timestamp (unixts) is always the first 36 bits of the UUIDv7 layout.<a href="#section-4.4.4.2-3" class="pilcrow">¶</a></p>
+<p id="section-4.4.4.2-4">
+ Similarly as per Figure 2, the sub-second precision values lie within subsec_a, subsec_b, and subsec_seq_node which are all interpreted as sub-second information after skipping over the version (ver) and (var) bits.  
+ These concatenated sub-second information bits are interpreted in a way where most to least significant bits represent a further division by two.
+ This is the same normal place notation used to express fractional numbers, except in binary. For example, in decimal ".1" means one tenth, and ".01" means one hundredth.
+ In this subsec field, a 1 means one half, 01 means one quarter, 001 is one eighth, etc.
+ This scheme can work for any number of bits up to the maximum available, and keeps the most significant data leftmost in the bit sequence.<a href="#section-4.4.4.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.4.4.2-5">
+ To perform the sub-second math, simply take the first (most significant/leftmost) N bits of subsec and divide it by 2^N. Take for example:<a href="#section-4.4.4.2-5" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.4.4.2-6">
+ <li id="section-4.4.4.2-6.1">
+                <p id="section-4.4.4.2-6.1.1">To parse the first 16 bits, extract that value as an integer and divide it by 65536 (2 to the 16th).<a href="#section-4.4.4.2-6.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li id="section-4.4.4.2-6.2">
+                <p id="section-4.4.4.2-6.2.1">If these 16 bits are 0101 0101 0101 0101, then treating that as an integer gives 0x5555 or 21845 in decimal, and dividing by 65536 gives 0.3333282<a href="#section-4.4.4.2-6.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ol>
+<p id="section-4.4.4.2-7">
+ This sub-second encoding scheme provides maximum interoperability across systems where different levels of time precision are required/feasible/available.
+ The timestamp value derived from a UUIDv7 value SHOULD be "as close to the correct value as possible" when parsed, even across disparate systems.<a href="#section-4.4.4.2-7" class="pilcrow">¶</a></p>
+<p id="section-4.4.4.2-8">
+ Take for example the starting point for our next two UUIDv7 parsing scenarios:<a href="#section-4.4.4.2-8" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.4.4.2-9">
+ <li id="section-4.4.4.2-9.1">System A produces a UUIDv7 with a microsecond-precise timestamp value.<a href="#section-4.4.4.2-9.1" class="pilcrow">¶</a>
+</li>
+              <li id="section-4.4.4.2-9.2">System B is unaware of the precision encoded in the UUIDv7 timestamp by System A.<a href="#section-4.4.4.2-9.2" class="pilcrow">¶</a>
+</li>
+            </ol>
+<p id="section-4.4.4.2-10">
+ Scenario 1:<a href="#section-4.4.4.2-10" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.4.4.2-11">
+ <li id="section-4.4.4.2-11.1">System B parses the embedded timestamp with millisecond precision. (Less precision than the encoder)<a href="#section-4.4.4.2-11.1" class="pilcrow">¶</a>
+</li>
+              <li id="section-4.4.4.2-11.2">System B SHOULD return the correct millisecond value encoded by system A (truncated to milliseconds).<a href="#section-4.4.4.2-11.2" class="pilcrow">¶</a>
+</li>
+            </ol>
+<p id="section-4.4.4.2-12">
+ Scenario 2:<a href="#section-4.4.4.2-12" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.4.4.2-13">
+ <li id="section-4.4.4.2-13.1">System B parses the timestamp with nanosecond precision. (More precision than the encoder)<a href="#section-4.4.4.2-13.1" class="pilcrow">¶</a>
+</li>
+              <li id="section-4.4.4.2-13.2">System B's value returned SHOULD have the same microsecond level of precision provided by the encoder with the additional precision down to nanosecond level being essentially random as per the encoded random value at the end of the UUIDv7.<a href="#section-4.4.4.2-13.2" class="pilcrow">¶</a>
+</li>
+            </ol>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="uuidv8layout">
+<section id="section-4.5">
+        <h3 id="name-uuidv8-layout-and-bit-order">
+<a href="#section-4.5" class="section-number selfRef">4.5. </a><a href="#name-uuidv8-layout-and-bit-order" class="section-name selfRef">UUIDv8 Layout and Bit Order</a>
+        </h3>
+<p id="section-4.5-1">
+        UUIDv8 offers variable-size timestamp, clock sequence, and node values
+        which allow for a highly customizable UUID that fits a given application needs.<a href="#section-4.5-1" class="pilcrow">¶</a></p>
+<p id="section-4.5-2">
+        UUIDv8 SHOULD only be utilized if an implementation cannot utilize UUIDv1, UUIDv6, or UUIDv7.
+        Some situations in which UUIDv8 usage could occur:<a href="#section-4.5-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.5-3.1">
+            <p id="section-4.5-3.1.1">An implementation would like to utilize a timestamp source
+              not defined by the current time-based UUIDs.<a href="#section-4.5-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.5-3.2">
+            <p id="section-4.5-3.2.1">An implementation would like to utilize a timestamp bit layout
+              not defined by the current time-based UUIDs.<a href="#section-4.5-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.5-3.3">
+            <p id="section-4.5-3.3.1">An implementation would like to avoid truncating a 64 bit Unix to 36 bits as defined by UUIDv7.<a href="#section-4.5-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.5-3.4">
+            <p id="section-4.5-3.4.1">An implementation would like a specific level of precision
+              within the timestamp not offered by current time-based UUIDs.<a href="#section-4.5-3.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.5-3.5">
+            <p id="section-4.5-3.5.1">An implementation would like to embed extra information
+              within the UUID node other than what is defined in this document.<a href="#section-4.5-3.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.5-3.6">
+            <p id="section-4.5-3.6.1">An implementation has other application/language restrictions which
+              inhibit the usage of one of the current time-based UUIDs.<a href="#section-4.5-3.6.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-4.5-4">
+        Roughly speaking a properly formatted UUIDv8 SHOULD contain
+        the following sections adding up to a total of 128 bits.<a href="#section-4.5-4" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty">
+<li class="compact ulEmpty" id="section-4.5-5.1">
+            <p id="section-4.5-5.1.1">- Timestamp Bits (Variable Length)<a href="#section-4.5-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-4.5-5.2">
+            <p id="section-4.5-5.2.1">- Clock Sequence Bits (Variable Length)<a href="#section-4.5-5.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-4.5-5.3">
+            <p id="section-4.5-5.3.1">- Node Bits (Variable Length)<a href="#section-4.5-5.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-4.5-5.4">
+            <p id="section-4.5-5.4.1">- UUIDv8 Version Bits (4 bits)<a href="#section-4.5-5.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty" id="section-4.5-5.5">
+            <p id="section-4.5-5.5.1">- UUID Variant Bits (2 Bits)<a href="#section-4.5-5.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-4.5-6">
+        The only explicitly defined bits are the Version and Variant leaving 122 bits
+        for implementation specific time-based UUIDs. To be clear:
+        UUIDv8 is not a replacement for UUIDv4 where all 122 extra bits are
+        filled with random data. UUIDv8's 128 bits (including the version and variant)
+        SHOULD contain at the minimum a timestamp of some format in the most
+        significant bit position followed directly by a clock sequence counter
+        and finally a node containing either random data or implementation specific data.<a href="#section-4.5-6" class="pilcrow">¶</a></p>
+<p id="section-4.5-7">
+        A sample format in Figure 6 is used to further illustrate the point
+        for the 16-octet, 128 bit UUIDv8.<a href="#section-4.5-7" class="pilcrow">¶</a></p>
+<span id="name-uuidv8-field-and-bit-layout"></span><figure id="figure-6">
+          <div class="alignLeft art-text artwork" id="section-4.5-8.1">
+<pre>
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                          timestamp_32                         |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |           timestamp_48        |  ver  |      time_or_seq      |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |var|  seq_or_node  |          node                             |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                              node                             |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
+</div>
+<figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
+<a href="#name-uuidv8-field-and-bit-layout" class="selfRef">UUIDv8 Field and Bit Layout</a>
+          </figcaption></figure>
+<span class="break"></span><dl class="dlNewline" id="section-4.5-9">
+          <dt id="section-4.5-9.1">timestamp_32:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.5-9.2">The most significant 32 bits of the desired timestamp source.
+            Occupies bits 0 through 31 (octets 0-3).<a href="#section-4.5-9.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.5-9.3">timestamp_48:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.5-9.4">The next 16 bits of the timestamp source when a timestamp
+            source with at least 48 bits is used. When a 32 bit timestamp source
+            is utilized, these bits are set to 0. Occupies bits 32 through 47<a href="#section-4.5-9.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.5-9.5">ver:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.5-9.6">The 4 bit UUIDv8 version (1000). Occupies bits 48 through 51.<a href="#section-4.5-9.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.5-9.7">time_or_seq:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.5-9.8">If a 60 bit, or larger, timestamp is used these 12 bits are used to
+            fill out the remaining timestamp. If a 32 or 48 bit timestamp
+            is leveraged a 12 bit clock sequence MAY be used. 
+ Together ver and time_or_seq occupy bits 48 through 63 (octets 6-7)<a href="#section-4.5-9.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.5-9.9">var:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.5-9.10">2 bit UUID variant (10)<a href="#section-4.5-9.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.5-9.11">seq_or_node:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.5-9.12">If a 60 bit, or larger, timestamp source is leverages these 8 bits
+            SHOULD be allocated for an 8 bit clock sequence counter. If
+            a 32 or 48 bit timestamp source is used these 8 bits SHOULD be set to random.<a href="#section-4.5-9.12" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-4.5-9.13">node:</dt>
+          <dd style="margin-left: 1.5em" id="section-4.5-9.14">In most implementations these bits will likely be set to
+            pseudo-random data. However, implementations utilize the node as they see fit.
+            Together var, seq_or_node, and node occupy Bits 64 through 127 (octets 8-15)<a href="#section-4.5-9.14" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<div id="uuidv8timestamp">
+<section id="section-4.5.1">
+          <h4 id="name-uuidv8-timestamp-usage">
+<a href="#section-4.5.1" class="section-number selfRef">4.5.1. </a><a href="#name-uuidv8-timestamp-usage" class="section-name selfRef">UUIDv8 Timestamp Usage</a>
+          </h4>
+<p id="section-4.5.1-1">
+            UUIDv8's usage of timestamp relaxes both the timestamp source
+            and timestamp length. Implementations are free to utilize
+            any monotonically stable timestamp source for UUIDv8.<a href="#section-4.5.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.5.1-2">
+            Some examples include:<a href="#section-4.5.1-2" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty">
+<li class="compact ulEmpty" id="section-4.5.1-3.1">
+              <p id="section-4.5.1-3.1.1">- Custom Epoch<a href="#section-4.5.1-3.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="compact ulEmpty" id="section-4.5.1-3.2">
+              <p id="section-4.5.1-3.2.1">- NTP timestamp<a href="#section-4.5.1-3.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="compact ulEmpty" id="section-4.5.1-3.3">
+              <p id="section-4.5.1-3.3.1">- ISO 8601 timestamp<a href="#section-4.5.1-3.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="compact ulEmpty" id="section-4.5.1-3.4">
+              <p id="section-4.5.1-3.4.1">- Full, Non-truncated 64 bit Unix Epoch timestamp<a href="#section-4.5.1-3.4.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-4.5.1-4">
+            The relaxed nature UUIDv8 timestamps also works to future proof
+            this specification and allow implementations a method to create
+            compliant time-based UUIDs using timestamp source that might not yet be defined.<a href="#section-4.5.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.5.1-5">
+            Timestamps come in many sizes and UUIDv8 defines three fields
+            that can easily used for the majority of timestamp lengths:<a href="#section-4.5.1-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.5.1-6.1">
+              <p id="section-4.5.1-6.1.1">32 bit timestamp: using timestamp_32 and setting timestamp_48 to 0s<a href="#section-4.5.1-6.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4.5.1-6.2">
+              <p id="section-4.5.1-6.2.1">48 bit timestamp: using timestamp_32 and timestamp_48 entirely<a href="#section-4.5.1-6.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4.5.1-6.3">
+              <p id="section-4.5.1-6.3.1">60 bit timestamp: using timestamp_32, timestamp_48, and time_or_seq<a href="#section-4.5.1-6.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4.5.1-6.4">
+              <p id="section-4.5.1-6.4.1">64 bit timestamp: using timestamp_32, timestamp_48, and time_or_seq
+                  and truncating the timestamp the 60 most significant bits.<a href="#section-4.5.1-6.4.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-4.5.1-7">
+            Although it is possible to create a timestamp larger than 64 bits in size
+            The usage and bit layout of that timestamp format is up to the implementation.
+            When a timestamp exceeds the 64th bit (octet 7), extra care must be taken to
+            ensure the Variant bits are properly inserted at their respective location
+            in the UUID. Likewise, the Version MUST always be implemented at the appropriate
+            location.<a href="#section-4.5.1-7" class="pilcrow">¶</a></p>
+<p id="section-4.5.1-8">
+            Any timestamps that does not entirely fill the timestamp_32, timestamp_48
+            or time_or_seq MUST set all leftover bits in the least significant position
+            of the respective field to 0. For example a 36 bit timestamp source would
+            fully utilize timestamp_32 and 4 bits of timestamp_48.
+            The remaining 12 bits in timestamp_48 MUST be set to 0.<a href="#section-4.5.1-8" class="pilcrow">¶</a></p>
+<p id="section-4.5.1-9">
+            By using implementation-specific timestamp sources it is not
+            guaranteed that devices outside of the application context are able to
+            extract and parse the timestamp from UUIDv8 without some pre-existing
+            knowledge of the source timestamp used by the UUIDv8 implementation.<a href="#section-4.5.1-9" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="uuidv8sequence">
+<section id="section-4.5.2">
+          <h4 id="name-uuidv8-clock-sequence-usage">
+<a href="#section-4.5.2" class="section-number selfRef">4.5.2. </a><a href="#name-uuidv8-clock-sequence-usage" class="section-name selfRef">UUIDv8 Clock Sequence Usage</a>
+          </h4>
+<p id="section-4.5.2-1">
+            A clock sequence MUST be used with UUIDv8 as added sequencing guarantees
+            when multiple UUIDv8 will be created on the same clock tick.
+            The amount of bits allocated to the clock sequence depends on the
+            precision of the timestamp source. For example, a more accurate timestamp source using
+            nanosecond precision will require less clock sequence bits than a timestamp
+            source utilizing seconds for precision.<a href="#section-4.5.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.5.2-2">
+            The UUIDv8 layout in Figure 6 generically defines two possible
+            clock sequence values that can leveraged:<a href="#section-4.5.2-2" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-4.5.2-3.1">
+              <p id="section-4.5.2-3.1.1">12 bit clock sequence using time_or_seq for use when the timestamp
+                  is less than 48 bits which allows for 4095 UUIDs per clock tick.<a href="#section-4.5.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="compact" id="section-4.5.2-3.2">
+              <p id="section-4.5.2-3.2.1">8 bit clock sequence using seq_or_node when the timestamp uses
+                  more than 48 bits which allows for 255 UUIDs per clock tick.<a href="#section-4.5.2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-4.5.2-4">
+            An implementation MAY use both time_or_seq and seq_or_node for clock sequencing
+            however it is highly unlikely that 20 bits of clock sequence are needed
+            for a given clock tick. Furthermore, more bits from the node MAY be used
+            for clock sequencing in the event that 8 bits is not sufficient.<a href="#section-4.5.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.5.2-5">
+            The clock sequence MUST start at zero and increment monotonically
+            for each new UUIDv8 created on by the application on the same timestamp.
+            When the timestamp increments the clock sequence MUST be reset to zero.
+            The clock sequence MUST NOT rollover or reset to zero unless the timestamp
+            has incremented. Care MUST be given to ensure that an adequate sized
+            clock sequence is selected for a given application based on expected
+            timestamp precision and expected UUIDv8 generation rates.<a href="#section-4.5.2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="uuidv8node">
+<section id="section-4.5.3">
+          <h4 id="name-uuidv8-node-usage">
+<a href="#section-4.5.3" class="section-number selfRef">4.5.3. </a><a href="#name-uuidv8-node-usage" class="section-name selfRef">UUIDv8 Node Usage</a>
+          </h4>
+<p id="section-4.5.3-1">
+            The UUIDv8 Node MAY contain any set of data an implementation desires however
+            the node MUST NOT be set to all 0s which does not ensure global uniqueness.
+            In most scenarios the node will be filled with pseudo-random data.<a href="#section-4.5.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.5.3-2">
+            The UUIDv8 layout in Figure 6 defines 2 sizes of Node
+            depending on the timestamp size:<a href="#section-4.5.3-2" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-4.5.3-3.1">
+              <p id="section-4.5.3-3.1.1">62 bit node encompassing seq_or_node and node
+                  Used when a timestamp of 48 bits or less is leveraged.<a href="#section-4.5.3-3.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="compact" id="section-4.5.3-3.2">
+              <p id="section-4.5.3-3.2.1">54 bit node when all 60 bits of the timestamp are
+                  in use and the seq_or_node is used as clock sequencing.<a href="#section-4.5.3-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-4.5.3-4">
+            An implementation MAY choose to allocate bits from the node to the timestamp,
+            clock sequence or application-specific embedded field.
+            It is recommended that implementation utilize a node of at least 48 bits to
+            ensure global uniqueness can be guaranteed.<a href="#section-4.5.3-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="uuidv8pseudo">
+<section id="section-4.5.4">
+          <h4 id="name-uuidv8-basic-creation-algor">
+<a href="#section-4.5.4" class="section-number selfRef">4.5.4. </a><a href="#name-uuidv8-basic-creation-algor" class="section-name selfRef">UUIDv8 Basic Creation Algorithm</a>
+          </h4>
+<p id="section-4.5.4-1">
+            The entire usage of UUIDv8 is meant to be variable
+            and allow as much customization as possible to meet
+            specific application/language requirements.
+            As such any UUIDv8 implementations will likely vary among applications.<a href="#section-4.5.4-1" class="pilcrow">¶</a></p>
+<p id="section-4.5.4-2">
+            The following algorithm is a generic implementation using Figure 6
+            and the recommendations outlined in this specification.<a href="#section-4.5.4-2" class="pilcrow">¶</a></p>
+<p id="section-4.5.4-3">
+            <strong>32 bit timestamp, 12 bit sequence counter, 62 bit node:</strong><a href="#section-4.5.4-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.5.4-4">
+ <li id="section-4.5.4-4.1">
+              <p id="section-4.5.4-4.1.1">From a system-wide shared stable store (e.g., a file) or global variable,
+   read the UUID generator state: the values of the timestamp
+   and clock sequence used to generate the last UUID.<a href="#section-4.5.4-4.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-4.2">
+              <p id="section-4.5.4-4.2.1">Obtain the current time from the selected clock source as 32 bits.<a href="#section-4.5.4-4.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-4.3">
+              <p id="section-4.5.4-4.3.1">Set the 32 bit field timestamp_32 to the 32 bits from the timestamp<a href="#section-4.5.4-4.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-4.4">
+              <p id="section-4.5.4-4.4.1">Set 16 bit timestamp_48 to all 0s<a href="#section-4.5.4-4.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-4.5">
+              <p id="section-4.5.4-4.5.1">Set the version to 8 (1000)<a href="#section-4.5.4-4.5.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-4.6">
+              <p id="section-4.5.4-4.6.1">If the state was unavailable (e.g., non-existent or corrupted) or
+   the timestamp is greater than the current timestamp;
+   set the 12 bit clock sequence value (time_or_seq) to 0<a href="#section-4.5.4-4.6.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-4.7">
+              <p id="section-4.5.4-4.7.1">If the state was available, but the saved timestamp is less than
+   or equal to the current timestamp, increment the clock sequence
+   value (time_or_seq).<a href="#section-4.5.4-4.7.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-4.8">
+              <p id="section-4.5.4-4.8.1">Set the variant to binary 10<a href="#section-4.5.4-4.8.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-4.9">
+              <p id="section-4.5.4-4.9.1">Generate 62 random bits and fill in 8 bits for seq_or_node and
+   54 bits for the node.<a href="#section-4.5.4-4.9.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-4.10">
+              <p id="section-4.5.4-4.10.1">Format by concatenating the 128 bits as:
+   timestamp_32|timestamp_48|version|time_or_seq|variant|seq_or_node|node<a href="#section-4.5.4-4.10.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-4.11">
+              <p id="section-4.5.4-4.11.1">Save the state (current timestamp and clock sequence)
+   back to the stable store<a href="#section-4.5.4-4.11.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+<p id="section-4.5.4-5">
+            <strong>48 bit timestamp, 12 bit sequence counter, 62 bit node:</strong><a href="#section-4.5.4-5" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.5.4-6">
+ <li id="section-4.5.4-6.1">
+              <p id="section-4.5.4-6.1.1">From a system-wide shared stable store (e.g., a file) or global variable,
+   read the UUID generator state: the values of the timestamp
+   and clock sequence used to generate the last UUID.<a href="#section-4.5.4-6.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-6.2">
+              <p id="section-4.5.4-6.2.1">Obtain the current time from the selected clock source as 32 bits.<a href="#section-4.5.4-6.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-6.3">
+              <p id="section-4.5.4-6.3.1">Set the 32 bit field timestamp_32 to the 32 most significant bits
+   from the timestamp<a href="#section-4.5.4-6.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-6.4">
+              <p id="section-4.5.4-6.4.1">Set 16 bit timestamp_48 to the 16 least significant bits
+   from the timestamp<a href="#section-4.5.4-6.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-6.5">
+              <p id="section-4.5.4-6.5.1">The rest of the steps are the same as the previous example.<a href="#section-4.5.4-6.5.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+<p id="section-4.5.4-7">
+            <strong>60 bit timestamp, 8 bit sequence counter, 54 bit node:</strong><a href="#section-4.5.4-7" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.5.4-8">
+ <li id="section-4.5.4-8.1">
+              <p id="section-4.5.4-8.1.1">From a system-wide shared stable store (e.g., a file) or global variable,
+   read the UUID generator state: the values of the timestamp
+   and clock sequence used to generate the last UUID.<a href="#section-4.5.4-8.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-8.2">
+              <p id="section-4.5.4-8.2.1">Obtain the current time from the selected clock source as 32 bits.<a href="#section-4.5.4-8.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-8.3">
+              <p id="section-4.5.4-8.3.1">Set the 32 bit field timestamp_32 to the 32 bits from the timestamp<a href="#section-4.5.4-8.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-8.4">
+              <p id="section-4.5.4-8.4.1">Set 16 bit timestamp_48 to the 16 middle bits from the timestamp<a href="#section-4.5.4-8.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-8.5">
+              <p id="section-4.5.4-8.5.1">Set the version to 8 (1000)<a href="#section-4.5.4-8.5.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-8.6">
+              <p id="section-4.5.4-8.6.1">Set 12 bit time_or_seq to the 12 least significant bits from the timestamp<a href="#section-4.5.4-8.6.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-8.7">
+              <p id="section-4.5.4-8.7.1">Set the variant to 10<a href="#section-4.5.4-8.7.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-8.8">
+              <p id="section-4.5.4-8.8.1">If the state was unavailable (e.g., non-existent or corrupted)
+   or the timestamp is greater than the current timestamp;
+   set the 12 bit clock sequence value (seq_or_node) to 0<a href="#section-4.5.4-8.8.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-8.9">
+              <p id="section-4.5.4-8.9.1">If the state was available, but the saved timestamp is less than
+   or equal to the current timestamp, increment the clock sequence
+   value (seq_or_node).<a href="#section-4.5.4-8.9.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-8.10">
+              <p id="section-4.5.4-8.10.1">Generate 54 random bits and fill in the node<a href="#section-4.5.4-8.10.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-8.11">
+              <p id="section-4.5.4-8.11.1">Format by concatenating the 128 bits as:
+   timestamp_32|timestamp_48|version|time_or_seq|variant|seq_or_node|node<a href="#section-4.5.4-8.11.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-8.12">
+              <p id="section-4.5.4-8.12.1">Save the state (current timestamp and clock sequence) back to the stable store<a href="#section-4.5.4-8.12.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+<p id="section-4.5.4-9">
+            <strong>64 bit timestamp, 8 bit sequence counter, 54 bit node:</strong><a href="#section-4.5.4-9" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.5.4-10">
+ <li id="section-4.5.4-10.1">
+              <p id="section-4.5.4-10.1.1">The same steps as the 60 bit timestamp can be utilized
+   if the 64 bit timestamp is truncated to 60 bits.<a href="#section-4.5.4-10.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-10.2">
+              <p id="section-4.5.4-10.2.1">Implementations MAY chose to truncate the most or least significant
+   bits but it is recommended to utilize the most significant 60 bits
+   and lose 4 bits of precision in the nanoseconds or microseconds position.<a href="#section-4.5.4-10.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+<p id="section-4.5.4-11">
+            <strong>General algorithm for generation of UUIDv8 not defined here:</strong><a href="#section-4.5.4-11" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.5.4-12">
+ <li id="section-4.5.4-12.1">
+              <p id="section-4.5.4-12.1.1">From a system-wide shared stable store (e.g., a file) or global variable,
+   read the UUID generator state: the values of the timestamp
+   and clock sequence used to generate the last UUID.<a href="#section-4.5.4-12.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-12.2">
+              <p id="section-4.5.4-12.2.1">Obtain the current time from the selected clock source as desired bit total<a href="#section-4.5.4-12.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-12.3">
+              <p id="section-4.5.4-12.3.1">Set total amount of bits for timestamp as required in the most significant
+   positions of the 128 bit UUID<a href="#section-4.5.4-12.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-12.4">
+              <p id="section-4.5.4-12.4.1">Care MUST be taken to ensure that the UUID Version and UUID Variant are in the correct bit positions.<a href="#section-4.5.4-12.4.1" class="pilcrow">¶</a></p>
+<p id="section-4.5.4-12.4.2">UUID Version: Bits 48 through 51<a href="#section-4.5.4-12.4.2" class="pilcrow">¶</a></p>
+<p id="section-4.5.4-12.4.3">UUID Variant: Bits 64 and 65<a href="#section-4.5.4-12.4.3" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-12.5">
+              <p id="section-4.5.4-12.5.1">If the state was unavailable (e.g., non-existent or corrupted)
+   or the timestamp is greater than the current timestamp;
+   set the desired clock sequence value to 0<a href="#section-4.5.4-12.5.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-12.6">
+              <p id="section-4.5.4-12.6.1">If the state was available, but the saved timestamp is less than
+   or equal to the current timestamp, increment the clock sequence value.<a href="#section-4.5.4-12.6.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-12.7">
+              <p id="section-4.5.4-12.7.1">Set the remaining bits to the node as pseudo-random data<a href="#section-4.5.4-12.7.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-12.8">
+              <p id="section-4.5.4-12.8.1">Format by concatenating the 128 bits together<a href="#section-4.5.4-12.8.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-4.5.4-12.9">
+              <p id="section-4.5.4-12.9.1">Save the state (current timestamp and clock sequence)
+   back to the stable store<a href="#section-4.5.4-12.9.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="encoding">
+<section id="section-5">
+      <h2 id="name-encoding-and-storage">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-encoding-and-storage" class="section-name selfRef">Encoding and Storage</a>
+      </h2>
+<p id="section-5-1">
+        The existing UUID hex and dash format of 8-4-4-4-12 is retained for both
+        backwards compatibility and human readability.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">
+        For many applications such as databases
+        this format is unnecessarily verbose totaling 288 bits.<a href="#section-5-2" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-5-3.1">
+          <p id="section-5-3.1.1">8 bits for each of the 32 hex characters = 256 bits<a href="#section-5-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="compact" id="section-5-3.2">
+          <p id="section-5-3.2.1">8 bits for each of the 4 hyphens = 32 bits<a href="#section-5-3.2.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-5-4">
+        Where possible UUIDs SHOULD be stored within
+        database applications as the underlying 128 bit binary value.<a href="#section-5-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="uniquness">
+<section id="section-6">
+      <h2 id="name-global-uniqueness">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-global-uniqueness" class="section-name selfRef">Global Uniqueness</a>
+      </h2>
+<p id="section-6-1">
+        UUIDs created by this specification offer the same guarantees for global uniqueness 
+ as those found in <span>[<a href="#RFC4122" class="xref">RFC4122</a>]</span>. Furthermore, the time-based UUIDs defined in this specification 
+ are geared towards database applications but MAY be used for a wide variety of use-cases. 
+ Just as global uniqueness is guaranteed, UUIDs are guaranteed to be unique within an application 
+ context within the enterprise domain.<a href="#section-6-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="distributed">
+<section id="section-7">
+      <h2 id="name-distributed-uuid-generation">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-distributed-uuid-generation" class="section-name selfRef">Distributed UUID Generation</a>
+      </h2>
+<p id="section-7-1">
+        Some implementations might desire to utilize multi-node, clustered, applications which involve 2 or more 
+ applications independently generating UUIDs that will be stored in a common location. UUIDs already feature sufficient 
+ entropy to ensure that the chances of collision are low. However, implementations MAY dedicate a 
+ portion of the node's most significant random bits to a pseudo-random machineID which helps identify 
+ UUIDs created by a given node. This works to add an extra layer of collision avoidance.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">
+ This machine ID MUST be placed in the UUID after the timestamp and sequence counter bits. 
+ This position is selected to ensure that the sorting by timestamp and clock sequence is still possible. 
+ The machineID MUST NOT be an IEEE 802 MAC address. The creation and negotiation of the machineID 
+ among distributed nodes is out of scope for this specification.<a href="#section-7-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="IANA">
+<section id="section-8">
+      <h2 id="name-iana-considerations">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-8-1">This document has no IANA actions.<a href="#section-8-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="Security">
+<section id="section-9">
+      <h2 id="name-security-considerations">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-9-1"> 
+        MAC addresses pose inherent security risks and MUST not be used for node generation. 
+ As such they have been strictly forbidden from time-based UUIDs within this specification.
+ Instead pseudo-random bits SHOULD selected from a source with sufficient entropy to ensure guaranteed
+ uniqueness among UUID generation.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-2">
+        Timestamps embedded in the UUID do pose a very small attack surface. The timestamp in conjunction with 
+ the clock sequence does signal the order of creation for a given UUID and it's corresponding data but 
+ does not define anything about the data itself or the application as a whole. If UUIDs are required for
+ use with any security operation within an application context in any shape or form then <span>[<a href="#RFC4122" class="xref">RFC4122</a>]</span> UUIDv4 
+ SHOULD be utilized.<a href="#section-9-2" class="pilcrow">¶</a></p>
+<p id="section-9-3">
+        The machineID portion of node, described in <a href="#distributed" class="xref">Section 7</a>, does 
+ provide small unique identifier which could be used to determine which application is generating 
+ data but this machineID alone is not enough to identify a node on the network without other corresponding 
+ data points. Furthermore the machineID, like the timestamp+sequence, does not provide any context about 
+ the data the corresponds to the UUID or the current state of the application as a whole.<a href="#section-9-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="Acknowledgements">
+<section id="section-10">
+      <h2 id="name-acknowledgements">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
+      </h2>
+<p id="section-10-1">The authors gratefully acknowledge the contributions of 
+            Ben Campbell,
+            Ben Ramsey,
+            Fabio Lima,
+            Gonzalo Salgueiro, 
+            Martin Thomson,
+            Murray S. Kucherawy,
+            Rick van Rein,
+            Rob Wilton,
+            Sean Leonard,
+            Theodore Y. Ts'o.
+            As well as all of those in and outside the IETF community to who contributed to the discussions which resulted in this document.<a href="#section-10-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<section id="section-11">
+      <h2 id="name-normative-references">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+      </h2>
+<dl class="references">
+<dt id="RFC2119">[RFC2119]</dt>
+      <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4122">[RFC4122]</dt>
+    <dd>
+<span class="refAuthor">Leach, P.</span>, <span class="refAuthor">Mealling, M.</span>, and <span class="refAuthor">R. Salz</span>, <span class="refTitle">"A Universally Unique IDentifier (UUID) URN Namespace"</span>, <span class="seriesInfo">RFC 4122</span>, <span class="seriesInfo">DOI 10.17487/RFC4122</span>, <time datetime="2005-07" class="refDate">July 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc4122">https://www.rfc-editor.org/info/rfc4122</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-12">
+      <h2 id="name-informative-references">
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+      </h2>
+<dl class="references">
+<dt id="LexicalUUID">[LexicalUUID]</dt>
+      <dd>
+<span class="refAuthor">Twitter</span>, <span class="refTitle">"A Scala client for Cassandra"</span>, <span class="seriesInfo">commit f6da4e0</span>, <time datetime="2012-11" class="refDate">November 2012</time>, <span>&lt;<a href="https://github.com/twitter-archive/cassie">https://github.com/twitter-archive/cassie</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="Snowflake">[Snowflake]</dt>
+      <dd>
+<span class="refAuthor">Twitter</span>, <span class="refTitle">"Snowflake is a network service for generating unique ID numbers at high scale with some simple guarantees."</span>, <span class="seriesInfo">Commit b3f6a3c</span>, <time datetime="2014-05" class="refDate">May 2014</time>, <span>&lt;<a href="https://github.com/twitter-archive/snowflake/releases/tag/snowflake-2010">https://github.com/twitter-archive/snowflake/releases/tag/snowflake-2010</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="Flake">[Flake]</dt>
+      <dd>
+<span class="refAuthor">Boundary</span>, <span class="refTitle">"Flake: A decentralized, k-ordered id generation service in Erlang"</span>, <span class="seriesInfo">Commit 15c933a</span>, <time datetime="2017-02" class="refDate">February 2017</time>, <span>&lt;<a href="https://github.com/boundary/flake">https://github.com/boundary/flake</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="ShardingID">[ShardingID]</dt>
+      <dd>
+<span class="refAuthor">Instagram Engineering</span>, <span class="refTitle">"Sharding &amp; IDs at Instagram"</span>, <time datetime="2012-12" class="refDate">December 2012</time>, <span>&lt;<a href="https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c">https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="KSUID">[KSUID]</dt>
+      <dd>
+<span class="refAuthor">Segment</span>, <span class="refTitle">"K-Sortable Globally Unique IDs"</span>, <span class="seriesInfo">Commit bf376a7</span>, <time datetime="2020-07" class="refDate">July 2020</time>, <span>&lt;<a href="https://github.com/segmentio/ksuid">https://github.com/segmentio/ksuid</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="Elasticflake">[Elasticflake]</dt>
+      <dd>
+<span class="refAuthor">Pearcy, P.</span>, <span class="refTitle">"Sequential UUID / Flake ID generator pulled out of elasticsearch common"</span>, <span class="seriesInfo">Commit dd71c21</span>, <time datetime="2015-01" class="refDate">January 2015</time>, <span>&lt;<a href="https://github.com/ppearcy/elasticflake">https://github.com/ppearcy/elasticflake</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="FlakeID">[FlakeID]</dt>
+      <dd>
+<span class="refAuthor">Pawlak, T.</span>, <span class="refTitle">"Flake ID Generator"</span>, <span class="seriesInfo">Commit fcd6a2f</span>, <time datetime="2020-04" class="refDate">April 2020</time>, <span>&lt;<a href="https://github.com/T-PWK/flake-idgen">https://github.com/T-PWK/flake-idgen</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="Sonyflake">[Sonyflake]</dt>
+      <dd>
+<span class="refAuthor">Sony</span>, <span class="refTitle">"A distributed unique ID generator inspired by Twitter's Snowflake"</span>, <span class="seriesInfo">Commit 848d664</span>, <time datetime="2020-08" class="refDate">August 2020</time>, <span>&lt;<a href="https://github.com/sony/sonyflake">https://github.com/sony/sonyflake</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="orderedUuid">[orderedUuid]</dt>
+      <dd>
+<span class="refAuthor">Cabrera, IT.</span>, <span class="refTitle">"Laravel: The mysterious "Ordered UUID""</span>, <time datetime="2020-01" class="refDate">January 2020</time>, <span>&lt;<a href="https://itnext.io/laravel-the-mysterious-ordered-uuid-29e7500b4f8">https://itnext.io/laravel-the-mysterious-ordered-uuid-29e7500b4f8</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="COMBGUID">[COMBGUID]</dt>
+      <dd>
+<span class="refAuthor">Tallent, R.</span>, <span class="refTitle">"Creating sequential GUIDs in C# for MSSQL or PostgreSql"</span>, <span class="seriesInfo">Commit 2759820</span>, <time datetime="2020-12" class="refDate">December 2020</time>, <span>&lt;<a href="https://github.com/richardtallent/RT.Comb">https://github.com/richardtallent/RT.Comb</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="ULID">[ULID]</dt>
+      <dd>
+<span class="refAuthor">Feerasta, A.</span>, <span class="refTitle">"Universally Unique Lexicographically Sortable Identifier"</span>, <span class="seriesInfo">Commit d0c7170</span>, <time datetime="2019-05" class="refDate">May 2019</time>, <span>&lt;<a href="https://github.com/ulid/spec">https://github.com/ulid/spec</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="SID">[SID]</dt>
+      <dd>
+<span class="refAuthor">Chilton, A.</span>, <span class="refTitle">"sid : generate sortable identifiers"</span>, <span class="seriesInfo">Commit 660e947</span>, <time datetime="2019-06" class="refDate">June 2019</time>, <span>&lt;<a href="https://github.com/chilts/sid">https://github.com/chilts/sid</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="pushID">[pushID]</dt>
+      <dd>
+<span class="refAuthor">Google</span>, <span class="refTitle">"The 2^120 Ways to Ensure Unique Identifiers"</span>, <time datetime="2015-02" class="refDate">February 2015</time>, <span>&lt;<a href="https://firebase.googleblog.com/2015/02/the-2120-ways-to-ensure-unique_68.html">https://firebase.googleblog.com/2015/02/the-2120-ways-to-ensure-unique_68.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="XID">[XID]</dt>
+      <dd>
+<span class="refAuthor">Poitrey, O.</span>, <span class="refTitle">"Globally Unique ID Generator"</span>, <span class="seriesInfo">Commit efa678f</span>, <time datetime="2020-10" class="refDate">October 2020</time>, <span>&lt;<a href="https://github.com/rs/xid">https://github.com/rs/xid</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="ObjectID">[ObjectID]</dt>
+      <dd>
+<span class="refAuthor">MongoDB</span>, <span class="refTitle">"ObjectId - MongoDB Manual"</span>, <span>&lt;<a href="https://docs.mongodb.com/manual/reference/method/ObjectId/">https://docs.mongodb.com/manual/reference/method/ObjectId/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="CUID">[CUID]</dt>
+    <dd>
+<span class="refAuthor">Elliott, E.</span>, <span class="refTitle">"Collision-resistant ids optimized for horizontal scaling and performance."</span>, <span class="seriesInfo">Commit 215b27b</span>, <time datetime="2020-10" class="refDate">October 2020</time>, <span>&lt;<a href="https://github.com/ericelliott/cuid">https://github.com/ericelliott/cuid</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<div id="authors-addresses">
+<section id="appendix-A">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Brad G. Peabody</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:brad@peabody.io" class="email">brad@peabody.io</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Kyzer R. Davis</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:kydavis@cisco.com" class="email">kydavis@cisco.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
