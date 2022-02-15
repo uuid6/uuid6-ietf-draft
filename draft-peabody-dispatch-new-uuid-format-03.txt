@@ -5,8 +5,8 @@
 dispatch                                                    BGP. Peabody
 Internet-Draft                                                          
 Updates: 4122 (if approved)                                     K. Davis
-Intended status: Standards Track                        13 February 2022
-Expires: 17 August 2022
+Intended status: Standards Track                        15 February 2022
+Expires: 19 August 2022
 
 
                             New UUID Formats
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 17 August 2022.
+   This Internet-Draft will expire on 19 August 2022.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Peabody & Davis          Expires 17 August 2022                 [Page 1]
+Peabody & Davis          Expires 19 August 2022                 [Page 1]
 
 Internet-Draft               new-uuid-format               February 2022
 
@@ -77,23 +77,23 @@ Table of Contents
    7.  UUID Concerns . . . . . . . . . . . . . . . . . . . . . . . .  10
      7.1.  Implementation Tradeoffs  . . . . . . . . . . . . . . . .  10
      7.2.  Storing UUIDs, Opacity  . . . . . . . . . . . . . . . . .  10
-     7.3.  Combined Variant and Version Fields . . . . . . . . . . .  11
-     7.4.  Length (Variable, 128-bit Default)  . . . . . . . . . . .  11
-     7.5.  Text Format . . . . . . . . . . . . . . . . . . . . . . .  12
-     7.6.  Sorting . . . . . . . . . . . . . . . . . . . . . . . . .  12
-     7.7.  Timestamp Granularity . . . . . . . . . . . . . . . . . .  13
-     7.8.  Monotonicity and Counters . . . . . . . . . . . . . . . .  13
+     7.3.  Variant and Version Fields  . . . . . . . . . . . . . . .  11
+     7.4.  Length (Variable, 128-bit Default)  . . . . . . . . . . .  12
+     7.5.  Text Format . . . . . . . . . . . . . . . . . . . . . . .  13
+     7.6.  Sorting . . . . . . . . . . . . . . . . . . . . . . . . .  13
+     7.7.  Timestamp Granularity . . . . . . . . . . . . . . . . . .  14
+     7.8.  Monotonicity and Counters . . . . . . . . . . . . . . . .  14
      7.9.  Global and Local Uniqueness . . . . . . . . . . . . . . .  14
-     7.10. Collision Resistance  . . . . . . . . . . . . . . . . . .  14
+     7.10. Collision Resistance  . . . . . . . . . . . . . . . . . .  15
      7.11. Unguessability  . . . . . . . . . . . . . . . . . . . . .  15
-     7.12. Shared Knowledge  . . . . . . . . . . . . . . . . . . . .  15
+     7.12. Shared Knowledge  . . . . . . . . . . . . . . . . . . . .  16
      7.13. Documentation . . . . . . . . . . . . . . . . . . . . . .  16
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  16
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  16
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  17
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  17
    10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  17
    11. Normative References  . . . . . . . . . . . . . . . . . . . .  17
-   12. Informative References  . . . . . . . . . . . . . . . . . . .  17
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  18
+   12. Informative References  . . . . . . . . . . . . . . . . . . .  18
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  19
 
 1.  Introduction
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Peabody & Davis          Expires 17 August 2022                 [Page 2]
+Peabody & Davis          Expires 19 August 2022                 [Page 2]
 
 Internet-Draft               new-uuid-format               February 2022
 
@@ -165,7 +165,7 @@ Internet-Draft               new-uuid-format               February 2022
 
 
 
-Peabody & Davis          Expires 17 August 2022                 [Page 3]
+Peabody & Davis          Expires 19 August 2022                 [Page 3]
 
 Internet-Draft               new-uuid-format               February 2022
 
@@ -221,7 +221,7 @@ Internet-Draft               new-uuid-format               February 2022
 
 
 
-Peabody & Davis          Expires 17 August 2022                 [Page 4]
+Peabody & Davis          Expires 19 August 2022                 [Page 4]
 
 Internet-Draft               new-uuid-format               February 2022
 
@@ -250,9 +250,10 @@ Internet-Draft               new-uuid-format               February 2022
 
    draft-03
 
+      - Reworked the draft body to make the content more concise
       - UUIDv7 changed to simplify timestsamp mechanism to just
       millisecond unix timestamp
-      - Reworked to make it more concise
+      - Changed UUIDv7 and UUIDv8 to use Variant 111.
 
    draft-02
 
@@ -276,8 +277,7 @@ Internet-Draft               new-uuid-format               February 2022
 
 
 
-
-Peabody & Davis          Expires 17 August 2022                 [Page 5]
+Peabody & Davis          Expires 19 August 2022                 [Page 5]
 
 Internet-Draft               new-uuid-format               February 2022
 
@@ -322,9 +322,9 @@ Internet-Draft               new-uuid-format               February 2022
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |            time_top           |  ver  |     time_bottom       |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                                                               |
+   |                        remaining_bytes                        |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                                                               |
+   |                        remaining_bytes                        |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
                    Figure 1: UUIDv6 Field and Bit Layout
@@ -333,7 +333,7 @@ Internet-Draft               new-uuid-format               February 2022
 
 
 
-Peabody & Davis          Expires 17 August 2022                 [Page 6]
+Peabody & Davis          Expires 19 August 2022                 [Page 6]
 
 Internet-Draft               new-uuid-format               February 2022
 
@@ -350,7 +350,7 @@ Internet-Draft               new-uuid-format               February 2022
       The remaining 12 bits of the 60-bit timestamp.  Occupies bits 52
       through 63 (bottom 4 bits of octet 6 and octets 7-8)
 
-   remaining bytes:
+   remaining_bytes bytes:
       The rest of the bytes remain unchanged from UUIDv1, although see
       next for more explanation.
 
@@ -389,7 +389,7 @@ Internet-Draft               new-uuid-format               February 2022
 
 
 
-Peabody & Davis          Expires 17 August 2022                 [Page 7]
+Peabody & Davis          Expires 19 August 2022                 [Page 7]
 
 Internet-Draft               new-uuid-format               February 2022
 
@@ -445,7 +445,7 @@ Internet-Draft               new-uuid-format               February 2022
 
 
 
-Peabody & Davis          Expires 17 August 2022                 [Page 8]
+Peabody & Davis          Expires 19 August 2022                 [Page 8]
 
 Internet-Draft               new-uuid-format               February 2022
 
@@ -457,9 +457,9 @@ Internet-Draft               new-uuid-format               February 2022
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |          unix_ts_ms           |             rand              |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |    var_ver    |             rand...                           |
+   |    var_ver    |             rand                              |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                                                               |
+   |                             rand                              |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
                    Figure 3: UUIDv7 Field and Bit Layout
@@ -501,7 +501,7 @@ Internet-Draft               new-uuid-format               February 2022
 
 
 
-Peabody & Davis          Expires 17 August 2022                 [Page 9]
+Peabody & Davis          Expires 19 August 2022                 [Page 9]
 
 Internet-Draft               new-uuid-format               February 2022
 
@@ -513,20 +513,18 @@ Internet-Draft               new-uuid-format               February 2022
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                            custom                             |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |    var_ver    |            custom...                          |
+   |    var_ver    |            custom                             |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                                                               |
+   |                            custom                             |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
                    Figure 4: UUIDv8 Field and Bit Layout
 
    custom:
-      Custom sections can be filled as the implementation sees fit.  A
-      typical implementation would fill
+      Custom sections can be filled as the implementation sees fit.
 
    var_ver:
       The 8-bit combined variant and version field with the value 0xE8.
-      (TODO: link to explanation below)
 
 6.2.  Creating a UUIDv8 Value
 
@@ -549,19 +547,6 @@ Internet-Draft               new-uuid-format               February 2022
    reason to do otherwise (i.e. implementations SHOULD NOT examine the
    bits in a UUID to whatever extent is possible.)
 
-
-
-
-
-
-
-
-
-Peabody & Davis          Expires 17 August 2022                [Page 10]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
    As such, any storage mechanism capable of storing a series of bytes
    (minimum 9, maximum 64) is a valid storage mechanism for UUIDs.  If
    an implementation chooses to only support 128-bit UUIDs, then
@@ -569,11 +554,13 @@ Internet-Draft               new-uuid-format               February 2022
    store UUIDs are not required or advised to have an understanding of
    their contents.
 
-   A UUID with all zero bytes is never valid (per this doc and the
-   allowed values per [RFC4122]).  Implementations which much check if a
-   UUID is present and/or valid can usually be simplified to verifying
-   if a UUID is zero.  The intention is simplify implementations and
-   make them more robust by removing unnecessary complexity.
+
+
+
+Peabody & Davis          Expires 19 August 2022                [Page 10]
+
+Internet-Draft               new-uuid-format               February 2022
+
 
    For applications which go against this advice and must inspect UUIDs,
    extracting the version number can be done by examining the variant
@@ -584,8 +571,8 @@ Internet-Draft               new-uuid-format               February 2022
    remainder of the UUID according to the specification for that
    version.
 
-   If you want to embed custom stuff in a UUID, you do so at your own
-   risk; UUIDv8 is best suited for this
+   In the event that custom elements are required implementors SHOULD
+   utilize UUIDv8
 
    UUIDs can be stored in binary form or as text, as appropriate for
    individual systems.  Storing as binary requires less space and may
@@ -593,30 +580,81 @@ Internet-Draft               new-uuid-format               February 2022
    but may require less translation if the resulting text form is to be
    used after retrieval and thus maybe simpler to implement.
 
-7.3.  Combined Variant and Version Fields
+7.3.  Variant and Version Fields
 
-   For UUID versions 7 and 8, the version and variant fields from
-   [RFC4122] have been combined into the ver_var field described herein.
+   For UUIDv6 the version and variant field placement from [RFC4122] are
+   unchanged and a new version (0110 [6]) has been added.
+
+   00000000-0000-6000-8000-000000000000
+   00000000-0000-6000-9000-000000000000
+   00000000-0000-6000-A000-000000000000
+   00000000-0000-6000-B000-000000000000
+   xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
+
+               Figure 5: UUIDv6 Version and Variante Examples
+
+   M:
+      Version (0110 [6])
+
+   N:
+      Variant (1000 [8], 1001 [9], 1010 [A] or 1011 [B]) are all valid
+      values
+
+   For UUID versions 7 and 8, the variant field has been incremented and
+   the version field has been moved to the same octet as the variant.
    Since the bits of the variant remain in the same place as described
-   in [RFC4122] but utilized the previously reserved value 111b, this
-   allows us to simply define octect 9 as ver_var, and the values 0xE7
-   and 0xE8 indicate UUID versions 7 and 8 respectively.
+   in [RFC4122] but utilized the previously reserved value 111, this
+   allows a UUID to simply define octect 9 as var_ver, and the values
+   0xE7 and 0xE8 indicate UUID versions 7 and 8 respectively.
+
+
+
+
+
+
+
+Peabody & Davis          Expires 19 August 2022                [Page 11]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
+   00000000-0000-0000-E700-000000000000
+   xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
+
+   00000000-0000-0000-E800-000000000000
+   xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
+
+               Figure 6: UUIDv7 Version and Variant Examples
+
+   N:
+      Variant (1110 [E])
+
+   M:
+      Version (0111 [7] or 1000 [8])
+
+   While this specification makes use of the unused variant bits of 111
+   defined in [RFC4122], Section 4.1.1; the placement of the version
+   within the same octet as the variant leaves room for a future
+   variant.  As such the table below details the previous variant, new
+   variant and new variant that is reserved for future definition.
+
+    +------+------+------+------+------------------------------------+
+    | Msb0 | Msb1 | Msb2 | Msb3 | Description                        |
+    +------+------+------+------+------------------------------------+
+    | 1    | 0    | x    | x    | The variant specified by [RFC4122] |
+    +------+------+------+------+------------------------------------+
+    | 1    | 1    | 1    | 0    | The variant specified in this      |
+    |      |      |      |      | document.                          |
+    +------+------+------+------+------------------------------------+
+    | 1    | 1    | 1    | 1    | Reserved for future definition.    |
+    +------+------+------+------+------------------------------------+
+
+           Table 1: UUID Variant defined by this specification
 
 7.4.  Length (Variable, 128-bit Default)
 
    Default is still 128-bits, 16 bytes.  Implementations SHOULD default
    to this.
-
-
-
-
-
-
-
-Peabody & Davis          Expires 17 August 2022                [Page 11]
-
-Internet-Draft               new-uuid-format               February 2022
-
 
    Implementations MAY choose to allow generation UUIDs of anywhere from
    9 to 64 bytes.  (decide if we want to elaborate on the various
@@ -628,6 +666,13 @@ Internet-Draft               new-uuid-format               February 2022
    less than 9 bytes and we lose the variant/version, and 64 is
    arbitrary but we should have some upper limit in case it has an
    impact on physical storage requirements)
+
+
+
+Peabody & Davis          Expires 19 August 2022                [Page 12]
+
+Internet-Draft               new-uuid-format               February 2022
+
 
    Variable length is optional and implementations MAY opt-out and only
    support 128-bits.
@@ -642,8 +687,9 @@ Internet-Draft               new-uuid-format               February 2022
 
 7.5.  Text Format
 
-   Existing hex format is still valid.  Shorter or longer values just
-   omit or add hex characters (give some examples at different lengths)
+   Existing hex and dash format (8-4-4-4-12) is still valid.  Shorter or
+   longer values just omit or add hex characters (give some examples at
+   different lengths)
 
    Crockford base32 is allowed also (briefly summarize reasons -
    shorter, more compact if UUIDs are stored as text, crockford
@@ -666,14 +712,6 @@ Internet-Draft               new-uuid-format               February 2022
    sort as opaque raw bytes (UUIDv6 and 7 are designed for this),
    without examining the contents at all.
 
-
-
-
-Peabody & Davis          Expires 17 August 2022                [Page 12]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
    Implementations MAY implement more complex sorting rules for UUID
    versions < 6 (or strictly speaking they MAY do this for any version,
    but shouldn't need to).
@@ -682,6 +720,15 @@ Internet-Draft               new-uuid-format               February 2022
    values are near each other in the index and can much more easily be
    clustered together for better performance.  Real-world differences vs
    random data can be quite large.
+
+
+
+
+
+Peabody & Davis          Expires 19 August 2022                [Page 13]
+
+Internet-Draft               new-uuid-format               February 2022
+
 
 7.7.  Timestamp Granularity
 
@@ -723,13 +770,6 @@ Internet-Draft               new-uuid-format               February 2022
    The monotonicity properties of an particular UUID generator SHOULD
    stated in it's documentation.
 
-
-
-Peabody & Davis          Expires 17 August 2022                [Page 13]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
 7.9.  Global and Local Uniqueness
 
    Global uniquess is impossible to guarantee without shared knowledge.
@@ -737,6 +777,14 @@ Internet-Draft               new-uuid-format               February 2022
    independently without some possibility of collission UNLESS they
    agree on some mechanism to ensure uniqueness ahead of time (e.g. your
    numbers always end with ... and mine always end with... or whatever)
+
+
+
+
+Peabody & Davis          Expires 19 August 2022                [Page 14]
+
+Internet-Draft               new-uuid-format               February 2022
+
 
    RFC4122 tried to use MAC address as shared knowledge - it sort of
    worked but had problems (security issues with exposing MAC addresses,
@@ -776,16 +824,6 @@ Internet-Draft               new-uuid-format               February 2022
    v7 is time ordered for better index locality/database performance, v8
    has lower collision resistance, pick your poison.
 
-
-
-
-
-
-Peabody & Davis          Expires 17 August 2022                [Page 14]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
 7.11.  Unguessability
 
    Some applications acquire security benefits from generating values
@@ -796,6 +834,13 @@ Internet-Draft               new-uuid-format               February 2022
    (CSPRNG) provides values that are both difficult to predict
    ("unguessable") and have a low likelyhood of collision ("unique").
    And so this is the recommended approach.
+
+
+
+Peabody & Davis          Expires 19 August 2022                [Page 15]
+
+Internet-Draft               new-uuid-format               February 2022
+
 
    Length is a factor too (TODO: link to wherever we list out
    probabilities)
@@ -824,24 +869,6 @@ Internet-Draft               new-uuid-format               February 2022
    https://github.com/uuid6/uuid6-ietf-draft/
    issues/36#issuecomment-903295070
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-Peabody & Davis          Expires 17 August 2022                [Page 15]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
    Mention that the reason this spec does not endorse any specific
    global registry is because if something goes wrong with it (like the
    fact that MAC addresses used to be more or less unique but with cloud
@@ -863,6 +890,14 @@ Internet-Draft               new-uuid-format               February 2022
 
    1.  Timestamp granularity (v7 only)
    2.  Monotoncity (v7 only do the values always count up)
+
+
+
+Peabody & Davis          Expires 19 August 2022                [Page 16]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
    3.  Uniqueness scope (are these values supposed to be globally unique
        or unique with a specific context, if so which context)
    4.  Shared knowledge system (if any)
@@ -891,13 +926,6 @@ Internet-Draft               new-uuid-format               February 2022
    within an application context in any shape or form then [RFC4122]
    UUIDv4 SHOULD be utilized.
 
-
-
-Peabody & Davis          Expires 17 August 2022                [Page 16]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
 10.  Acknowledgements
 
    The authors gratefully acknowledge the contributions of Ben Campbell,
@@ -917,6 +945,14 @@ Internet-Draft               new-uuid-format               February 2022
               Unique IDentifier (UUID) URN Namespace", RFC 4122,
               DOI 10.17487/RFC4122, July 2005,
               <https://www.rfc-editor.org/info/rfc4122>.
+
+
+
+
+Peabody & Davis          Expires 19 August 2022                [Page 17]
+
+Internet-Draft               new-uuid-format               February 2022
+
 
 12.  Informative References
 
@@ -944,16 +980,6 @@ Internet-Draft               new-uuid-format               February 2022
    [KSUID]    Segment, "K-Sortable Globally Unique IDs", Commit bf376a7,
               July 2020, <https://github.com/segmentio/ksuid>.
 
-
-
-
-
-
-Peabody & Davis          Expires 17 August 2022                [Page 17]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
    [Elasticflake]
               Pearcy, P., "Sequential UUID / Flake ID generator pulled
               out of elasticsearch common", Commit dd71c21, January
@@ -975,6 +1001,14 @@ Internet-Draft               new-uuid-format               February 2022
    [COMBGUID] Tallent, R., "Creating sequential GUIDs in C# for MSSQL or
               PostgreSql", Commit 2759820, December 2020,
               <https://github.com/richardtallent/RT.Comb>.
+
+
+
+
+Peabody & Davis          Expires 19 August 2022                [Page 18]
+
+Internet-Draft               new-uuid-format               February 2022
+
 
    [ULID]     Feerasta, A., "Universally Unique Lexicographically
               Sortable Identifier", Commit d0c7170, May 2019,
@@ -1000,15 +1034,6 @@ Internet-Draft               new-uuid-format               February 2022
               October 2020, <https://github.com/ericelliott/cuid>.
 
 Authors' Addresses
-
-
-
-
-
-Peabody & Davis          Expires 17 August 2022                [Page 18]
-
-Internet-Draft               new-uuid-format               February 2022
-
 
    Brad G. Peabody
 
@@ -1036,29 +1061,4 @@ Internet-Draft               new-uuid-format               February 2022
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Peabody & Davis          Expires 17 August 2022                [Page 19]
+Peabody & Davis          Expires 19 August 2022                [Page 19]
