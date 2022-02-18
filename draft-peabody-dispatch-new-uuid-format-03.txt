@@ -5,8 +5,8 @@
 dispatch                                                    BGP. Peabody
 Internet-Draft                                                          
 Updates: 4122 (if approved)                                     K. Davis
-Intended status: Standards Track                        16 February 2022
-Expires: 20 August 2022
+Intended status: Standards Track                        17 February 2022
+Expires: 21 August 2022
 
 
                             New UUID Formats
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 20 August 2022.
+   This Internet-Draft will expire on 21 August 2022.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Peabody & Davis          Expires 20 August 2022                 [Page 1]
+Peabody & Davis          Expires 21 August 2022                 [Page 1]
 
 Internet-Draft               new-uuid-format               February 2022
 
@@ -61,67 +61,58 @@ Internet-Draft               new-uuid-format               February 2022
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-   2.  Background  . . . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   4
+     2.1.  Requirements Language . . . . . . . . . . . . . . . . . .   5
+     2.2.  Abbreviations . . . . . . . . . . . . . . . . . . . . . .   5
    3.  Summary of Changes  . . . . . . . . . . . . . . . . . . . . .   5
      3.1.  changelog . . . . . . . . . . . . . . . . . . . . . . . .   5
-   4.  UUID Version 6  . . . . . . . . . . . . . . . . . . . . . . .   6
-     4.1.  Format  . . . . . . . . . . . . . . . . . . . . . . . . .   6
-     4.2.  Creating a UUIDv6 Value . . . . . . . . . . . . . . . . .   8
-     4.3.  Example of a UUIDv6 Value . . . . . . . . . . . . . . . .   9
-   5.  UUID Version 7  . . . . . . . . . . . . . . . . . . . . . . .   9
-     5.1.  Format  . . . . . . . . . . . . . . . . . . . . . . . . .   9
-     5.2.  Creating a UUIDv7 Value . . . . . . . . . . . . . . . . .  10
-     5.3.  Example of a UUIDv7 Value . . . . . . . . . . . . . . . .  10
-   6.  UUID Version 8  . . . . . . . . . . . . . . . . . . . . . . .  10
-     6.1.  Format  . . . . . . . . . . . . . . . . . . . . . . . . .  10
-   7.  UUID Concerns . . . . . . . . . . . . . . . . . . . . . . . .  11
-     7.1.  Storing UUIDs, Opacity  . . . . . . . . . . . . . . . . .  11
-     7.2.  Variant and Version Fields  . . . . . . . . . . . . . . .  12
-     7.3.  Length (Variable, 128-bit Default)  . . . . . . . . . . .  13
-     7.4.  Text Format . . . . . . . . . . . . . . . . . . . . . . .  14
-     7.5.  Sorting . . . . . . . . . . . . . . . . . . . . . . . . .  14
-     7.6.  Timestamp Granularity . . . . . . . . . . . . . . . . . .  15
-     7.7.  Monotonicity and Counters . . . . . . . . . . . . . . . .  15
-     7.8.  Global and Local Uniqueness . . . . . . . . . . . . . . .  15
-     7.9.  Collision Resistance  . . . . . . . . . . . . . . . . . .  16
-     7.10. Unguessability  . . . . . . . . . . . . . . . . . . . . .  16
-     7.11. Shared Knowledge  . . . . . . . . . . . . . . . . . . . .  17
-     7.12. Documentation . . . . . . . . . . . . . . . . . . . . . .  18
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  18
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  18
-   10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  18
-   11. Normative References  . . . . . . . . . . . . . . . . . . . .  18
-   12. Informative References  . . . . . . . . . . . . . . . . . . .  19
+   4.  Format  . . . . . . . . . . . . . . . . . . . . . . . . . . .   7
+     4.1.  UUID Version 6  . . . . . . . . . . . . . . . . . . . . .   7
+     4.2.  UUID Version 7  . . . . . . . . . . . . . . . . . . . . .   8
+     4.3.  UUID Version 8  . . . . . . . . . . . . . . . . . . . . .   9
+   5.  UUID Concerns . . . . . . . . . . . . . . . . . . . . . . . .  10
+     5.1.  Storing UUIDs, Opacity  . . . . . . . . . . . . . . . . .  10
+     5.2.  Variant and Version Fields  . . . . . . . . . . . . . . .  11
+     5.3.  Length  . . . . . . . . . . . . . . . . . . . . . . . . .  12
+     5.4.  Text Format . . . . . . . . . . . . . . . . . . . . . . .  12
+     5.5.  Sorting . . . . . . . . . . . . . . . . . . . . . . . . .  13
+     5.6.  Timestamp Granularity . . . . . . . . . . . . . . . . . .  13
+     5.7.  Monotonicity and Counters . . . . . . . . . . . . . . . .  13
+     5.8.  Global and Local Uniqueness . . . . . . . . . . . . . . .  14
+     5.9.  Collision Resistance  . . . . . . . . . . . . . . . . . .  15
+     5.10. Unguessability  . . . . . . . . . . . . . . . . . . . . .  15
+     5.11. Shared Knowledge  . . . . . . . . . . . . . . . . . . . .  15
+     5.12. Documentation . . . . . . . . . . . . . . . . . . . . . .  16
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  16
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  16
+   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  17
+   9.  Normative References  . . . . . . . . . . . . . . . . . . . .  17
+   10. Informative References  . . . . . . . . . . . . . . . . . . .  17
+   Appendix A.  Example Code . . . . . . . . . . . . . . . . . . . .  19
+     A.1.  Creating a UUIDv6 Value . . . . . . . . . . . . . . . . .  19
+     A.2.  Creating a UUIDv7 Value . . . . . . . . . . . . . . . . .  20
+   Appendix B.  Test Vectors . . . . . . . . . . . . . . . . . . . .  20
+     B.1.  Example of a UUIDv6 Value . . . . . . . . . . . . . . . .  20
+     B.2.  Example of a UUIDv7 Value . . . . . . . . . . . . . . . .  20
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  20
 
 1.  Introduction
 
-   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-   document are to be interpreted as described in [RFC2119].
-
-
-
-
-
-
-
-
-
-
-Peabody & Davis          Expires 20 August 2022                 [Page 2]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
-2.  Background
-
-   A lot of things have changed in the time since UUIDs were originally
+   Many things have changed in the time since UUIDs were originally
    created.  Modern applications have a need to create and utilize UUIDs
    as the primary identifier for a variety of different items in complex
    computational systems, including but not limited to database primary
    keys, file names, machine or system names, identifiers for
    transactions or other objects or processes.
+
+
+
+
+
+Peabody & Davis          Expires 21 August 2022                 [Page 2]
+
+Internet-Draft               new-uuid-format               February 2022
+
 
    A specific use case for UUIDs which has gained popularity is as
    database primary keys.  The motivation for this stems primarily from
@@ -133,8 +124,8 @@ Internet-Draft               new-uuid-format               February 2022
    values in distributed systems without requiring synchronization makes
    them a good candidate for use as a database key in such environments.
 
-   Previous UUID versions 1 through 5 suffer from at least the following
-   shortcomings:
+   UUID versions 1 through 5 lack certain desirable characteristics in
+   some circumstances:
 
    1.  Non-time-ordered UUID versions such as UUIDv4 have poor database
        index locality.  Meaning new values created in succession are not
@@ -144,50 +135,52 @@ Internet-Draft               new-uuid-format               February 2022
        variants) can be dramatic.
 
    2.  Introspection/parsing is required to order by time sequence (as
-       opposed to being able to peform a simple byte-by-byte
-       comparision.
+       opposed to being able to perform a simple byte-by-byte
+       comparison.
 
-   3.  UUIDv1 utilizes a non-standard timestamp epoch derived from the
-       Gregorian Calendar.  More specifically, the Coordinated Universal
-       Time (UTC) as a count of 100-nanosecond intervals since
-       00:00:00.00, 15 October 1582.
+   3.  The 100-nanosecond, Gregorian epoch used in UUIDv1 timestamps is
+       uncommon and difficult to represent accurately using a standard
+       number format such as [IEEE754].
 
    4.  Privacy and network security issues arise from using a MAC
        address in the node field of Version 1 UUIDs.  Exposed MAC
        addresses can be used as an attack surface to locate machines and
        reveal various other information about such machines (minimally
-       manufacturer, potentially other details).
+       manufacturer, potentially other details).  Additionally, with the
+       advent of virtual machines and containers, MAC address uniqueness
+       is no longer guaranteed.
 
    5.  Many implementation details are specified in [RFC4122] but some
-       of the decisions made involve tradeoffs that are neither possible
-       to specify for all applications nor necessary to produce
+       of the decisions made involve trade offs that are neither
+       possible to specify for all applications nor necessary to produce
        interoperable implementations.
-
-
-
-Peabody & Davis          Expires 20 August 2022                 [Page 3]
-
-Internet-Draft               new-uuid-format               February 2022
-
 
    6.  The previous specification also does not distinguish between the
        requirements for generation of a UUID versus an application which
        simply stores one, which are different.
 
-   7.  The only specified text format is unnecessarily verbose at 225%
-       the length of the raw bytes.
+   7.  The hex-octet-and-hyphen string notation results in strings is
+       not particularly compact.
+
+
+
+
+Peabody & Davis          Expires 21 August 2022                 [Page 3]
+
+Internet-Draft               new-uuid-format               February 2022
+
 
    8.  A fixed length restricts the options of implementations to choose
        between having shorter (and e.g. values easier for humans to read
        and use) and less unique values, or having longer yet more unique
        values.
 
-   Due to the shortcomings of UUIDv1 and UUIDv4, many widely distributed
-   database applications and large application vendors have sought to
-   solve the problem of creating a better time-based, sortable unique
-   identifier for use as a database key.  This has lead to numerous
-   implementations over the past 10+ years solving the same problem in
-   slightly different ways.
+   Due to the aforementioned issue, many widely distributed database
+   applications and large application vendors have sought to solve the
+   problem of creating a better time-based, sortable unique identifier
+   for use as a database key.  This has lead to numerous implementations
+   over the past 10+ years solving the same problem in slightly
+   different ways.
 
    While preparing this specification the following 16 different
    implementations were analyzed for trends in total ID length, bit
@@ -216,20 +209,42 @@ Internet-Draft               new-uuid-format               February 2022
    has led to this document which attempts to adapt UUIDs to address
    these issues.
 
-
-
-
-
-
-Peabody & Davis          Expires 20 August 2022                 [Page 4]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
    Note that there are similarities between [ULID] and UUID version 7 as
    described in this document.  In any case, the point here is to
    formalize new UUID formats in a way that is backward compatible with
    UUID and takes into account all of the concerns mentioned herein.
+
+2.  Terminology
+
+
+
+
+
+
+Peabody & Davis          Expires 21 August 2022                 [Page 4]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
+2.1.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+2.2.  Abbreviations
+
+   The following abbreviations are used in this document:
+
+   UUID          Universally Unique Identifier [RFC4122]
+
+   CSPRNG        Cryptographically Secure Pseudo-Random Number Generator
+
+   MAC           Media Access Control
+
+   MSB           Most Significant Bit
 
 3.  Summary of Changes
 
@@ -237,12 +252,13 @@ Internet-Draft               new-uuid-format               February 2022
 
    1.  UUID version 6: A re-ordering of UUID version 1 so it is sortable
        as an opaque sequence of bytes.  Easy to implement given an
-       existing UUIDv1 implementation.
-   2.  UUID version 7: A new format which is simpler, time-ordered and
-       specified in a way that separates UUID generation requirements
-       from generation recommendations from storage requirements.
+       existing UUIDv1 implementation.  See Section 4.1
+   2.  UUID version 7: An entirely new time-based UUID bit layout
+       sourced from the widely implemented and well known Unix Epoch
+       timestamp source.  See Section 4.2
    3.  UUID version 8: A free-form UUID format which has no explicit
-       requirements except maintaining backward compatibility.
+       requirements except maintaining backward compatibility.  See
+       Section 4.3
 
 3.1.  changelog
 
@@ -252,13 +268,21 @@ Internet-Draft               new-uuid-format               February 2022
 
       - Reworked the draft body to make the content more concise
       - UUIDv6 section reworked to just the reorder of the timestamp
-      - UUIDv7 changed to simplify timestsamp mechanism to just
+      - UUIDv7 changed to simplify timestamp mechanism to just
       millisecond unix timestamp
       - UUIDv8 relaxed to be custom in all elements except version and
       variant
       - Changed UUIDv7 and UUIDv8 to use Variant 111.
-      - Added C code samples for UUIDv6 and UUIDv7
-      - Added test vectors for UUIDv6 and UUIDv7
+      - Added C code samples for UUIDv6 and UUIDv7 in Appendix.
+
+
+
+Peabody & Davis          Expires 21 August 2022                 [Page 5]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
+      - Added test vectors for UUIDv6 and UUIDv7 in Appendix.
       - Version and Variant section combined into Variant and Version
       Fields section.
       - Introduced variable length UUIDs.
@@ -274,18 +298,11 @@ Internet-Draft               new-uuid-format               February 2022
       - Combined redundant topics from all UUIDs into sections such as
       Sorting, Monotonicity and Counters, Collision Resistance, and
       Unguessability
-
-
-
-Peabody & Davis          Expires 20 August 2022                 [Page 5]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
       - Node verbiage only used in UUIDv6 and v7 and v8 reference random
       instead
       - Clock sequence verbiage changed simply to counter in any section
       other than UUIDv6
+      - Added Abbreviations section
 
    draft-02
 
@@ -295,7 +312,7 @@ Internet-Draft               new-uuid-format               February 2022
       - Fixed some UUIDvX reference issues
       - Changed all instances of "motonic" to "monotonic"
       - Changed all instances of "#-bit" to "# bit"
-      - Changed "proceeding" veriage to "after" in section 7
+      - Changed "proceeding" verbiage to "after" in section 7
       - Added details on how to pad 32 bit unix timestamp to 36 bits in
       UUIDv7
       - Added details on how to truncate 64 bit unix timestamp to 36
@@ -313,6 +330,14 @@ Internet-Draft               new-uuid-format               February 2022
       standards.
       - Removed the topics of UUID length modification, alternate UUID
       text formats, and alternate UUID encoding techniques.
+
+
+
+Peabody & Davis          Expires 21 August 2022                 [Page 6]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
       - Research into 16 different historical and current
       implementations of time-based universal identifiers was completed
       at the end of 2020 in attempt to identify trends which have
@@ -322,29 +347,26 @@ Internet-Draft               new-uuid-format               February 2022
       and UUIDv8 in various languages by many GitHub community members.
       (https://github.com/uuid6/prototypes)
 
-4.  UUID Version 6
+4.  Format
 
-4.1.  Format
+   The UUID format is 16 octets; some bits of the eight octet variant
+   field specified below determine finer structure.
 
-   UUID version 6 aims to be the easiest new version to implement by
-   using the same information from a UUID version 1 and changing the
-   order of the timestamp value.
+4.1.  UUID Version 6
 
-
-
-
-Peabody & Davis          Expires 20 August 2022                 [Page 6]
-
-Internet-Draft               new-uuid-format               February 2022
-
+   UUID version 6 is a field-compatible version of v1, reordered for
+   improved DB locality.  It is expected that v6 UUIDs will primarily be
+   used in contexts where there are existing v1 UUIDs.  Systems that do
+   not have involve legacy v1 UUIDs SHOULD consider using v7 UUIDs
+   instead.
 
    Instead of splitting the timestamp into the low, mid and high
-   sections from UUIDv1, UUIDv6 changes this sequence so the timestamp
-   is stored from most to least significant.  I.e.  Given a 60-bit
+   sections from UUIDv1, UUIDv6 changes this sequence so timestamp bytes
+   are stored from most to least significant.  I.e.  Given a 60 bit
    timestamp value as specified for UUIDv1 in [RFC4122], Section 4.1.4,
    for UUIDv6, the first 48 most significant bits are stored first,
-   followed by the 4-bit version (same position), followed by the
-   remaining 12 bits of the original 60-bit timestamp.
+   followed by the 4 bit version (same position), followed by the
+   remaining 12 bits of the original 60 bit timestamp.
 
    The format for the 16-byte, 128 bit UUIDv6 is shown in Figure 1
 
@@ -362,8 +384,18 @@ Internet-Draft               new-uuid-format               February 2022
 
                    Figure 1: UUIDv6 Field and Bit Layout
 
+
+
+
+
+
+Peabody & Davis          Expires 21 August 2022                 [Page 7]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
    time_top:
-      The most significant 48 bits of the 60-bit timestamp.  Occupies
+      The most significant 48 bits of the 60 bit timestamp.  Occupies
       bits 0 through 47 (octets 0-5).
 
    ver:
@@ -371,38 +403,628 @@ Internet-Draft               new-uuid-format               February 2022
       (top 4 bits of octet 6).
 
    time_bottom:
-      The remaining 12 bits of the 60-bit timestamp.  Occupies bits 52
-      through 63 (bottom 4 bits of octet 6 and octets 7-8)
+      The remaining 12 bits of the 60 bit timestamp.  Occupies bits 52
+      through 63 (bottom 4 bits of octet 6 and all of octets 7)
 
    var:
-      The 2 bit UUID variant (10)
+      The 2 bit UUID variant (10) (top 2 bits of octet 8)
 
    remaining_bytes bytes:
       The remaining 62 Bits of the UUID as defined by [RFC4122],
-      Section 4.1.6 or [RFC4122], Section 4.5
-
-
-
-
-
-
-
-
-
-Peabody & Davis          Expires 20 August 2022                 [Page 7]
-
-Internet-Draft               new-uuid-format               February 2022
-
+      Section 4.1.6 or [RFC4122], Section 4.5 (octets 9 through 15)
 
    In the specification for UUIDv1, the clock sequence [RFC4122],
    Section 4.1.5 and node value [RFC4122], Section 4.1.6 have specific
    behaviors prescribed for them.  For UUIDv6, such requirements are
    relaxed.  Implementations may choose to continue to using the
-   previous behavior, or refer to the sections on (TODO, links)
-   Monotonicity and Collision Resistance and implement appropriate
-   behavior described therein.
+   previous behavior, or refer to the sections on Section 5.7 and
+   Section 5.9 and implement appropriate behavior described therein.
 
-4.2.  Creating a UUIDv6 Value
+4.2.  UUID Version 7
+
+   UUID version 7 features a time-ordered value field derived from the
+   widely implemented and well known Unix Epoch timestamp source, as
+   well as improved entropy characteristics over versions 1 or 6.
+   Implementations SHOULD utilize UUID version 7 over UUID version 1 and
+   6 if possible.
+
+   The length of a UUIDv7 value is variable with a default of 128 bits
+   as per Section 5.3.
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                           unix_ts_ms                          |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |          unix_ts_ms           |            rand_a             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    var_ver    |            rand_b                             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                            rand_b                             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+
+Peabody & Davis          Expires 21 August 2022                 [Page 8]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
+                   Figure 2: UUIDv7 Field and Bit Layout
+
+   unix_ts_ms:
+      48 bit big-endian unsigned number of milliseconds since midnight 1
+      January 1970 UTC.  Follows the same rules as a UNIX timestamp,
+      i.e. does not include leap seconds.
+
+   rand_a:
+      16 bits pseudo-random data to provide uniqueness as per
+      Section 5.10
+
+   var_ver:
+      The 8 bit combined variant and version field with the value 0xE7
+      as defined by Section 5.2.
+
+   rand_b:
+      The final 56 bits of pseudo-random data to provide uniqueness as
+      per Section 5.10 and Section 5.7.
+
+4.3.  UUID Version 8
+
+   UUID version 8 provides an RFC-compatible format for experimental or
+   vendor-specific use cases.  The only requirement is that the variant
+   and version bits be set as defined in Section 5.2.  UUID version 8's
+   uniqueness will be implementation-specific and should not be assumed.
+
+   The length of a UUIDv8 value is variable with a default of 128 bits
+   as dictated by Section 5.3.
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                           custom_a                            |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                           custom_a                            |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    var_ver    |           custom_b                            |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                           custom_b                            |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                   Figure 3: UUIDv8 Field and Bit Layout
+
+   custom_a:
+      The first 64 bits of the layout that can be filled as an
+      implementation sees fit.
+
+
+
+
+
+Peabody & Davis          Expires 21 August 2022                 [Page 9]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
+   var_ver:
+      The 8 bit combined variant and version field with the value 0xE8
+      as defined by Section 5.2.
+
+   custom_b:
+      The final 56 bits of the layout immediatly following the var_var
+      field to be filled as an implementation sees fit.
+
+5.  UUID Concerns
+
+   The minimum requirements for generating UUIDs are described in this
+   document for each version.  Storing UUIDs requires only that the
+   exact value is recorded.  Everything else is an implementation detail
+   and up to the implementer to decide what is appropriate for a given
+   implementation.  That being said, various relevant factors are
+   covered below to help guide an implementer through the different
+   trade-offs among differing UUID implementations.
+
+5.1.  Storing UUIDs, Opacity
+
+   UUIDs SHOULD be treated as opaque values unless there is a good
+   reason to do otherwise (i.e. implementations SHOULD NOT examine the
+   bits in a UUID to whatever extent is possible.)
+
+   As such, any storage mechanism capable of storing a series of bytes
+   (minimum 9, maximum 64) is a valid storage mechanism for UUIDs.  If
+   an implementation chooses to only support 128 bit UUIDs, then
+   anything that can store 16 bytes is valid.  Implementations which
+   store UUIDs are not required or advised to have an understanding of
+   their contents.
+
+   Where necessary, the version number may be extracted by first
+   verifying the variant field bits 64 and 65 contain 1 and 0
+   respectively, and then extract the version from bits 48 through 51.
+   UUID versions 7 and 8 can be identified by checking octet 8 for the
+   values 0xE7 or 0xE8 respectively.  The version number can then be
+   used to inspect the remainder of the UUID according to the
+   specification for that version.  See Section 5.2 for more information
+   on determining a UUID version based on the inspected variant bits.
+
+   In the event that custom elements are required an implementer SHOULD
+   utilize UUIDv8.  Section 4.3
+
+   UUIDs can be stored in binary form or as text, as appropriate for
+   individual systems.  Storing as binary requires less space and may
+   result in faster data access.  Storing as text requires more space
+   but may require less translation if the resulting text form is to be
+   used after retrieval and thus maybe simpler to implement.
+
+
+
+Peabody & Davis          Expires 21 August 2022                [Page 10]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
+5.2.  Variant and Version Fields
+
+   For UUIDv6 the version and variant field placement from [RFC4122] are
+   unchanged and a new version (0110b [6]) has been added.
+
+   00000000-0000-6000-8000-000000000000
+   00000000-0000-6000-9000-000000000000
+   00000000-0000-6000-A000-000000000000
+   00000000-0000-6000-B000-000000000000
+   xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
+
+               Figure 4: UUIDv6 Version and Variant Examples
+
+   M:  Version (0110b [6])
+
+   N:  Variant (1000b [8], 1001b [9], 1010b [A] or 1011b [B]) are all
+      valid values
+
+   For UUID versions 7 and 8, the variant field has been incremented and
+   the version field has been moved to the same octet as the variant.
+   Since the bits of the variant remain in the same place as described
+   in [RFC4122] but utilized the previously reserved value 111, this
+   allows a UUID to simply define octet 8 as var_ver, and the values
+   0xE7 and 0xE8 indicate UUID versions 7 and 8 respectively.
+
+   00000000-0000-0000-E700-000000000000
+   xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
+
+   00000000-0000-0000-E800-000000000000
+   xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
+
+               Figure 5: UUIDv7 Version and Variant Examples
+
+   N:  Variant (1110b [E])
+
+   M:  Version (0111b [7] or 1000 [8])
+
+   While this specification makes use of the unused variant bits of 111
+   defined in [RFC4122], Section 4.1.1; the placement of the version
+   within the same octet as the variant leaves room for a future
+   variant.  UUIDs specified by this document MUST set the first 3 bits
+   of octet 8 to 111 and the fourth bit to 0.  The 4 bit version MUST
+   follow the 1110 bit variant to fill out the final bits of octet 8.
+   Future specifications that wish to utilize variant 111 for a
+   different version position (or any other bit layout position) MUST
+   set the first 3 bits of octet 8 to 111 and then the fourth bit to 1.
+
+
+
+
+
+Peabody & Davis          Expires 21 August 2022                [Page 11]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
+   As such the table below details the three variants described in this
+   document where the letter "x" indicates a "don't-care" value.
+
+    +------+------+------+------+-------------------------------------+
+    | Msb0 | Msb1 | Msb2 | Msb3 | Description                         |
+    +------+------+------+------+-------------------------------------+
+    | 1    | 0    | x    | x    | The variant specified by [RFC4122]. |
+    |      |      |      |      | Hex characters 8, 9, A, B.          |
+    +------+------+------+------+-------------------------------------+
+    | 1    | 1    | 1    | 0    | The variant specified in this       |
+    |      |      |      |      | document.  Hex character E,         |
+    +------+------+------+------+-------------------------------------+
+    | 1    | 1    | 1    | 1    | Reserved for future definition.     |
+    |      |      |      |      | Hex Character F.                    |
+    +------+------+------+------+-------------------------------------+
+
+            Table 1: UUID Variant defined by this specification
+
+5.3.  Length
+
+   The default UUID length is still 128 bits, 16 bytes.  Implementations
+   SHOULD default to this.
+
+   Implementations MAY choose to allow generation UUIDs of anywhere from
+   9 to 64 bytes.
+
+   Implementations that store UUIDs of variable length SHOULD support
+   any length from 9 to 64 bytes
+
+   Variable length is optional and implementations MAY opt-out and only
+   support 128 bits.
+
+   Recommendation is for implementations to start defining UUID as an
+   array of bytes (length + pointer or whatever language mechanism)
+   instead of a fixed set of 16 bytes.
+
+5.4.  Text Format
+
+   The existing hex and dash format (8-4-4-4-12) is still valid.
+   Shorter or longer values just omit or add hex characters (TODO: give
+   some examples at different lengths)
+
+   Crockford base32 is allowed also (TODO: briefly summarize reasons -
+   shorter, more compact if UUIDs are stored as text, crockford
+   version's benefits vs).
+
+
+
+
+
+
+Peabody & Davis          Expires 21 August 2022                [Page 12]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
+   A compatible parser MUST support crockford base32 with or without
+   padding, and allow a checksum part (verifying the checksum is
+   optional)
+
+   Base32 text encoder SHOULD output crockford base32 values without
+   padding or checksum by default.  The padding or checksum features MAY
+   be used if warranted for a specific application.
+
+5.5.  Sorting
+
+   UUIDv6 and UUIDv7 are designed so that implementations that require
+   sorting (e.g. database indexes) SHOULD sort as opaque raw bytes,
+   without examining the contents at all.
+
+   Implementations MAY implement more complex sorting rules for UUID
+   versions 1 through 5 (or strictly speaking they MAY do this for any
+   version, but shouldn't need to).
+
+   One of the big benefits of time ordering is "index locality" - new
+   values are near each other in the index and can much more easily be
+   clustered together for better performance.  Real-world differences vs
+   random data can be quite large.
+
+5.6.  Timestamp Granularity
+
+   Implementations SHOULD use the current timestamp to provide values
+   that are time-ordered and continually increasing.
+
+   It's okay to "fuzz" timestamp values here for various reasons
+   (security, clock inaccuracy, etc.), there is no absolute guarantee
+   about how close the clock value needs to be to actual time - that's
+   implementation-specific.
+
+5.7.  Monotonicity and Counters
+
+   (the old clock seq, can be optionally implemented, doesn't help that
+   much in distributed environment)
+
+   Within UUIDv7 it can be said that "each value returned is greater
+   than the last" due to the embedded counter.
+
+   Implementations SHOULD return monotonic values where it is feasible.
+   E.g. in a single library, effort should be made to return successive
+   values that count up.
+
+   Implementations can achieve monotonic sequencing with an embedded
+   sequence counter:
+
+
+
+
+Peabody & Davis          Expires 21 August 2022                [Page 13]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
+   *  By waiting for the next clock tick
+   *  By comparing the current timestamp against the previously stored
+      timestamp.  If the current timestamp is greater than the previous
+      timestamp; generate new random bytes.
+
+   Provide a clear suggestion of a recommended way (e.g. something as
+   simple as: "if next UUID is >= last, generate again until timestamp
+   or random bytes provide a value that is higher" - maybe consider a
+   max limit for cases where the system clock rolls back).
+
+   The monotonicity properties of an particular UUID generator SHOULD
+   stated in it's documentation.
+
+5.8.  Global and Local Uniqueness
+
+   Global uniqueness is impossible to guarantee without shared
+   knowledge.  I.e. two systems cannot come up with two numbers
+   completely independently without some possibility of collision UNLESS
+   they agree on some mechanism to ensure uniqueness ahead of time (e.g.
+   your numbers always end with ... and mine always end with... or
+   whatever)
+
+   RFC4122 tried to use MAC address as shared knowledge - it sort of
+   worked but had problems (security issues with exposing MAC addresses
+   defined in Section 7, guarantee of actual global uniqueness is
+   questionable)
+
+   A shared knowledge scheme is not required by the UUID to provide
+   uniqueness guarantees.  Implementations MAY implement a shared
+   knowledge scheme as they see fit to extend the uniqueness guaranteed
+   by this UUIDs in this specification and [RFC4122].
+
+   So instead just decide if you need 100% guarantee of uniqueness.  If
+   so, implement shared knowledge approach (see section below)
+
+   If not, reduce probability of uniqueness to acceptable level for your
+   application.
+
+   It is okay if implementations only provide "local" uniqueness, e.g.
+   unique within one database instance or cluster of machines - as long
+   as the implementation A) states that and B) the value can be
+   reasonably expected to remain only in that system.  I.e. don't use
+   this unique-within-this-database UUID across databases and the docs
+   need to state this.
+
+   Implementations which do not know the uniqueness requirements of the
+   final application and cannot implement shared knowledge should just
+   be made as unique as possible and state that.
+
+
+
+Peabody & Davis          Expires 21 August 2022                [Page 14]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
+5.9.  Collision Resistance
+
+   In the absence of shared knowledge, collisions cannot be fully
+   prevented, only the probability reduced.
+
+   v7 is time ordered for better index locality/database performance, v8
+   has lower collision resistance, pick your poison.
+
+5.10.  Unguessability
+
+   Some applications acquire security benefits from generating values
+   that cannot be predicted (this is related to collision resistance,
+   but not the same thing).
+
+   Implementations SHOULD utilize a cryptographically secure pseudo-
+   random number generator (CSPRNG) provides values that are both
+   difficult to predict ("unguessable") and have a low likelihood of
+   collision ("unique").
+
+5.11.  Shared Knowledge
+
+   Means a prearranged agreement about how different systems or pieces
+   of code will each produce different values.
+
+   Examples: A section of the "random" part gets devoted to: database
+   node number, MAC or IP address, manually entered ID, etc.  Or it
+   could be something like the UUID generator in a database
+   implementation simply checks to ensure the UUID is not in use before
+   generating.  Regardless, the concept is that an implementation MAY
+   just make up a rule that ensures uniqueness, at the cost of some
+   guessability.
+
+   Using a shared knowledge pattern with the same length of UUID
+   increases guessability (the more bits that fit a known value or
+   pattern, the easier a value is to guess).
+
+   Shared knowledge solutions are okay and MAY be done as long as this
+   is stated in the UUID implementation docs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Peabody & Davis          Expires 21 August 2022                [Page 15]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
+   Mention that the reason this spec does not endorse any specific
+   global registry is because if something goes wrong with it (like the
+   fact that MAC addresses used to be more or less unique but with cloud
+   computing and software network interfaces being commonplace that
+   assumption changed) - in this case random data results in lower
+   collision probability.  So basically we're saying: Global registries,
+   aside from being inconvenient, can still have problems and thus the
+   collision probability jumps way up above the random data approach -
+   so let's not even bother.  If an application wants a "perfect,
+   guaranteed unique" solution, it provide it within it's own
+   application via shared knowledge.
+
+5.12.  Documentation
+
+   We say in various places that certain things should be stated in the
+   implementation docs.  So we should probably have a list here... If
+   you make a UUID implementation, provide a clear statement in the
+   documentation about each of these points:
+
+   1.  Timestamp granularity (v7 only)
+   2.  Monotoncity (v7 only do the values always count up)
+   3.  Uniqueness scope (are these values supposed to be globally unique
+       or unique with a specific context, if so which context)
+   4.  Shared knowledge system (if any)
+   5.  Collision resistance math (use the table in this spec if it
+       helps)
+   6.  Unguessability (how strong is the random number generator for how
+       many bits)
+
+6.  IANA Considerations
+
+   This document has no IANA actions.
+
+7.  Security Considerations
+
+   MAC addresses pose inherent security risks and MUST not be used
+   within a UUID.  As such they have been strictly forbidden from time-
+   based UUIDs within this specification.  Instead pseudo-random data
+   SHOULD selected from a source with sufficient entropy to ensure
+   guaranteed uniqueness among UUID generation.  See Section 5.10 for
+   more information.
+
+
+
+
+
+
+
+
+
+
+Peabody & Davis          Expires 21 August 2022                [Page 16]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
+   Timestamps embedded in the UUID do pose a very small attack surface.
+   The timestamp in conjunction with an embedded counter does signal the
+   order of creation for a given UUID and it's corresponding data but
+   does not define anything about the data itself or the application as
+   a whole.  If UUIDs are required for use with any security operation
+   within an application context in any shape or form then [RFC4122]
+   UUIDv4 SHOULD be utilized.
+
+8.  Acknowledgements
+
+   The authors gratefully acknowledge the contributions of Ben Campbell,
+   Ben Ramsey, Fabio Lima, Gonzalo Salgueiro, Martin Thomson, Murray S.
+   Kucherawy, Rick van Rein, Rob Wilton, Sean Leonard, Theodore Y.
+   Ts'o., Robert Kieffer, sergeyprokhorenko As well as all of those in
+   the IETF community and on GitHub to who contributed to the
+   discussions which resulted in this document.
+
+9.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC4122]  Leach, P., Mealling, M., and R. Salz, "A Universally
+              Unique IDentifier (UUID) URN Namespace", RFC 4122,
+              DOI 10.17487/RFC4122, July 2005,
+              <https://www.rfc-editor.org/info/rfc4122>.
+
+10.  Informative References
+
+   [LexicalUUID]
+              Twitter, "A Scala client for Cassandra", commit f6da4e0,
+              November 2012,
+              <https://github.com/twitter-archive/cassie>.
+
+   [Snowflake]
+              Twitter, "Snowflake is a network service for generating
+              unique ID numbers at high scale with some simple
+              guarantees.", Commit b3f6a3c, May 2014,
+              <https://github.com/twitter-
+              archive/snowflake/releases/tag/snowflake-2010>.
+
+
+
+
+
+Peabody & Davis          Expires 21 August 2022                [Page 17]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
+   [Flake]    Boundary, "Flake: A decentralized, k-ordered id generation
+              service in Erlang", Commit 15c933a, February 2017,
+              <https://github.com/boundary/flake>.
+
+   [ShardingID]
+              Instagram Engineering, "Sharding & IDs at Instagram",
+              December 2012, <https://instagram-engineering.com/
+              sharding-ids-at-instagram-1cf5a71e5a5c>.
+
+   [KSUID]    Segment, "K-Sortable Globally Unique IDs", Commit bf376a7,
+              July 2020, <https://github.com/segmentio/ksuid>.
+
+   [Elasticflake]
+              Pearcy, P., "Sequential UUID / Flake ID generator pulled
+              out of elasticsearch common", Commit dd71c21, January
+              2015, <https://github.com/ppearcy/elasticflake>.
+
+   [FlakeID]  Pawlak, T., "Flake ID Generator", Commit fcd6a2f, April
+              2020, <https://github.com/T-PWK/flake-idgen>.
+
+   [Sonyflake]
+              Sony, "A distributed unique ID generator inspired by
+              Twitter's Snowflake", Commit 848d664, August 2020,
+              <https://github.com/sony/sonyflake>.
+
+   [orderedUuid]
+              Cabrera, IT., "Laravel: The mysterious "Ordered UUID"",
+              January 2020, <https://itnext.io/laravel-the-mysterious-
+              ordered-uuid-29e7500b4f8>.
+
+   [COMBGUID] Tallent, R., "Creating sequential GUIDs in C# for MSSQL or
+              PostgreSql", Commit 2759820, December 2020,
+              <https://github.com/richardtallent/RT.Comb>.
+
+   [ULID]     Feerasta, A., "Universally Unique Lexicographically
+              Sortable Identifier", Commit d0c7170, May 2019,
+              <https://github.com/ulid/spec>.
+
+   [SID]      Chilton, A., "sid : generate sortable identifiers",
+              Commit 660e947, June 2019,
+              <https://github.com/chilts/sid>.
+
+   [pushID]   Google, "The 2^120 Ways to Ensure Unique Identifiers",
+              February 2015, <https://firebase.googleblog.com/2015/02/
+              the-2120-ways-to-ensure-unique_68.html>.
+
+   [XID]      Poitrey, O., "Globally Unique ID Generator",
+              Commit efa678f, October 2020, <https://github.com/rs/xid>.
+
+
+
+Peabody & Davis          Expires 21 August 2022                [Page 18]
+
+Internet-Draft               new-uuid-format               February 2022
+
+
+   [ObjectID] MongoDB, "ObjectId - MongoDB Manual",
+              <https://docs.mongodb.com/manual/reference/method/
+              ObjectId/>.
+
+   [CUID]     Elliott, E., "Collision-resistant ids optimized for
+              horizontal scaling and performance.", Commit 215b27b,
+              October 2020, <https://github.com/ericelliott/cuid>.
+
+   [IEEE754]  IEEE, "Collision-resistant ids optimized for horizontal
+              scaling and performance.", Series 754-2019, July 2019,
+              <https://standards.ieee.org/ieee/754/6210/>.
+
+Appendix A.  Example Code
+
+A.1.  Creating a UUIDv6 Value
 
    This section details a function in C which converts from a UUID
    version 1 to version 6:
@@ -437,23 +1059,24 @@ Internet-Draft               new-uuid-format               February 2022
 
    }
 
-                       Figure 2: UUIDv6 Function in C
 
 
-
-
-
-
-
-Peabody & Davis          Expires 20 August 2022                 [Page 8]
+Peabody & Davis          Expires 21 August 2022                [Page 19]
 
 Internet-Draft               new-uuid-format               February 2022
 
 
-4.3.  Example of a UUIDv6 Value
+                       Figure 6: UUIDv6 Function in C
 
-   TODO: Show 1x UUIDv6 examples (and their respective UUIDv1
-   counterpart?
+A.2.  Creating a UUIDv7 Value
+
+TODO: some C code here showing how to generate, including option for counter
+
+                    Figure 7: UUIDv7 Function in C
+
+Appendix B.  Test Vectors
+
+B.1.  Example of a UUIDv6 Value
 
    ------------------------------------
    field           bits    value
@@ -468,65 +1091,9 @@ Internet-Draft               new-uuid-format               February 2022
    ------------------------------------
    final: <example_uuidv6_from_table_inputs>
 
-                    Figure 3: UUIDv6 Example Test Vector
+                    Figure 8: UUIDv6 Example Test Vector
 
-5.  UUID Version 7
-
-5.1.  Format
-
-   UUID version 7 is a time-ordered value intended to be simpler and
-   more flexible than version 6.
-
-   The length of a UUIDv7 value is variable with a default of 128 bits
-   as per Section 7.3.
-
-    0                   1                   2                   3
-    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                           unix_ts_ms                          |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |          unix_ts_ms           |            rand_a             |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |    var_ver    |            rand_b                             |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                            rand_b                             |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-                   Figure 4: UUIDv7 Field and Bit Layout
-
-   unix_ts_ms:
-      48-bit big-endian unsigned number of milliseconds since midnight 1
-      January 1970 UTC.  Follows the same rules as a UNIX timestamp,
-      i.e. does not include leap seconds.
-
-
-
-Peabody & Davis          Expires 20 August 2022                 [Page 9]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
-   rand_a:
-      16-bits pseudo-random data to provide uniquness as per
-      Section 7.10
-
-   var_ver:
-      The 8-bit combined variant and version field with the value 0xE7
-      as defined by Section 7.2.
-
-   rand_b:
-      The final 56-bits of pseudo-random data to provide uniquness as
-      per Section 7.10 and Section 7.7.
-
-5.2.  Creating a UUIDv7 Value
-
-TODO: some C code here showing how to generate, including option for counter
-
-                    Figure 5: UUIDv7 Function in C
-
-5.3.  Example of a UUIDv7 Value
-
-   TODO: Show a few UUIDv7 values with the field/value breakdown
+B.2.  Example of a UUIDv7 Value
 
    -------------------------------
    field      bits    value
@@ -540,568 +1107,19 @@ TODO: some C code here showing how to generate, including option for counter
    -------------------------------
    final: <example_uuidv7_from_table_inputs>
 
-                    Figure 6: UUIDv7 Example Test Vector
-
-6.  UUID Version 8
-
-6.1.  Format
-
-   UUID version 8 provides a backward compatible UUID format which
-   otherwise has no restrictions on format except that the variant bits
-   and version bits be set to 0xE8 in octet 9 as defined in Section 7.2.
-
-   The length of a UUIDv8 value is variable with a default of 128 bits
-   as dictated by Section 7.3.
-
-
-
-
-
-Peabody & Davis          Expires 20 August 2022                [Page 10]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
-    0                   1                   2                   3
-    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                           custom_a                            |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                           custom_a                            |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |    var_ver    |           custom_b                            |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                           custom_b                            |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-                   Figure 7: UUIDv8 Field and Bit Layout
-
-   custom_a:
-      The first 64-bits of the layout that can be filled as an
-      implementation sees fit.
-
-   var_ver:
-      The 8-bit combined variant and version field with the value 0xE8
-      as defined by Section 7.2.
-
-   custom_b:
-      The final 56-bits of the layout immediatly following the var_var
-      field to be filled as an implementation sees fit.
-
-7.  UUID Concerns
-
-   The minimum requirements for generating UUIDs are described in this
-   document for each version.  Storing UUIDs requires only that the
-   exact value is recorded.  Everything else is an implementation detail
-   and up to the implementor to decide what is appropriate for a given
-   implementation.  That being said, various relevant factors are
-   covered below to help guide an implementor through the different
-   tradeoffs among differing UUID implementations.
-
-7.1.  Storing UUIDs, Opacity
-
-   UUIDs SHOULD be treated as opaque values unless there is a good
-   reason to do otherwise (i.e. implementations SHOULD NOT examine the
-   bits in a UUID to whatever extent is possible.)
-
-   As such, any storage mechanism capable of storing a series of bytes
-   (minimum 9, maximum 64) is a valid storage mechanism for UUIDs.  If
-   an implementation chooses to only support 128-bit UUIDs, then
-   anything that can store 16 bytes is valid.  Implementations which
-   store UUIDs are not required or advised to have an understanding of
-   their contents.
-
-
-
-Peabody & Davis          Expires 20 August 2022                [Page 11]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
-   For applications which go against this advice and must inspect UUIDs,
-   extracting the version number can be done by first examining the
-   variant field at bits 64 and 65 for the values 1 and 0 respectively,
-   and then extract the version from bits 48 through 51.  UUID versions
-   7 and 8 can be identified by checking octet 9 for the values 0xE7 or
-   0xE8 repspectively.  The version number can then be used to inspect
-   the remainder of the UUID according to the specification for that
-   version.  See Section 7.2 for more information on determining a UUID
-   version based on the inspected variant bits.
-
-   In the event that custom elements are required implementors SHOULD
-   utilize UUIDv8.  Section 6
-
-   UUIDs can be stored in binary form or as text, as appropriate for
-   individual systems.  Storing as binary requires less space and may
-   result in faster data access.  Storing as text requires more space
-   but may require less translation if the resulting text form is to be
-   used after retrieval and thus maybe simpler to implement.
-
-7.2.  Variant and Version Fields
-
-   For UUIDv6 the version and variant field placement from [RFC4122] are
-   unchanged and a new version (0110 [6]) has been added.
-
-   00000000-0000-6000-8000-000000000000
-   00000000-0000-6000-9000-000000000000
-   00000000-0000-6000-A000-000000000000
-   00000000-0000-6000-B000-000000000000
-   xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
-
-               Figure 8: UUIDv6 Version and Variante Examples
-
-   M:  Version (0110 [6])
-
-   N:  Variant (1000 [8], 1001 [9], 1010 [A] or 1011 [B]) are all valid
-      values
-
-   For UUID versions 7 and 8, the variant field has been incremented and
-   the version field has been moved to the same octet as the variant.
-   Since the bits of the variant remain in the same place as described
-   in [RFC4122] but utilized the previously reserved value 111, this
-   allows a UUID to simply define octect 9 as var_ver, and the values
-   0xE7 and 0xE8 indicate UUID versions 7 and 8 respectively.
-
-
-
-
-
-
-
-
-Peabody & Davis          Expires 20 August 2022                [Page 12]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
-   00000000-0000-0000-E700-000000000000
-   xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
-
-   00000000-0000-0000-E800-000000000000
-   xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
-
-               Figure 9: UUIDv7 Version and Variant Examples
-
-   N:  Variant (1110 [E])
-
-   M:  Version (0111 [7] or 1000 [8])
-
-   While this specification makes use of the unused variant bits of 111
-   defined in [RFC4122], Section 4.1.1; the placement of the version
-   within the same octet as the variant leaves room for a future
-   variant.  As such the table below details the previous variant, new
-   variant and new variant that is reserved for future definition.
-
-    +------+------+------+------+------------------------------------+
-    | Msb0 | Msb1 | Msb2 | Msb3 | Description                        |
-    +------+------+------+------+------------------------------------+
-    | 1    | 0    | x    | x    | The variant specified by [RFC4122] |
-    +------+------+------+------+------------------------------------+
-    | 1    | 1    | 1    | 0    | The variant specified in this      |
-    |      |      |      |      | document.                          |
-    +------+------+------+------+------------------------------------+
-    | 1    | 1    | 1    | 1    | Reserved for future definition.    |
-    +------+------+------+------+------------------------------------+
-
-           Table 1: UUID Variant defined by this specification
-
-7.3.  Length (Variable, 128-bit Default)
-
-   The default UUID length is still 128-bits, 16 bytes.  Implementations
-   SHOULD default to this.
-
-   Implementations MAY choose to allow generation UUIDs of anywhere from
-   9 to 64 bytes.  (TODO: decide if we want to elaborate on the various
-   possible motivations for this here, e.g. shorter for better human
-   use, longer for lower collision probability)
-
-   Implementations that store UUIDs of variable length SHOULD support
-   any length from 9 to 64 bytes (TODO: decide if this is the right
-   range - less than 9 bytes and we lose the variant/version, and 64 is
-   arbitrary but we should have some upper limit in case it has an
-   impact on physical storage requirements)
-
-
-
-
-
-Peabody & Davis          Expires 20 August 2022                [Page 13]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
-   Variable length is optional and implementations MAY opt-out and only
-   support 128-bits.
-
-   Recommendation is for implementations to start defining UUID as an
-   array of bytes (length + pointer or whatever language mechanism)
-   instead of a fixed set of 16 bytes.
-
-   TODO: I think we need a table in here that gives bit/byte lengths and
-   collision probability.  So someone can look down the numbers and pick
-   the one that is right for their app.
-
-7.4.  Text Format
-
-   The existing hex and dash format (8-4-4-4-12) is still valid.
-   Shorter or longer values just omit or add hex characters (TODO: give
-   some examples at different lengths)
-
-   Crockford base32 is allowed also (TODO: briefly summarize reasons -
-   shorter, more compact if UUIDs are stored as text, crockford
-   version's benefits vs).
-
-   TODO: Discuss how parsers can use the presence of '-' to determine if
-   it's hex or crockford base32 format.
-
-   Compatible parsers MUST support crockford base32 with or without
-   padding, and allow a checksum part (verifyin the checksum is
-   optional)
-
-   Base32 text encoder SHOULD output crockford base32 values without
-   padding or checksum by default.  The padding or checksum features MAY
-   be used if warranted for a specific application.
-
-7.5.  Sorting
-
-   UUIDv6 and UUIDv7 are designed so that implementations that require
-   sorting (e.g. database indexes) SHOULD sort as opaque raw bytes,
-   without examining the contents at all.
-
-   Implementations MAY implement more complex sorting rules for UUID
-   versions 1 through 5 (or strictly speaking they MAY do this for any
-   version, but shouldn't need to).
-
-   One of the big benefits of time ordering is "index locality" - new
-   values are near each other in the index and can much more easily be
-   clustered together for better performance.  Real-world differences vs
-   random data can be quite large.
-
-
-
-
-
-Peabody & Davis          Expires 20 August 2022                [Page 14]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
-7.6.  Timestamp Granularity
-
-   Implementations SHOULD use the current timestamp to provide values
-   that are time-ordered and continually increasing.
-
-   It's okay to "fuzz" timestamp values here for various reasons
-   (security, clock inaccuracy, etc.), there is no absolute guarantee
-   about how close the clock value needs to be to actual time - that's
-   implementation-specific.
-
-   TODO: Give some examples
-
-7.7.  Monotonicity and Counters
-
-   (the old clock seq, can be optionally implemented, doesn't help that
-   muc in distributed environment)
-
-   Within UUIDv7 it can be said that "each value returned is greater
-   than the last" due to the embedded counter.
-
-   Implementations SHOULD return monotonic values where it is feasible.
-   E.g. in a single library, effort should be made to return successive
-   values that count up.
-
-   Implemetnations can achieve monotonic sequencing with an emedded
-   sequence counter, by waiting for the next clock tick, or by checking
-   that in case of next value has same timestamp see that the random
-   bytes part is greater than prior value and generate new random bytes
-   and check again.  TODO: Describe trade offs of these approaches, but
-   it's implemenatation-specific - no mandedated sequence counter.
-
-   Provide a clear suggestion of a recommended way (e.g. something as
-   simple as: "if next UUID is >= last, generate again until timestamp
-   or random bytes provide a value that is higher" - maybe consider a
-   max limit for cases where the system clock rolls back).
-
-   The monotonicity properties of an particular UUID generator SHOULD
-   stated in it's documentation.
-
-7.8.  Global and Local Uniqueness
-
-   Global uniquess is impossible to guarantee without shared knowledge.
-   I.e. two systems cannot come up with two numbers completely
-   independently without some possibility of collission UNLESS they
-   agree on some mechanism to ensure uniqueness ahead of time (e.g. your
-   numbers always end with ... and mine always end with... or whatever)
-
-
-
-
-
-Peabody & Davis          Expires 20 August 2022                [Page 15]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
-   RFC4122 tried to use MAC address as shared knowledge - it sort of
-   worked but had problems (security issues with exposing MAC addresses
-   defined in Section 9, guarantee of actual global uniqueness is
-   questionable)
-
-   TODO: mention that "shared knowledge" is intentionally not required
-   for implementation and this is part of the design, but...
-
-   So instead just decide if you need 100% guarantee of uniqueness.  If
-   so, implement shared knowledge approach (see section below)
-
-   If not, reduce probability of uniqueness to acceptable level for your
-   application.
-
-   It is okay if implementations only provide "local" uniqueness, e.g.
-   unique within one database instance or cluster of machines - as long
-   as the implementation A) states that and B) the value can be
-   reasonably expected to remain only in that system.  I.e. don't use
-   this unique-within-this-database UUID across databases and the docs
-   need to state this.
-
-   Implementations which do not know the uniqueness requirements of the
-   final application and cannot implement shared knowledge should just
-   be made as unique as possible and state that.
-
-7.9.  Collision Resistance
-
-   In the absence of shared knowledge, collisions cannot be fully
-   prevented, only the probability reduced.
-
-   TODO: Give the math and some examples.
-
-   TODO: Variable length allows you to further reduce collision probably
-   beyond 128-bits if needed.  If we give the math, then people can make
-   their own decisions based on their app.
-
-   v7 is time ordered for better index locality/database performance, v8
-   has lower collision resistance, pick your poison.
-
-7.10.  Unguessability
-
-   Some applications acquire security benefits from generating values
-   that cannot be predicted (this is related to collision resistance,
-   but not the same thing).
-
-
-
-
-
-
-
-Peabody & Davis          Expires 20 August 2022                [Page 16]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
-   Implementations SHOULD utilize a cryptographically secure pseudo-
-   random number generator (CSPRNG) provides values that are both
-   difficult to predict ("unguessable") and have a low likelyhood of
-   collision ("unique").
-
-   Length is a factor too (TODO: link to wherever we list out
-   probabilities)
-
-7.11.  Shared Knowledge
-
-   Means a pre-arranged agreement about how different systems or pieces
-   of code will each produce different values.
-
-   Examples: A section of the "random" part gets devoted to: database
-   node number, MAC or IP address, manually entered ID, etc.  Or it
-   could be something like the UUID generator in a database
-   implementation simply checks to ensure the UUID is not in use before
-   generating.  Regardless, the concept is that an implementation MAY
-   just make up a rule that ensures uniqueness, at the cost of some
-   guessability.
-
-   Using a shared knowledge pattern with the same length of UUID
-   increases guessability (the more bits that fit a known value or
-   pattern, the easier a value is to guess).
-
-   Shared knowledge solutions are okay and MAY be done as long as this
-   is stated in the UUID implementation docs.
-
-   TODO: Talk a bit about the cost of collision, e.g.
-   https://github.com/uuid6/uuid6-ietf-draft/
-   issues/36#issuecomment-903295070
-
-   Mention that the reason this spec does not endorse any specific
-   global registry is because if something goes wrong with it (like the
-   fact that MAC addresses used to be more or less unique but with cloud
-   computing and software network interfaces being commonplace that
-   assumption changed) - in this case random data results in lower
-   collision probability.  So basically we're saying: Global registries,
-   aside from being inconvenient, can still have problems and thus the
-   collision probability jumps way up above the random data approach -
-   so let's not even bother.  If an application wants a "perfect,
-   guaranteed unique" solution, it provide it within it's own
-   application via shared knowledge.
-
-
-
-
-
-
-
-
-Peabody & Davis          Expires 20 August 2022                [Page 17]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
-7.12.  Documentation
-
-   We say in various places that certain things should be stated in the
-   implementation docs.  So we should probably have a list here... If
-   you make a UUID implementation, provide a clear statement in the
-   documentation about each of these points:
-
-   1.  Timestamp granularity (v7 only)
-   2.  Monotoncity (v7 only do the values always count up)
-   3.  Uniqueness scope (are these values supposed to be globally unique
-       or unique with a specific context, if so which context)
-   4.  Shared knowledge system (if any)
-   5.  Collision resistance math (use the table in this spec if it
-       helps)
-   6.  Unguessability (how strong is the random number generator for how
-       many bits)
-
-8.  IANA Considerations
-
-   This document has no IANA actions.
-
-9.  Security Considerations
-
-   MAC addresses pose inherent security risks and MUST not be used
-   within a UUID.  As such they have been strictly forbidden from time-
-   based UUIDs within this specification.  Instead pseudo-random data
-   SHOULD selected from a source with sufficient entropy to ensure
-   guaranteed uniqueness among UUID generation.  See Section 7.10 for
-   more information.
-
-   Timestamps embedded in the UUID do pose a very small attack surface.
-   The timestamp in conjunction with an embedded counter does signal the
-   order of creation for a given UUID and it's corresponding data but
-   does not define anything about the data itself or the application as
-   a whole.  If UUIDs are required for use with any security operation
-   within an application context in any shape or form then [RFC4122]
-   UUIDv4 SHOULD be utilized.
-
-10.  Acknowledgements
-
-   The authors gratefully acknowledge the contributions of Ben Campbell,
-   Ben Ramsey, Fabio Lima, Gonzalo Salgueiro, Martin Thomson, Murray S.
-   Kucherawy, Rick van Rein, Rob Wilton, Sean Leonard, Theodore Y.
-   Ts'o., Robert Kieffer, sergeyprokhorenko As well as all of those in
-   the IETF community and on GitHub to who contributed to the
-   discussions which resulted in this document.
-
-11.  Normative References
-
-
-
-Peabody & Davis          Expires 20 August 2022                [Page 18]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
-   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119,
-              DOI 10.17487/RFC2119, March 1997,
-              <https://www.rfc-editor.org/info/rfc2119>.
-
-   [RFC4122]  Leach, P., Mealling, M., and R. Salz, "A Universally
-              Unique IDentifier (UUID) URN Namespace", RFC 4122,
-              DOI 10.17487/RFC4122, July 2005,
-              <https://www.rfc-editor.org/info/rfc4122>.
-
-12.  Informative References
-
-   [LexicalUUID]
-              Twitter, "A Scala client for Cassandra", commit f6da4e0,
-              November 2012,
-              <https://github.com/twitter-archive/cassie>.
-
-   [Snowflake]
-              Twitter, "Snowflake is a network service for generating
-              unique ID numbers at high scale with some simple
-              guarantees.", Commit b3f6a3c, May 2014,
-              <https://github.com/twitter-
-              archive/snowflake/releases/tag/snowflake-2010>.
-
-   [Flake]    Boundary, "Flake: A decentralized, k-ordered id generation
-              service in Erlang", Commit 15c933a, February 2017,
-              <https://github.com/boundary/flake>.
-
-   [ShardingID]
-              Instagram Engineering, "Sharding & IDs at Instagram",
-              December 2012, <https://instagram-engineering.com/
-              sharding-ids-at-instagram-1cf5a71e5a5c>.
-
-   [KSUID]    Segment, "K-Sortable Globally Unique IDs", Commit bf376a7,
-              July 2020, <https://github.com/segmentio/ksuid>.
-
-   [Elasticflake]
-              Pearcy, P., "Sequential UUID / Flake ID generator pulled
-              out of elasticsearch common", Commit dd71c21, January
-              2015, <https://github.com/ppearcy/elasticflake>.
-
-   [FlakeID]  Pawlak, T., "Flake ID Generator", Commit fcd6a2f, April
-              2020, <https://github.com/T-PWK/flake-idgen>.
-
-   [Sonyflake]
-              Sony, "A distributed unique ID generator inspired by
-              Twitter's Snowflake", Commit 848d664, August 2020,
-              <https://github.com/sony/sonyflake>.
-
-
-
-Peabody & Davis          Expires 20 August 2022                [Page 19]
-
-Internet-Draft               new-uuid-format               February 2022
-
-
-   [orderedUuid]
-              Cabrera, IT., "Laravel: The mysterious "Ordered UUID"",
-              January 2020, <https://itnext.io/laravel-the-mysterious-
-              ordered-uuid-29e7500b4f8>.
-
-   [COMBGUID] Tallent, R., "Creating sequential GUIDs in C# for MSSQL or
-              PostgreSql", Commit 2759820, December 2020,
-              <https://github.com/richardtallent/RT.Comb>.
-
-   [ULID]     Feerasta, A., "Universally Unique Lexicographically
-              Sortable Identifier", Commit d0c7170, May 2019,
-              <https://github.com/ulid/spec>.
-
-   [SID]      Chilton, A., "sid : generate sortable identifiers",
-              Commit 660e947, June 2019,
-              <https://github.com/chilts/sid>.
-
-   [pushID]   Google, "The 2^120 Ways to Ensure Unique Identifiers",
-              February 2015, <https://firebase.googleblog.com/2015/02/
-              the-2120-ways-to-ensure-unique_68.html>.
-
-   [XID]      Poitrey, O., "Globally Unique ID Generator",
-              Commit efa678f, October 2020, <https://github.com/rs/xid>.
-
-   [ObjectID] MongoDB, "ObjectId - MongoDB Manual",
-              <https://docs.mongodb.com/manual/reference/method/
-              ObjectId/>.
-
-   [CUID]     Elliott, E., "Collision-resistant ids optimized for
-              horizontal scaling and performance.", Commit 215b27b,
-              October 2020, <https://github.com/ericelliott/cuid>.
+                    Figure 9: UUIDv7 Example Test Vector
 
 Authors' Addresses
 
    Brad G. Peabody
    Email: brad@peabody.io
+
+
+
+
+Peabody & Davis          Expires 21 August 2022                [Page 20]
+
+Internet-Draft               new-uuid-format               February 2022
 
 
    Kyzer R. Davis
@@ -1117,4 +1135,42 @@ Authors' Addresses
 
 
 
-Peabody & Davis          Expires 20 August 2022                [Page 20]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Peabody & Davis          Expires 21 August 2022                [Page 21]
