@@ -31,7 +31,7 @@ Draft 02, Section 5.1.  Timestamp Granularity
 UUIDs SHOULD be universally unique.
 ```
 
-### Proposed Text:
+#### Proposed Text:
 ```
 UUIDs MUST be universally unique.
 ```
