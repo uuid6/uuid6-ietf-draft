@@ -51,12 +51,12 @@ For more information on any of these items refer to the XML, TXT, HTML draft, re
 
 ### Topics being scoped
 - [Alternative text encoding techniques (Crockfords Base32, Base64, etc)](https://github.com/uuid6/uuid6-ietf-draft/issues/2)
+- [Variable length UUIDs](https://github.com/uuid6/uuid6-ietf-draft/issues/59)
 
 ---
 
 ### Out of Scope Topics (as as the result of discussion threads)
 - [Variable length subsecond precision encoding](https://github.com/uuid6/uuid6-ietf-draft/issues/24)
-- [Variable length UUIDs](https://github.com/uuid6/uuid6-ietf-draft/issues/59) [Tabled for a future RFC Draft]
 
 ### Out of Scope Topics (for backwards compatibility)
 - Changing the default 8-4-4-4-12 UUID text layout
