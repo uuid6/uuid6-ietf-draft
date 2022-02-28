@@ -175,6 +175,7 @@ please see http://xml.resource.org/authoring/README.html. -->
 					<li><t>- Node verbiage only used in UUIDv6 and v7 and v8 reference random instead</t></li>
 					<li><t>- Clock sequence verbiage changed simply to counter in any section other than UUIDv6</t></li>
 					<li><t>- Added Abbreviations section</t></li>
+					<li><t>- Updated IETF Draft XML Layout</t></li>
 				</ul>
 				<t>draft-02</t>
 				<ul spacing="compact" empty="true">
@@ -457,8 +458,8 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 						<dd>Implementations SHOULD use the current timestamp from a reliable source to provide values that are time-ordered and continually increasing. Care SHOULD be taken to ensure the timestamp does not move backwards which will impact UUID sorting.</dd>
 					<dt>Source:</dt>
 						<dd>UUID version 1 and 6 both utilize a Gregorian epoch timestamp while UUIDv7 utilizes a Unix Epoch timestamp. If other timestamp sources or a custom timestamp epoch are required UUIDv8 SHOULD be leveraged.</dd>
-					<dt>Sub-second Precision and Accuracy):</dt>
-						<dd>Many levels of precision exist for timestamps: milliseconds, microseconds, nanoseconds, and beyond. Additionally fractional representations of sub-second precision may be desired to create more exotic timestamps. With UUID version 1 and 6, 100-nanoseconds of precision are present while UUIDv7 features fixed millisecond level of precision within the Unix epoch. If additional levels of precision are required UUIDv8 SHOULD be utilized.</dd>
+					<dt>Sub-second Precision and Accuracy:</dt>
+						<dd>Many levels of precision exist for timestamps: milliseconds, microseconds, nanoseconds, and beyond. Additionally fractional representations of sub-second precision may be desired to mix various levels of precision in a time-ordered manner. With UUID version 1 and 6, 100-nanoseconds of precision are present while UUIDv7 features fixed millisecond level of precision within the Unix epoch. If additional levels of precision are required UUIDv8 SHOULD be utilized.</dd>
 					<dt>Length:</dt>
 						<dd>The length of a given timestamp directly impacts how long a given UUID will be valid. Care should be given to ensure that the proper length is selected for a given timestamp. UUID version 1 and 6 utilize a 60 bit timestamp and UUIDv7 features a 48 bit timestamp.</dd>
 					<dt>Fuzzing:</dt>
@@ -505,7 +506,7 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 						</dd>
 					<dt>Monotonic Random:</dt> 
 						<dd>
-						With this method the random data is extended to also double as a counter. This monotonic random can be thought of as a "randomly seeded counter" which MUST be incremented in the least significant position for each UUID created on a given timestamp tick. This is similar to the Fixed-Length Dedicated Counter Bits (Position B) method described in the previous bullets but does not suffer from rollover issues, length problems, or wasted entropy bits plagued by boh fixed-length counter bit positions. As such, UUIDv7 MUST utilize this method to handle batch UUID generation during a single timestamp tick.
+						With this method the random data is extended to also double as a counter. This monotonic random can be thought of as a "randomly seeded counter" which MUST be incremented in the least significant position for each UUID created on a given timestamp tick. This is similar to the Fixed-Length Dedicated Counter Bits (Position B) method described in the previous bullets but does not suffer from rollover issues, length problems, or wasted entropy bits plagued by both fixed-length counter bit positions. As such, UUIDv7 SHOULD utilize this method to handle batch UUID generation during a single timestamp tick.
 						</dd>
 				</dl>
 				<t>
@@ -577,15 +578,9 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 					UUIDv6 and UUIDv7 are designed so that implementations that require sorting (e.g. database indexes) SHOULD sort as opaque raw bytes, without examining the contents at all.
 				</t>
 				<t>
-					Time ordered monotonic UUIDs benefit from grater index locality because the new values are near each other in the index. 
+					Time ordered monotonic UUIDs benefit from greater index locality because the new values are near each other in the index. 
 					As a result objects can much more easily be clustered together for better performance.  
 					The real-world differences in this approach of index locality vs random data inserts can be quite large.
-				</t>
-			</section>
-			<section anchor="text_format" title="Text Format">
-				<t>
-					The UUID length of 16 octets (128 bits) remains unchanged. The textual representation of a UUID consisting of 36
-					hexadecimal and dash characters in the format 8-4-4-4-12 remains unchanged for human readability.
 				</t>
 			</section>
 			<section anchor="storing_uuids_opacity" title="Storing UUIDs, Opacity">
@@ -648,7 +643,8 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 				Sean Leonard,
 				Theodore Y. Ts'o.,
 				Robert Kieffer,
-				sergeyprokhorenko
+				sergeyprokhorenko,
+				LiosK
 				As well as all of those in the IETF community and on GitHub to who contributed to the discussions which resulted in this document.
 			</t>
 		</section>
