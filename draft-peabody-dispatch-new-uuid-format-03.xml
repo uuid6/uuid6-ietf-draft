@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="rfc2629.xslt" ?> <!-- used by XSLT processors -->
 <!-- OPTIONS, known as processing instructions (PIs) go here. -->
 <!-- For a complete list and description of PIs,
-     please see http://xml.resource.org/authoring/README.html. -->
+please see http://xml.resource.org/authoring/README.html. -->
 <!-- Below are generally applicable PIs that most I-Ds might want to use. -->
 <?rfc strict="yes" ?> <!-- give errors regarding ID-nits and DTD validation -->
 <!-- control the table of contents (ToC): -->
@@ -12,120 +12,101 @@
 <?rfc symrefs="yes"?> <!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
 <?rfc sortrefs="yes" ?> <!-- sort the reference entries alphabetically -->
 <!-- control vertical white space: 
-     (using these PIs as follows is recommended by the RFC Editor) -->
+(using these PIs as follows is recommended by the RFC Editor) -->
 <!-- end of popular PIs -->
-<!--
-    <rfc version="3" category="std" updates="4122" submissionType="IETF" consensus="true" ipr="trust200902"
-    docName="draft-peabody-dispatch-new-uuid-format-02">
--->
 <rfc version="3" category="std" updates="4122" submissionType="IETF" consensus="true" ipr="trust200902" docName="draft-peabody-dispatch-new-uuid-format-02">
-  <front>
-    <title abbrev="new-uuid-format">New UUID Formats</title>
-    <seriesInfo name="Internet-Draft" value="draft-peabody-dispatch-new-uuid-format-02" stream="IETF"/>
-    <author fullname="Brad G. Peabody" initials="BGP" surname="Peabody">
-<!-- <organization/> -->
-      <address>
-        <!-- postal><street/><city/><region/><code/><country/></postal -->
-<!-- <phone/> -->
-<!-- <facsimile/> -->
-      <email>brad@peabody.io</email>
-<!-- <uri/> -->
-      </address>
-    </author>
-	<author fullname="Kyzer R. Davis" initials="K" surname="Davis">
-      <address>
-      <email>kydavis@cisco.com</email>
-      </address>
-    </author>
-    <date year="2022" />
-      <area>ART</area>
-      <workgroup>dispatch</workgroup>
-      <keyword>uuid</keyword>
-<!-- <keyword/> -->
-<!-- <keyword/> -->
-<!-- <keyword/> -->
-    <abstract>
-        <t>
-            This document presents new time-based UUID formats which are suited for use as a database key.
-        </t>
-        <t>
-            A common case for modern applications is to create a unique identifier for use as a primary key in a database table.
-			This identifier usually implements an embedded timestamp that is sortable using the monotonic creation time in the most significant bits. 
-			In addition the identifier is highly collision resistant, difficult to guess, and provides minimal security attack surfaces.
-			None of the existing UUID versions, including UUIDv1, fulfill each of these requirements in the most efficient possible way.
-			This document is a proposal to update <xref target="RFC4122"/> with three new UUID versions that address these concerns, each with different trade-offs.
-        </t>
-    </abstract>
-  </front>
-  <middle>
-    <section title="Introduction">
-      <t>
-        The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-        "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in
-        this document are to be interpreted as described in
-        <xref target="RFC2119"/>.
-      </t>
-    </section>
-    <section anchor="Background" title="Background">
-        <t>
-            A lot of things have changed in the time since UUIDs were originally created.
-            Modern applications have a need to use (and many have already implemented) UUIDs
-            as database primary keys.
-        </t>
-        <t>
-            The motivation for using UUIDs as database keys stems primarily from the fact that applications
-            are increasingly distributed in nature. Simplistic "auto increment" schemes
-            with integers in sequence do not work well in a distributed system since the effort required to
-            synchronize such numbers across a network can easily become a burden.  
-            The fact that UUIDs can be used to create unique and reasonably short values in 
-			distributed systems without requiring synchronization makes them a good candidate 
-			for use as a database key in such environments.
-        </t>
-        <t>
-            However some properties of <xref target="RFC4122"/> UUIDs are not well suited to this task.
-			First, most of the existing UUID versions such as UUIDv4 have poor database index locality.
-			Meaning new values created in succession are not close to each other in the index and thus require 
-            inserts to be performed at random locations. The negative performance effects of which on 
-            common structures used for this (B-tree and its variants) can be dramatic. As such newly inserted 
-            values SHOULD be time-ordered to address this.
-        </t>
-        <t>
-			While it is true that UUIDv1 does contain an embedded timestamp
-			and can be time-ordered; UUIDv1 has other issues. It is possible to sort 
-            Version 1 UUIDs by time but it is a laborious task. The process requires breaking the bytes of the UUID 
-			into various pieces, re-ordering the bits, and then determining the order from the reconstructed timestamp. This 
-			is not efficient in very large systems. Implementations would be simplified with a sort order where the
-			UUID can simply be treated as an opaque sequence of bytes and ordered as such.
-        </t>
-        <t>
-            After the embedded timestamp, the remaining 64 bits are in essence used to provide uniqueness both on a global scale and
-			within a given timestamp tick. The clock sequence value ensures that when multiple UUIDs are 
-			generated for the same timestamp value are given a monotonic sequence value. This explicit sequencing 
-			helps further facilitate sorting. The remaining random bits ensure collisions are minimal.
-        </t>
-		<t>
-			Furthermore, UUIDv1 utilizes a non-standard timestamp epoch derived from the Gregorian Calendar. More 
-			specifically, the Coordinated Universal Time (UTC) as a count of 100-nanosecond intervals since 
-			00:00:00.00, 15 October 1582. Implementations and many languages may find it easier to implement the widely adopted and well known 
-			Unix Epoch, a custom epoch, or another timestamp source with various levels of timestamp precision required by the application.
-        </t>
-		<t>
-            Lastly, privacy and network security issues arise from using a MAC address in the node field of Version 1 UUIDs.
-            Exposed MAC addresses can be used as an attack surface to locate machines and reveal various other
-            information about such machines (minimally manufacturer, potentially other details). Instead 
-			"cryptographically secure" pseudo-random number generators (CSPRNGs) or pseudo-random number generators (PRNG) 
-			SHOULD be used within an application context to provide uniqueness and unguessability.
-        </t>
-		<t>
-			Due to the shortcomings of UUIDv1 and UUIDv4 details so far, many widely distributed database applications 
-			and large application vendors have sought to solve the problem of creating a better 
-			time-based, sortable unique identifier for use as a database key. This has lead to numerous implementations 
-			over the past 10+ years solving the same problem in slightly different ways.
-        </t>
-		<t>
-		   While preparing this specification the following 16 different implementations were analyzed for trends in total ID length, bit Layout, lexical formatting/encoding, timestamp type, timestamp format, timestamp accuracy, node format/components, collision handling and multi-timestamp tick generation sequencing.
-		</t>
-		   <ol spacing="compact">
+	<front>
+		<title abbrev="new-uuid-format">New UUID Formats</title>
+		<seriesInfo name="Internet-Draft" value="draft-peabody-dispatch-new-uuid-format-02" stream="IETF"/>
+		<author fullname="Brad G. Peabody" initials="BGP" surname="Peabody">
+			<address>
+				<email>brad@peabody.io</email>
+			</address>
+		</author>
+		<author fullname="Kyzer R. Davis" initials="K" surname="Davis">
+			<address>
+				<email>kydavis@cisco.com</email>
+			</address>
+		</author>
+		<date year="2022" />
+		<area>ART</area>
+		<workgroup>dispatch</workgroup>
+		<keyword>uuid</keyword>
+		<abstract>
+			<t>
+				This document presents three new Universally Unique Identifier (UUID) formats.
+			</t>
+			<t>
+				A common case for modern applications is to create a unique identifier for use as a primary key in a database table.
+				This identifier usually implements an embedded timestamp that is sortable using the monotonic creation time in the most significant bits. 
+				In addition the identifier is highly collision resistant, difficult to guess, and provides minimal security attack surfaces.
+				None of the existing UUID versions, including UUIDv1, fulfill each of these requirements in the most efficient possible way.
+				This document is a proposal to update <xref target="RFC4122"/> with three new UUID versions that address these concerns, each with different trade-offs.
+			</t>
+		</abstract>
+	</front>
+	<middle>
+		<section anchor="Background" title="Introduction">
+
+			<t>
+				Many things have changed in the time since UUIDs were originally created.
+				Modern applications have a need to create and utilize UUIDs as the primary
+				identifier for a variety of different items in complex computational systems,
+				including but not limited to database primary keys, file names, machine
+				or system names, identifiers for transactions or other objects or processes.
+			</t>
+
+			<t>
+				A specific use case for UUIDs which has gained popularity is as database primary keys.
+				The motivation for this stems primarily from the fact that applications
+				are increasingly distributed in nature. Simplistic "auto increment" schemes
+				with integers in sequence do not work well in a distributed system since the effort required to
+				synchronize such numbers across a network can easily become a burden.  
+				The fact that UUIDs can be used to create unique and reasonably short values in 
+				distributed systems without requiring synchronization makes them a good candidate 
+				for use as a database key in such environments.
+			</t>
+
+			<t>
+				UUID versions 1 through 5 lack certain desirable characteristics in some circumstances:
+			</t>
+			<ol>
+				<li><t>Non-time-ordered UUID versions such as UUIDv4 have poor database index locality.
+					Meaning new values created in succession are not close to each other in the index and thus require 
+					inserts to be performed at random locations. The negative performance effects of which on 
+					common structures used for this (B-tree and its variants) can be dramatic.
+				</t></li>	
+				<li><t>
+					The 100-nanosecond, Gregorian epoch used in UUIDv1 timestamps is uncommon and difficult to represent accurately using a standard number format such as <xref target="IEEE754"/>.
+				</t></li>
+				<li><t>
+					Introspection/parsing is required to order by time sequence; as opposed to being able to perform a simple byte-by-byte comparison.
+				</t></li>
+
+				<li><t>
+					Privacy and network security issues arise from using a MAC address in the node field of Version 1 UUIDs.
+					Exposed MAC addresses can be used as an attack surface to locate machines and reveal various other
+					information about such machines (minimally manufacturer, potentially other details). Additionally, with the advent of virtual machines and containers, MAC address uniqueness is no longer guaranteed.
+				</t></li>
+				<li><t>
+					Many implementation details are specified in <xref target="RFC4122"/> but some of the decisions made involve trade offs that are neither possible to specify for all applications nor necessary to produce interoperable implementations.
+				</t></li>
+				<li><t>
+					The previous specification also does not distinguish between the requirements for generation of a UUID versus an application which simply stores one, which are different.
+				</t></li>
+			</ol>
+
+			<t>
+				Due to the aforementioned issue, many widely distributed database applications 
+				and large application vendors have sought to solve the problem of creating a better 
+				time-based, sortable unique identifier for use as a database key. This has lead to numerous implementations 
+				over the past 10+ years solving the same problem in slightly different ways.
+			</t>
+			<t>
+				While preparing this specification the following 16 different implementations were analyzed for trends in total ID length, bit Layout, lexical formatting/encoding, timestamp type, timestamp format, timestamp accuracy, node format/components, collision handling and multi-timestamp tick generation sequencing.
+			</t>
+			<ol spacing="compact">
+				<li><t><xref target="ULID"/> by A. Feerasta</t></li>	
 				<li><t><xref target="LexicalUUID"/> by Twitter</t></li>	
 				<li><t><xref target="Snowflake"/> by Twitter</t></li>	
 				<li><t><xref target="Flake"/> by Boundary</t></li>	
@@ -136,7 +117,6 @@
 				<li><t><xref target="Sonyflake"/> by Sony</t></li>	
 				<li><t><xref target="orderedUuid"/> by IT. Cabrera</t></li>	
 				<li><t><xref target="COMBGUID"/> by R. Tallent</t></li>	
-				<li><t><xref target="ULID"/> by A. Feerasta</t></li>	
 				<li><t><xref target="SID"/> by A. Chilton</t></li>	
 				<li><t><xref target="pushID"/> by Google</t></li>	
 				<li><t><xref target="XID"/> by O. Poitrey</t></li>	
@@ -144,127 +124,183 @@
 				<li><t><xref target="CUID"/> by E. Elliott</t></li>	
 			</ol>
 
-		<t>
-			An inspection of these implementations details the following trends that help define this standard:
-		</t>
-			<ul spacing="compact" empty="true">
-				<li><t>- Timestamps MUST be k-sortable. That is, values within or close to the same timestamp are ordered properly by sorting algorithms.</t></li>
-				<li><t>- Timestamps SHOULD be big-endian with the most-significant bits of the time embedded as-is without reordering.</t></li>
-				<li><t>- Timestamps SHOULD utilize millisecond precision and Unix Epoch as timestamp source. Although,
-				  there is some variation to this among implementations depending on the application requirements.</t></li>			
-				<li><t>- The ID format SHOULD be Lexicographically sortable while in the textual representation.</t></li>	
-				<li><t>- IDs MUST ensure proper embedded sequencing to facilitate sorting when multiple UUIDs are created during a given timestamp.</t></li>			
-				<li><t>- IDs MUST NOT require unique network identifiers as part of achieving uniqueness.</t></li>
-				<li><t>- Distributed nodes MUST be able to create collision resistant Unique IDs 
-				  without consulting a centralized resource.</t></li>
-			</ul>
-    </section>
-    <section anchor="Changes" title="Summary of Changes">
-        <t>
-        In order to solve these challenges this specification introduces three new version identifiers assigned 
-		for time-based UUIDs.
-		</t>
-		<t>
-		The first, UUIDv6, aims to be the easiest to implement for applications which already
-		implement UUIDv1. The UUIDv6 specification keeps the original Gregorian timestamp source but does not reorder the timestamp bits as per the process  
-		utilized by UUIDv1. UUIDv6 also requires that pseudo-random data MUST be used in place of the MAC address.
-		The rest of the UUIDv1 format remains unchanged in UUIDv6. See <xref target="uuidv6layout"/>
-        </t>
-		<t>
-		Next, UUIDv7 introduces an entirely new time-based UUID bit layout utilizing a variable length timestamp sourced from the 
-		widely implemented and well known Unix Epoch timestamp source.
-        The timestamp is broken into a 36 bit integer sections part, and is followed by a field of variable length which
-        represents the sub-second timestamp portion, encoded so that each bit from most to least significant adds more precision. See <xref target="uuidv7layout"/>
-		</t>
-		<t>
-		Finally, UUIDv8 introduces a relaxed time-based UUID format that caters to application implementations
-		that cannot utilize UUIDv1, UUIDv6, or UUIDv7. UUIDv8 also future-proofs this specification by allowing 
-		time-based UUID formats from timestamp sources that are not yet be defined. The variable size timestamp offers
-		lots of flexibility to create an implementation specific RFC compliant time-based UUID while retaining the 
-		properties that make UUID great. See <xref target="uuidv8layout"/>
-        </t>
-		<section anchor="changelog" title="changelog">
-			<t>RFC EDITOR PLEASE DELETE THIS SECTION.</t>
-			<t>draft-02</t>
-			<ul spacing="compact" empty="true">
-				<li><t>- Added Changelog</t></li>
-				<li><t>- Fixed misc. grammatical errors</t></li>
-				<li><t>- Fixed section numbering issue</t></li>
-				<li><t>- Fixed some UUIDvX reference issues</t></li>
-				<li><t>- Changed all instances of "motonic" to "monotonic"</t></li>
-				<li><t>- Changed all instances of "#-bit" to "# bit"</t></li>
-				<li><t>- Changed "proceeding" veriage to "after" in section 7</t></li>
-				<li><t>- Added details on how to pad 32 bit unix timestamp to 36 bits in UUIDv7</t></li>
-				<li><t>- Added details on how to truncate 64 bit unix timestamp to 36 bits in UUIDv7</t></li>
-				<li><t>- Added forward reference and bullet to UUIDv8 if truncating 64 bit Unix Epoch is not an option.</t></li>
-				<li><t>- Fixed bad reference to non-existent "time_or_node" in section 4.5.4</t></li>
-			</ul>
-			<t>draft-01</t>
-			<ul spacing="compact" empty="true">
-				<li><t>- Complete rewrite of entire document.</t></li>
-				<li><t>- The format, flow and verbiage used in the specification has been reworked to mirror the original RFC 4122 and current IETF standards.</t></li>
-				<li><t>- Removed the topics of UUID length modification, alternate UUID text formats, and alternate UUID encoding techniques.</t></li>
-				<li><t>- Research into 16 different historical and current implementations of time-based universal identifiers was completed at the end of 2020 in attempt to identify trends which have directly influenced design decisions in this draft document (https://github.com/uuid6/uuid6-ietf-draft/tree/master/research)</t></li>
-				<li><t>- Prototype implementation have been completed for UUIDv6, UUIDv7, and UUIDv8 in various languages by many GitHub community members. (https://github.com/uuid6/prototypes)</t></li>
-			</ul>
+			<t>
+				An inspection of these implementations and the issues described above has led to this document which attempts to adapt UUIDs to address these issues.
+			</t>
+
 		</section>
-    </section>
-    <section anchor="format" title="Format">
-        <t>
-		The UUID length of 16 octets (128 bits) remains unchanged. The textual representation of a UUID consisting of 36
-        hexadecimal and dash characters in the format 8-4-4-4-12 remains unchanged for human readability.
-        In addition the position of both the Version and Variant bits remain unchanged in the layout.
-        </t>
-		<section anchor="versions" title="Versions">
-			<t>
-			Table 1 defines the 4 bit version found in Bits 48 through 51 within a given UUID.
-			</t>
-			<table>
-			<name>UUID versions defined by this specification</name>
-			<thead>
-				<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Version</td><td>Description</td></tr>
-			</thead>
-			<tbody>
-				<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>6</td><td>Reordered Gregorian time-based UUID</td></tr>
-				<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>7</td><td>Variable length Unix Epoch time-based UUID</td></tr>
-				<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>8</td><td>Custom time-based UUID</td></tr>
-			</tbody>
-			</table>
+		<section title="Terminology">
+			<section anchor="requirements_language" title="Requirements Language">
+				<t>
+					The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"/> <xref target="RFC8174"/> when, and only when, they appear in all capitals, as shown here.
+				</t>
+			</section>
+			<section anchor="acronyms" title="Abbreviations">
+				<t>The following abbreviations are used in this document: </t>
+				<dl newline="false" spacing="normal" indent="14" pn="section-2.2-2">
+					<dt>UUID</dt><dd>Universally Unique Identifier <xref target="RFC4122"/></dd>
+					<dt>CSPRNG</dt><dd>Cryptographically Secure Pseudo-Random Number Generator</dd>
+					<dt>MAC</dt><dd>Media Access Control</dd>
+					<dt>MSB</dt><dd>Most Significant Bit</dd>
+				</dl>
+			</section>
 		</section>
-        <section anchor="variant" title="Variant">
+		<section anchor="Changes" title="Summary of Changes">
 			<t>
-			The variant bits utilized by UUIDs in this specification 
-			remains the same as <xref target="RFC4122" sectionFormat="comma" section="4.1.1"/>. 
+				The following UUIDs are hereby introduced:
 			</t>
-			<t>
-			The Table 2 lists the contents of the variant field, bits 64 and 65,
-			where the letter "x" indicates a "don't-care" value. Common hex values of 
-			8 (1000), 9 (1001), A (1010), and B (1011) frequent the text representation.
-			</t>
-			<table>
-			<name>UUID Variant defined by this specification</name>
-			<thead>
-				<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Description</td></tr>
-			</thead>
-			<tbody>
-				<tr><td>1</td><td>0</td><td>x</td><td>The variant specified in this document.</td></tr>
-			</tbody>
-			</table>
-        </section>
-        <section anchor="uuidv6layout" title="UUIDv6 Layout and Bit Order">
-			<t>
-			UUIDv6 aims to be the easiest to implement by reusing most of the layout of bits
-			found in UUIDv1 but with changes to bit ordering for the timestamp.
-			Where UUIDv1 splits the timestamp bits into three distinct parts and orders them as
-			time_low, time_mid, time_high_and_version. UUIDv6 instead keeps the source bits
-			from the timestamp intact and changes the order to time_high, time_mid, and time_low.
-			Incidentally this will match the original 60 bit Gregorian timestamp source with 100-nanosecond precision defined in <xref target="RFC4122" sectionFormat="comma" section="4.1.4"/> 
-			The clock sequence bits remain unchanged from their usage and position in <xref target="RFC4122" sectionFormat="comma" section="4.1.5"/>.
-			The 48 bit node SHOULD be set to a pseudo-random value however implementations MAY choose retain the old MAC address behavior from <xref target="RFC4122" sectionFormat="comma" section="4.1.6"/> and <xref target="RFC4122" sectionFormat="comma" section="4.5"/>
-			</t>
-			<t>
-			The format for the 16-octet, 128 bit UUIDv6 is shown in Figure 1
-			</t>
+
+			<ol spacing="compact">
+				<li><t>UUID version 6: A re-ordering of UUID version 1 so it is sortable as an opaque sequence of bytes.  Easy to implement given an existing UUIDv1 implementation. See <xref target="uuidv6"/></t></li>
+				<li><t>UUID version 7: An entirely new time-based UUID bit layout sourced from the widely implemented and well known Unix Epoch timestamp source. See <xref target="uuidv7"/></t></li>
+				<li><t>UUID version 8: A free-form UUID format which has no explicit requirements except maintaining backward compatibility. See <xref target="uuidv8"/></t></li>
+			</ol>
+
+			<section anchor="changelog" title="changelog">
+				<t>RFC EDITOR PLEASE DELETE THIS SECTION.</t>
+				<t>draft-03</t>
+				<ul spacing="compact" empty="true">
+					<li><t>- Reworked the draft body to make the content more concise</t></li>
+					<li><t>- UUIDv6 section reworked to just the reorder of the timestamp</t></li>
+					<li><t>- UUIDv7 changed to simplify timestamp mechanism to just millisecond unix timestamp</t></li>
+					<li><t>- UUIDv8 relaxed to be custom in all elements except version and variant</t></li>
+					<li><t>- Changed UUIDv7 and UUIDv8 to use Variant 111.</t></li>
+					<li><t>- Added C code samples in Appendix.</t></li>
+					<li><t>- Added test vectors in Appendix.</t></li>
+					<li><t>- Version and Variant section combined into one section.</t></li>
+					<li><t>- Changed from pseudo-random number generators to cryptographically secure pseudo-random number generator (CSPRNG).</t></li>
+					<li><t>- Split Encoding and Storage section into more sections: Text Format and Storing UUIDs, Opacity</t></li>
+					<li><t>- Reworked Global Uniqueness under new section Global and Local Uniqueness</t></li>
+					<li><t>- Combined redundant topics from all UUIDs into sections such as Timestamp granularity, Monotonicity and Counters, Collision Resistance, Sorting, and Unguessability, etc.</t></li>
+					<li><t>- Node verbiage only used in UUIDv6 and v7 and v8 reference random instead</t></li>
+					<li><t>- Clock sequence verbiage changed simply to counter in any section other than UUIDv6</t></li>
+					<li><t>- Added Abbreviations section</t></li>
+					<li><t>- Updated IETF Draft XML Layout</t></li>
+				</ul>
+				<t>draft-02</t>
+				<ul spacing="compact" empty="true">
+					<li><t>- Added Changelog</t></li>
+					<li><t>- Fixed misc. grammatical errors</t></li>
+					<li><t>- Fixed section numbering issue</t></li>
+					<li><t>- Fixed some UUIDvX reference issues</t></li>
+					<li><t>- Changed all instances of "motonic" to "monotonic"</t></li>
+					<li><t>- Changed all instances of "#-bit" to "# bit"</t></li>
+					<li><t>- Changed "proceeding" verbiage to "after" in section 7</t></li>
+					<li><t>- Added details on how to pad 32 bit unix timestamp to 36 bits in UUIDv7</t></li>
+					<li><t>- Added details on how to truncate 64 bit unix timestamp to 36 bits in UUIDv7</t></li>
+					<li><t>- Added forward reference and bullet to UUIDv8 if truncating 64 bit Unix Epoch is not an option.</t></li>
+					<li><t>- Fixed bad reference to non-existent "time_or_node" in section 4.5.4</t></li>
+				</ul>
+				<t>draft-01</t>
+				<ul spacing="compact" empty="true">
+					<li><t>- Complete rewrite of entire document.</t></li>
+					<li><t>- The format, flow and verbiage used in the specification has been reworked to mirror the original RFC 4122 and current IETF standards.</t></li>
+					<li><t>- Removed the topics of UUID length modification, alternate UUID text formats, and alternate UUID encoding techniques.</t></li>
+					<li><t>- Research into 16 different historical and current implementations of time-based universal identifiers was completed at the end of 2020 in attempt to identify trends which have directly influenced design decisions in this draft document (https://github.com/uuid6/uuid6-ietf-draft/tree/master/research)</t></li>
+					<li><t>- Prototype implementation have been completed for UUIDv6, UUIDv7, and UUIDv8 in various languages by many GitHub community members. (https://github.com/uuid6/prototypes)</t></li>
+				</ul>
+			</section>
+		</section>
+		<section anchor="format" title="Format">
+			<t>The UUID format is 16 octets; some bits of the eight octet variant field specified below determine finer structure.</t>
+			<section anchor="variant_and_version_fields" title="Variant and Version Fields">
+				<t>
+				The variant bits utilized by UUIDs in this specification 
+				remain in the same octet as originally defined by <xref target="RFC4122" sectionFormat="comma" section="4.1.1"/>. 
+				</t>
+				<t>For UUIDv6 the version and variant field placement from <xref target="RFC4122"/> are unchanged and a new version (0110b [6]) has been added.				
+				</t>
+				<figure>
+					<name>UUIDv6 Version and Variant Examples</name>
+					<artwork><![CDATA[
+00000000-0000-6000-8000-000000000000
+00000000-0000-6000-9000-000000000000
+00000000-0000-6000-A000-000000000000
+00000000-0000-6000-B000-000000000000
+xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
+					]]></artwork>
+				</figure>
+				<dl newline="false">
+					<dt>M:</dt> <dd>Version (0110b [6])</dd>
+					<dt>N:</dt> <dd>Variant (1000b [8], 1001b [9], 1010b [A] or 1011b [B]) are all valid values</dd>
+				</dl>
+				<t>
+					For UUID versions 7 and 8, the variant field has been incremented and the version field has been moved to the same octet as the variant. Since the bits of the variant remain in the same place as described in <xref target="RFC4122"/> but utilized the previously reserved value 111, this allows a UUID to simply define octet 8 as var_ver, and the values 0xE7 and 0xE8 indicate UUID versions 7 and 8 respectively.
+				</t>
+				<figure>
+					<name>UUIDv7 Version and Variant Examples</name>
+					<artwork><![CDATA[
+00000000-0000-0000-E700-000000000000
+xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
+
+00000000-0000-0000-E800-000000000000
+xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
+					]]></artwork>
+				</figure>
+				<dl newline="false">
+					<dt>N:</dt> <dd>Variant (1110b [E])</dd>
+					<dt>M:</dt> <dd>Version (0111b [7] or 1000 [8])</dd>
+				</dl>
+								
+				<t>
+				While this specification makes use of the unused variant bits of 111 defined in <xref target="RFC4122" sectionFormat="comma" section="4.1.1"/>; the placement of the version within the same octet as the variant leaves room for a future variant.
+				</t>
+				<t>
+				UUID Version 7 and 8 specified by this document MUST set the first 3 bits of octet 8 to 111 and the fourth bit to 0. The 4 bit version MUST follow the variant to fill out the final bits of octet 8.
+				</t>
+				<t>
+				Future specifications that wish to utilize variant 111 for a different version position (or any other bit layout position) MUST set the first 3 bits of octet 8 to 111 and then the fourth bit to 1.
+				</t>
+				<t>
+				As such the tables below detail the three variants and versions described in this document where the letter "x" indicates a "don't-care" value.
+				</t>
+				<table>
+				<name>UUID Variant defined by this specification</name>
+				<thead>
+					<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Description</td></tr>
+				</thead>
+				<tbody>
+					<tr><td>1</td><td>0</td><td>x</td><td>x</td><td>The variant specified by <xref target="RFC4122"/>. Hex characters 8, 9, A, B.</td></tr>
+					<tr><td>1</td><td>1</td><td>1</td><td>0</td><td>The variant specified in this document. Hex character E,</td></tr>
+					<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>Reserved for future definition. Hex Character F.</td></tr>
+				</tbody>
+				</table>
+
+				<table>
+				<name>UUID versions defined by this specification</name>
+				<thead>
+					<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Version</td><td>Description</td></tr>
+				</thead>
+				<tbody>
+					<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>6</td><td>Reordered Gregorian time-based UUID</td></tr>
+					<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>7</td><td>Unix Epoch time-based UUID</td></tr>
+					<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>8</td><td>Custom UUID</td></tr>
+				</tbody>
+				</table>
+				
+			</section>
+			<section anchor="uuidv6" title="UUID Version 6">
+				<t>
+					UUID version 6 is a field-compatible version of UUIDv1, reordered for improved DB locality. 
+					It is expected that UUIDv6 will primarily be used in contexts where there are existing v1 UUIDs.
+					Systems that do not involve legacy UUIDv1 SHOULD consider using UUIDv7 instead.
+				</t>
+
+				<t>
+					Instead of splitting the timestamp into the low, mid and high sections from UUIDv1, UUIDv6 changes this sequence so timestamp bytes are stored from most to least significant.  
+					That is, given a 60 bit timestamp value as specified for UUIDv1 in <xref target="RFC4122" sectionFormat="comma" section="4.1.4"/>,
+					for UUIDv6, the first 48 most significant bits are stored
+					first, followed by the 4 bit version (same position), followed by the remaining 12 bits of the original 60 bit timestamp.
+				</t>
+				<t>
+					The clock sequence bits remain unchanged from their usage and position in <xref target="RFC4122" sectionFormat="comma" section="4.1.5"/>.
+				</t>
+				<t>
+					The 48 bit node SHOULD be set to a pseudo-random value however implementations MAY choose retain the old MAC address behavior from <xref target="RFC4122" sectionFormat="comma" section="4.1.6"/> and <xref target="RFC4122" sectionFormat="comma" section="4.5"/>. For more information on MAC address usage within UUIDs see the <xref target="Security"/>
+				</t>
+				<t>
+					The format for the 16-byte, 128 bit UUIDv6 is shown in Figure 1
+				</t>
 <figure>
 <name>UUIDv6 Field and Bit Layout</name>
 <artwork>
@@ -303,43 +339,11 @@
         <dt>node:</dt> <dd>48 bit spatially unique identifier
             Occupies bits 80 through 127 (octets 10-15)</dd>
 		</dl>
-            <section anchor="uuidv6pseudo" title="UUIDv6 Basic Creation Algorithm">
-				<t>
-				The following implementation algorithm is based on <xref target="RFC4122"/>
-				but with changes specific to UUIDv6:
-				</t>
-				<ol>
-					<li><t>From a system-wide shared stable store (e.g., a file) or global variable, read the
-					  UUID generator state: the values of the timestamp and clock sequence
-					  used to generate the last UUID.</t></li>
-					<li><t>Obtain the current time as a 60 bit count of 100-nanosecond intervals
-					  since 00:00:00.00, 15 October 1582.</t></li>
-					<li><t>Set the time_low field to the 12 least significant bits
-					  of the starting 60 bit timestamp.</t></li>
-					<li><t>Truncate the timestamp to the 48 most significant bits
-					  in order to create time_high_and_time_mid.</t></li>
-					<li><t>Set the time_high field to the 32 most significant bits of the truncated timestamp.</t></li>
-					<li><t>Set the time_mid field to the 16 least significant bits of the truncated timestamp.</t></li>
-					<li><t>Create the 16 bit time_low_and_version by concatenating the 4 bit UUIDv6 version
-					  with the 12 bit time_low.</t></li>
-					<li><t>If the state was unavailable (e.g., non-existent or corrupted)
-					  or the timestamp is greater than the current timestamp generate
-					  a random 14 bit clock sequence value.</t></li>
-					<li><t>If the state was available, but the saved timestamp is less than or equal to the current
-					  timestamp, increment the clock sequence value.</t></li>
-					<li><t>Complete the 16 bit clock sequence high, low and reserved creation
-					  by concatenating the clock sequence onto UUID variant bits which take
-					  the most significant position in the 16 bit value.</t></li>
-					<li><t>Generate a 48 bit pseudo-random node.</t></li>
-					<li><t>Format by concatenating the 128 bits from each parts:
-					  time_high|time_mid|time_low_and_version|variant_clk_seq|node</t></li>
-					<li><t>Save the state (current timestamp and clock sequence)
-					  back to the stable store</t></li>
-				</ol>  	
-				<t>
-				The steps for splitting time_high_and_time_mid into time_high and time_mid are optional
-				since the 48 bits of time_high and time_mid will remain in the same order as time_high_and_time_mid
-				during the final concatenation. This extra step of splitting into the most significant
+		
+						<t>
+				With UUIDv6 the steps for splitting the timestamp into time_high and time_mid are optional
+				since the 48 bits of time_high and time_mid will remain in the same order.
+				An extra step of splitting the first 48 bits of the timestamp into the most significant 
 				32 bits and least significant 16 bits proves useful when reusing an existing UUIDv1 implementation.
 				In which the following logic can be applied to reshuffle the bits with minimal modifications.
 				</t>
@@ -354,824 +358,743 @@
 					<tr><td>time_high</td><td>12</td><td>time_low</td></tr>
 				</tbody>
 				</table>
-            </section>
-        </section>
-
-		<section anchor="uuidv7layout" title="UUIDv7 Layout and Bit Order">
-			<t>
-			The UUIDv7 format is designed to encode a Unix timestamp with arbitrary sub-second precision.
-			The key property provided by UUIDv7 is that timestamp values generated by one system and parsed by
-			another are guaranteed to have sub-second precision of either the generator or the parser,
-			whichever is less. Additionally, the system parsing the UUIDv7 value does not need to know which precision
-			was used during encoding in order to function correctly.
-			</t>
-			
-			<t>
-			The format for the 16-octet, 128 bit UUIDv7 is shown in Figure 2
-			</t>
-<figure>
-<name>UUIDv7 Field and Bit Layout</name>
-<artwork>
-     0                   1                   2                   3
-     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                            unixts                             |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |unixts |       subsec_a        |  ver  |       subsec_b        |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |var|                   subsec_seq_node                         |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                       subsec_seq_node                         |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</artwork>
-</figure>
-		<dl newline="true">
-			<dt>unixts:</dt> <dd>36 bit big-endian unsigned Unix Timestamp value</dd>
-			<dt>subsec_a:</dt> <dd>12 bits allocated to sub-second precision values.</dd>
-			<dt>ver:</dt> <dd>The 4 bit UUIDv7 version (0111)</dd>
-			<dt>subsec_b:</dt> <dd>12 bits allocated to sub-second precision values.</dd>
-			<dt>var:</dt> <dd>2 bit UUID variant (10)</dd>
-			<dt>subsec_seq_node:</dt> <dd>The remaining 62 bits which MAY be allocated to any combination of additional sub-second precision, sequence counter, or pseudo-random data.</dd>
-		</dl>
-
-			<section anchor="uuidv7timestamp" title="UUIDv7 Timestamp Usage">
-				<t>UUIDv7 utilizes a 36 bit big-endian unsigned Unix Timestamp value (number of seconds since the epoch of 1 Jan 1970, leap seconds excluded so each hour is exactly 3600 seconds long). The 36 bit value was selected in order to provide more available time to the unix timestamp and avoid the Year 2038 problem by extending the maximum timestamp to the year 4147.</t>
-				<t>To achieve a 36 bit UUIDv7 timestamp, the lower 36 bits of a 64 bit unix time are extracted verbatim into UUIDv7</t>
-				<t>In the event that 32 bit Unix Timestamp are in use; four zeros MUST be appended at the start in the most significant (left-most) bits of the 32 bit Unix timestamp creating the 36 bit Unix timestamp. This ensures sorting compatibility with 64 bit unix timestamp which have been truncated to 36 bits.</t>
-				<t>Additional sub-second precision (millisecond, nanosecond, microsecond, etc) MAY be provided for encoding and decoding in the remaining bits in the layout.</t>
-				<t>UUIDv8 SHOULD be used in place of UUIDv7 if an application or implementation does not want to truncate a 64 bit Unix Epoch to the lower 36 bits.</t>
 			</section>
-			
-			<section anchor="uuidv7sequence" title="UUIDv7 Clock Sequence Usage">
+			<section anchor="uuidv7" title="UUID Version 7">
 				<t>
-				UUIDv7 SHOULD utilize a monotonic sequence counter to provide additional sequencing guarantees when multiple UUIDv7 values are created in the same UNIXTS and SUBSEC timestamp.
-				The amount of bits allocates to the sequence counter depend on the precision of the timestamp. For example, a more accurate timestamp source using nanosecond precision will require less clock sequence bits than a timestamp source utilizing seconds for precision.
-				For best sequencing results the sequence counter SHOULD be placed immediately after available sub-second bits.
+					UUID version 7 features a time-ordered value field derived from the widely implemented and well known Unix Epoch timestamp source, as well as improved entropy characteristics over versions 1 or 6.
+					Implementations SHOULD utilize UUID version 7 over UUID version 1 and 6 if possible. 
 				</t>
-				<t>
-				The clock sequence MUST start at zero and increment monotonically
-				for each new UUIDv7 created on by the application on the same timestamp.
-				When the timestamp increments the clock sequence MUST be reset to zero.
-				The clock sequence MUST NOT rollover or reset to zero unless the timestamp
-				has incremented. Care MUST be given to ensure that an adequate sized
-				clock sequence is selected for a given application based on expected
-				timestamp precision and expected UUIDv7 generation rates.
-				</t>
-			</section>
-			
-			<section anchor="uuidv7node" title="UUIDv7 Node Usage">
-				<t>
-				UUIDv7 implementations, even with very detailed sub-second precision and the optional sequence counter, MAY have leftover bits that will be identified as the Node for this section.
-				The UUIDv7 Node MAY contain any set of data an implementation desires however the node MUST NOT be set to all 0s which does not ensure global uniqueness. In most scenarios the node SHOULD be filled with pseudo-random data.
-				</t>
-			</section>
+				<figure>
+					<name>UUIDv7 Field and Bit Layout</name>
+					<artwork><![CDATA[
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                           unix_ts_ms                          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|          unix_ts_ms           |             rand              |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    var_ver    |            rand_b                             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                            rand_b                             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+					]]></artwork>
 
-			<section anchor="uuidv7encodingdecoding" title="UUIDv7 Encoding and Decoding">
-				<t>
-					The UUIDv7 bit layout for encoding and decoding are described separately in this document.
-				</t>
-				<section anchor="uuidv7encoding" title="UUIDv7 Encoding">
-					<t>
-					 Since the UUIDv7 Unix timestamp is fixed at 36 bits in length the exact layout for encoding UUIDv7 depends on the precision (number of bits)
-					 used for the sub-second portion and the sizes of the optionally desired sequence counter and node bits.
-					</t>
-					<t>
-						Three examples of UUIDv7 encoding are given below as a general guidelines but implementations are not limited to just these three examples.
-					</t>
-					<t>
-						All of these fields are only used during encoding, and during decoding the system is unaware of the bit layout used for them and considers this information opaque.
-						As such, implementations generating these values can assign whatever lengths to each field it deems applicable, as long as it does not break decoding compatibility
-						(i.e. Unix timestamp (unixts), version (ver) and variant (var) have to stay where they are, and clock sequence counter (seq), random (random) or other implementation specific values must follow the sub-second encoding).
-					</t>
-					<t>
-						In Figure 3 the UUIDv7 has been created with millisecond precision with the available sub-second precision bits.
-					</t>
-					<t>
-						Examining Figure 3 one can observe: 
-					</t>
-					<ul>
-						<li><t>The first 36 bits have been dedicated to the Unix Timestamp (unixts)</t></li>
-						<li><t>All 12 bits of scenario subsec_a is fully dedicated to millisecond information (msec).</t></li>
-						<li><t>The 4 Version bits remain unchanged (ver).</t></li>
-						<li><t>All 12 bits of subsec_b have been dedicated to a monotonic clock sequence counter (seq).</t></li>
-						<li><t>The 2 Variant bits remain unchanged (var).</t></li>
-						<li><t>Finally the remaining 62 bits in the subsec_seq_node section are layout is filled out with random data to pad the length and provide guaranteed uniqueness (rand).</t></li>
-					</ul>
-<figure>
-<name>UUIDv7 Field and Bit Layout - Encoding Example (Millisecond Precision)</name>
-<artwork>
-     0                   1                   2                   3
-     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                            unixts                             |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |unixts |         msec          |  ver  |          seq          |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |var|                         rand                              |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                             rand                              |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</artwork>
-</figure>
+				</figure>
 
-					<t>
-						In Figure 4 the UUIDv7 has been created with Microsecond precision with the available sub-second precision bits.
-					</t>
-					<t>
-						Examining Figure 4 one can observe: 
-					</t>
-					<ul>
-						<li><t>The first 36 bits have been dedicated to the Unix Timestamp (unixts)</t></li>
-						<li><t>All 12 bits of scenario subsec_a is fully dedicated to providing sub-second encoding for the Microsecond precision (usec).</t></li>
-						<li><t>The 4 Version bits remain unchanged (ver).</t></li>
-						<li><t>All 12 bits of subsec_b have been dedicated to providing sub-second encoding for the Microsecond precision (usec).</t></li>
-						<li><t>The 2 Variant bits remain unchanged (var).</t></li>
-						<li><t>A 14 bit monotonic clock sequence counter (seq) has been embedded in the most significant position of subsec_seq_node </t></li>
-						<li><t>Finally the remaining 48 bits in the subsec_seq_node section are layout is filled out with random data to pad the length and provide guaranteed uniqueness (rand).</t></li>
-					</ul>
-
-<figure>
-<name>UUIDv7 Field and Bit Layout - Encoding Example (Microsecond Precision)</name>
-<artwork>
-     0                   1                   2                   3
-     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                            unixts                             |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |unixts |         usec          |  ver  |         usec          |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |var|             seq           |            rand               |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                             rand                              |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</artwork>
-</figure>
-
-					<t>
-						In Figure 5 the UUIDv7 has been created with Nanosecond precision with the available sub-second precision bits.
-					</t>
-					<t>
-						Examining Figure 5 one can observe: 
-					</t>
-					<ul>
-						<li><t>The first 36 bits have been dedicated to the Unix Timestamp (unixts)</t></li>
-						<li><t>All 12 bits of scenario subsec_a is fully dedicated to providing sub-second encoding for the Nanosecond precision (nsec).</t></li>
-						<li><t>The 4 Version bits remain unchanged (ver).</t></li>
-						<li><t>All 12 bits of subsec_b have been dedicated to providing sub-second encoding for the Nanosecond precision (nsec).</t></li>
-						<li><t>The 2 Variant bits remain unchanged (var).</t></li>
-						<li><t>The first 14 bit of the subsec_seq_node dedicated to providing sub-second encoding for the Nanosecond precision (nsec).</t></li>
-						<li><t>The next 8 bits of subsec_seq_node dedicated a monotonic clock sequence counter (seq).</t></li>
-						<li><t>Finally the remaining 40 bits in the subsec_seq_node section are layout is filled out with random data to pad the length and provide guaranteed uniqueness (rand).</t></li>
-					</ul>
-
-<figure>
-<name>UUIDv7 Field and Bit Layout - Encoding Example (Nanosecond Precision)</name>
-<artwork>
-     0                   1                   2                   3
-     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                            unixts                             |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |unixts |         nsec          |  ver  |         nsec          |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |var|             nsec          |      seq      |     rand      |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                             rand                              |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</artwork>
-</figure>
+				<dl newline="true">
+					<dt>unix_ts_ms:</dt> <dd>48 bit big-endian unsigned number of unix epoch timestamp as per <xref target="timestamp_granularity"/></dd>
+					<dt>rand_a:</dt> <dd>16 bits pseudo-random data to provide uniqueness as per <xref target="unguessability"/></dd>
+					<dt>var_ver:</dt> <dd>The 8 bit combined variant and version field with the value 0xE7 as defined by <xref target="variant_and_version_fields"/>.</dd>
+					<dt>rand_b:</dt> <dd>The final 56 bits of pseudo-random data to provide uniqueness as per <xref target="unguessability"/> and <xref target="monotonicity_counters"/>.</dd>
+				</dl>
 
 			</section>
-			<section anchor="uuidv7decoding" title="UUIDv7 Decoding">
+			<section anchor="uuidv8" title="UUID Version 8">
 				<t>
-					When decoding or parsing a UUIDv7 value there are only two values to be considered:
-				</t>
-				<ol>
-					<li><t>The unix timestamp defined as unixts</t></li>
-					<li><t>The sub-second precision values defined as subsec_a, subsec_b, and subsec_seq_node</t></li>
-				</ol>
-				<t>As detailed in Figure 2 the unix timestamp (unixts) is always the first 36 bits of the UUIDv7 layout.</t>
-				<t>
-					Similarly as per Figure 2, the sub-second precision values lie within subsec_a, subsec_b, and subsec_seq_node which are all interpreted as sub-second information after skipping over the version (ver) and (var) bits.  
-					These concatenated sub-second information bits are interpreted in a way where most to least significant bits represent a further division by two.
-					This is the same normal place notation used to express fractional numbers, except in binary. For example, in decimal ".1" means one tenth, and ".01" means one hundredth.
-					In this subsec field, a 1 means one half, 01 means one quarter, 001 is one eighth, etc.
-					This scheme can work for any number of bits up to the maximum available, and keeps the most significant data leftmost in the bit sequence.
+					UUID version 8 provides an RFC-compatible format for experimental or vendor-specific use cases.
+					The only requirement is that the variant and version bits MUST be set as defined in <xref target="variant_and_version_fields"/>. 
+					UUIDv8's uniqueness will be implementation-specific and should not be assumed.
 				</t>
 				<t>
-					To perform the sub-second math, simply take the first (most significant/leftmost) N bits of subsec and divide it by 2^N. Take for example:
-				</t>
-				<ol>
-						<li><t>To parse the first 16 bits, extract that value as an integer and divide it by 65536 (2 to the 16th).</t></li>
-						<li><t>If these 16 bits are 0101 0101 0101 0101, then treating that as an integer gives 0x5555 or 21845 in decimal, and dividing by 65536 gives 0.3333282</t></li>
-				</ol>		
-				<t>
-				This sub-second encoding scheme provides maximum interoperability across systems where different levels of time precision are required/feasible/available.
-				The timestamp value derived from a UUIDv7 value SHOULD be "as close to the correct value as possible" when parsed, even across disparate systems. 
+				UUIDv8 SHOULD only be utilized if an implementation cannot utilize another UUID in this document or <xref target="RFC4122"/>.
 				</t>
 				<t>
-				Take for example the starting point for our next two UUIDv7 parsing scenarios:
+				The only explicitly defined bits are the Version and Variant leaving 120 bits
+				for implementation specific time-based UUIDs. To be clear:
+				UUIDv8 is not a replacement for UUIDv4 where all 122 extra bits are
+				filled with random data.
 				</t>
-				<ol>
-					<li>System A produces a UUIDv7 with a microsecond-precise timestamp value.</li>
-					<li>System B is unaware of the precision encoded in the UUIDv7 timestamp by System A.</li>
-				</ol>
 				<t>
-				Scenario 1:
+				Some example situations in which UUIDv8 usage could occur:
 				</t>
-				<ol>
-					<li>System B parses the embedded timestamp with millisecond precision. (Less precision than the encoder)</li>
-					<li>System B SHOULD return the correct millisecond value encoded by system A (truncated to milliseconds).</li>
-				</ol>
-				<t>
-				Scenario 2:
-				</t>
-				<ol>
-					<li>System B parses the timestamp with nanosecond precision. (More precision than the encoder)</li>
-					<li>System B's value returned SHOULD have the same microsecond level of precision provided by the encoder with the additional precision down to nanosecond level being essentially random as per the encoded random value at the end of the UUIDv7.</li>
-				</ol>
+				<ul>
+					<li><t>An implementation would like to embed extra information
+					  within the UUID other than what is defined in this document.</t></li>
+					<li><t>An implementation has other application/language restrictions which
+					  inhibit the use of one of the current UUIDs.</t></li>
+				</ul>
+				<figure>
+					<name>UUIDv8 Field and Bit Layout</name>
+					<artwork><![CDATA[
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                           custom_a                            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                           custom_a                            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    var_ver    |           custom_b                            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                           custom_b                            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+					]]></artwork>
 
+				</figure>
+				<dl newline="true">
+					<dt>custom_a:</dt> <dd>The first 64 bits of the layout that can be filled as an implementation sees fit.</dd>
+					<dt>var_ver:</dt> <dd>The 8 bit combined variant and version field with the value 0xE8 as defined by <xref target="variant_and_version_fields"/>.</dd>
+					<dt>custom_b:</dt> <dd>The final 56 bits of the layout immediatly following the var_var field to be filled as an implementation sees fit.</dd>
+				</dl>
+			</section>			
+		</section>
+
+		<section anchor="uuid_best_practices" title="UUID Best Practices">
+				<t>
+					The minimum requirements for generating UUIDs are 
+					described in this document for each version.
+					Everything else is an implementation detail and 
+					up to the implementer to decide what is appropriate for a given 
+					implementation. That being said, various relevant factors are covered
+					below to help guide an implementer through the different trade-offs among differing UUID implementations.
+				</t>
+
+			<section anchor="timestamp_granularity" title="Timestamp Granularity">
+				<t>
+					UUID timestamp source, precision and length was the topic of great debate while creating this specification. As such choosing the right timestamp for your application is a very important topic. This section will detail some of the most common points on this topic.
+				</t>
+				<dl newline="true">
+					<dt>Reliability:</dt>
+						<dd>Implementations SHOULD use the current timestamp from a reliable source to provide values that are time-ordered and continually increasing. Care SHOULD be taken to ensure the timestamp does not move backwards which will impact UUID sorting.</dd>
+					<dt>Source:</dt>
+						<dd>UUID version 1 and 6 both utilize a Gregorian epoch timestamp while UUIDv7 utilizes a Unix Epoch timestamp. If other timestamp sources or a custom timestamp epoch are required UUIDv8 SHOULD be leveraged.</dd>
+					<dt>Sub-second Precision and Accuracy:</dt>
+						<dd>Many levels of precision exist for timestamps: milliseconds, microseconds, nanoseconds, and beyond. Additionally fractional representations of sub-second precision may be desired to mix various levels of precision in a time-ordered manner. With UUID version 1 and 6, 100-nanoseconds of precision are present while UUIDv7 features fixed millisecond level of precision within the Unix epoch. If additional levels of precision are required UUIDv8 SHOULD be utilized.</dd>
+					<dt>Length:</dt>
+						<dd>The length of a given timestamp directly impacts how long a given UUID will be valid. Care should be given to ensure that the proper length is selected for a given timestamp. UUID version 1 and 6 utilize a 60 bit timestamp and UUIDv7 features a 48 bit timestamp.</dd>
+					<dt>Fuzzing:</dt>
+						<dd>Implementations MAY fuzz a timestamp. Some examples included security considerations around providing a real clock value within a UUID or to correct inaccurate clocks. This specification makes no requirement or guarantee about how close the clock value needs to be to actual time.</dd>
+					<dt>Padding:</dt>
+						<dd>When timestamp padding is required, implementations MUST pad the most significant bits (left-most) bits with zeros. An example is padding the most significant, left-most bits of a 32 bit unix timestamp with zero's to fill out the 48 bit timestamp in UUIDv7.</dd>
+					<dt>Truncating:</dt>
+						<dd>Similarly, when timestamps need to be truncated: the lower, least significant bits MUST be used. An example would be truncating a 64 bit unix timestamp to the least significant, right-most 48 bits for UUIDv7.</dd>
+				</dl>
+			</section>
+			<section anchor="monotonicity_counters" title="Monotonicity and Counters">
+				<t>
+					Monotonicity is the backbone of time-based sortable UUIDs. Naturally time-based UUIDs from this document will be monotonic due to an embedded timestamp however implementations can guarantee additional monotonicity via the concepts covered in this section.
+				</t>
+				<t>
+					Additionally, care MUST be taken to ensure UUIDs generated in batches are also monotonic. That is, if one-thousand UUIDs are generated for the same timestamp; there is sufficient logic for organizing the creation of order of those one-thousand UUIDs.
+					For batch UUID creation implements MAY utilize a monotonic counter which SHOULD increment for each UUID created during a given timestamp. 
+				</t>
+				<t>
+					For single-node UUID implementations that do not need to create batches of UUIDs, the embedded timestamp within UUID version 1, 6, and 7 can provide sufficient monotonicity guarantees by simply ensuring that timestamp increments before creating a new UUID. For the topic of Distributed Nodes please refer to <xref target="distributed_shared_knowledge"/>
+				</t>
+				<t>
+					The following methods SHOULD be employed for single-node UUID implementations that do require batch UUID creation.
+				</t>
+				<dl newline="true">
+					<dt>Fixed-Length Dedicated Counter Bits (Position A):</dt> 
+						<dd>
+						This references the practice of allocating a specific number of bits in the UUID layout to the sole purpose of tallying the total number of UUIDs created during a given UUID timestamp tick.
+						Positioning of a fixed bit-length counter SHOULD be immediatly after the embedded timestamp. This promotes sortability and allows random data generation for each counter increment. UUIDs utilizing this method should be created using UUIDv8.
+						</dd>
+					<dt>Fixed-Length Dedicated Counter Bits (Position B):</dt> 
+						<dd>
+						An alternative approach to the previous method is to dedicate a number of bits in the least significant position of the UUID. With this alternative method, the random data MUST be frozen for a given timestamp tick else sorting will be impacted. UUIDs utilizing this method should be created using UUIDv8.
+						</dd>
+					<dt>Fixed-Length Dedicated Counter Seeding:</dt> 
+						<dd>
+						Implementations utilizing fixed-length counter bits SHOULD initialize the counter at zero to ensure the full bit-space is utilized and help avoid counter rollovers.
+						</dd>
+					<dt>Fixed-Length Dedicated Counter Length</dt>
+						<dd>Care MUST be taken to select a counter bit-length that can properly handle the level of timestamp precision in use. For example, millisecond precision SHOULD require a larger counter than a timestamp with nanosecond precision. General Guidance is that the counter SHOULD be at least 12 bits and no more than a maximum of 24 bits.</dd>
+					<dt>Fixed-Length Dedicated Counter Rollover Handling</dt>
+						<dd>
+						Counter rollovers SHOULD be handled by the application to avoid sorting issues. The general guidance is that applications should freeze the counter and wait for the timestamp to advance which ensures monotonicity is not broken.
+						</dd>
+					<dt>Monotonic Random:</dt> 
+						<dd>
+						With this method the random data is extended to also double as a counter. This monotonic random can be thought of as a "randomly seeded counter" which MUST be incremented in the least significant position for each UUID created on a given timestamp tick. This is similar to the Fixed-Length Dedicated Counter Bits (Position B) method described in the previous bullets but does not suffer from rollover issues, length problems, or wasted entropy bits plagued by both fixed-length counter bit positions. As such, UUIDv7 SHOULD utilize this method to handle batch UUID generation during a single timestamp tick.
+						</dd>
+				</dl>
+				<t>
+					Implementations MAY use the following logic to ensure UUIDs featuring embedded counters are monotonic in nature:
+				</t>
+				<ol spacing="compact">
+					<li><t>Compare the current timestamp against the previously stored timestamp.</t></li>
+					<li>
+						<t>If the current timestamp is equal to the previous timestamp; increment desired counter logic.</t>
+					</li>
+					<li><t>If the current timestamp is greater than the previous timestamp; re-initialize the counter to the new timestamp and generate new random bytes (if the bytes were frozen or being used as the seed for a monotonic counter).</t></li>
+				</ol>
+				<t>
+					Implementations SHOULD check if the the currently generated UUID is greater than the previously generated UUID. If this is not the case then any number of things could have occurred. Such as, but not limited to, clock rollbacks or counter rollovers. Applications SHOULD embed sufficient logic to catch these scenarios and correct the problem ensuring the next UUID generated is greater than the previous.
+				</t>		
+				<t>
+					UUIDv1, and by extension UUIDv6, utilize a slightly different counter in the form of "clock sequence" bits. The usage of the clock sequence will remain as defined in <xref target="RFC4122" sectionFormat="comma" section="4.1.5"/>.
+				</t>
+			</section>
+			<section anchor="distributed_shared_knowledge" title="Distributed UUID Generation">
+				<t>
+				Some implementations MAY desire to utilize multi-node, clustered, applications which involve two or more 
+				applications independently generating UUIDs that will be stored in a common location. 
+				While UUIDs already feature sufficient entropy to ensure that the chances of collision are low as the total number of nodes increase; so does the likelihood of a collision. 
+				This section will detail the approaches that MAY be utilized by multi-node UUID implementations in distributed environments.
+				</t>
+				<dl newline="true">
+					<dt>Shared Knowledge System:</dt> 
+						<dd>With this method all nodes tasked with creating UUIDs consult a central registry and confirm the generated value is unique. As applications scale the communication with the central registry could become a bottleneck and impact UUID generation in a negative way. Utilization of shared knowledge schemes with central/global registries is outside the scope of this specification.</dd>
+					<dt>Node IDs:</dt> 
+						<dd>With this method, a nondescript pseudo-random Node ID value is placed within the UUID layout. This identifier ensures the bit-space for a given node is unique resulting in UUIDs that do not conflict with any other UUID created by another node with a different node id. Implementations that choose to leverage an embedded node id SHOULD utilize UUIDv8. The node id SHOULD NOT be an IEEE 802 MAC address as per <xref target="Security"/>. The location and bit length are up to implements and outside the scope of this specification. Furthermore, the creation and negotiation of a node id among distributed nodes is also out of scope for this specification.</dd>
+				</dl>
+				<t>
+					Utilization of either a shared knowledge scheme or Node ID are not required for implementing UUIDs in this specification. However implementations SHOULD utilize one of the two aforementioned methods if distributed UUID generation is a requirements.
+				</t>
+			</section>
+			<section anchor="collision_resistance" title="Collision Resistance">
+				<t>
+					Implementations SHOULD weigh the importance of a collision within their application and take this into account when making a selections around the total entropy (random) to dedicated to a UUID layout versus the other components such as <xref target="timestamp_granularity"/> and <xref target="monotonicity_counters"/>. This is especially true for distributed node collision resistance as defined by <xref target="distributed_shared_knowledge"/>.		
+				</t>
+				<t>
+					There are two example scenarios below which help illustrate the varying seriousness of a collision within an application.
+				</t>
+				<dl newline="true">
+					<dt>Low Impact</dt> 
+						<dd>A UUID collision generated a duplicate log entry which results in incorrect statistics derived from the data. Implementations that are not negatively affected by collisions may continue with the entropy and uniqueness provided by the traditional UUID format.</dd>
+					<dt>High Impact:</dt> 
+						<dd> A duplicate key causes an airplane to receive the wrong course which puts people's lives at risk. In this scenario there is no margin for error. Collisions MUST be avoided and failure is unacceptable. As such applications dealing with this type of scenario MUST employ as much collision resistance as possible within the given application context.</dd>
+				</dl>
+			</section>
+			<section anchor="global_local_uniqueness" title="Global and Local Uniqueness">
+				<t>
+					UUIDs created by this specification MAY be used to provide local uniqueness guarantees. 
+					For example, ensuring UUIDs created within a local application context are unique within a database MAY be sufficient for some implementations where global uniqueness outside of the application context, in other applications, or around the world is not required.
+				</t>
+				<t>
+					Although true global uniqueness is impossible to guarantee without shared knowledge scheme; a shared knowledge scheme is not required by UUID to provide uniqueness guarantees.
+					Implementations MAY implement a shared knowledge scheme introduced in <xref target="distributed_shared_knowledge"/> as they see fit to extend the uniqueness guaranteed this specification and <xref target="RFC4122"/>.
+				</t>
+			</section>
+			<section anchor="unguessability" title="Unguessability">
+				<t>
+					Implementations SHOULD utilize a cryptographically secure pseudo-random number generator (CSPRNG) to provide values that are both difficult to predict ("unguessable") and have a low likelihood of collision ("unique").
+					CSPRNG ensures the best of <xref target="collision_resistance"/> and <xref target="Security"/> are present in modern UUIDs.
+				</t>
+			</section>
+			<section anchor="sorting" title="Sorting">
+				<t>
+					UUIDv6 and UUIDv7 are designed so that implementations that require sorting (e.g. database indexes) SHOULD sort as opaque raw bytes, without examining the contents at all.
+				</t>
+				<t>
+					Time ordered monotonic UUIDs benefit from greater index locality because the new values are near each other in the index. 
+					As a result objects can much more easily be clustered together for better performance.  
+					The real-world differences in this approach of index locality vs random data inserts can be quite large.
+				</t>
+			</section>
+			<section anchor="storing_uuids_opacity" title="Storing UUIDs, Opacity">
+				<t>
+				For many applications, such as databases, storing UUIDs as the text is unnecessarily verbose totaling 288 bits to convey the 128 bit UUID value.
+				Due to the this, where possible, UUIDs SHOULD be stored within database applications as the underlying 128 bit binary value. 
+				</t>
+				<ul spacing="compact">
+					<li><t>8 bits for each of the 32 hex characters = 256 bits</t></li>
+					<li><t>8 bits for each of the 4 hyphens = 32 bits</t></li>
+				</ul>
+				<t>
+					
+					For other systems, UUIDs MAY be stored in binary form or as text, as appropriate. 
+					The trade offs to both approaches are as such:				
+				</t>
+				<ul spacing="compact">
+					<li><t>Storing as binary requires less space and may result in faster data access.</t></li>
+					<li><t>Storing as text requires more space but may require less translation if the resulting text form is to be used after retrieval and thus maybe simpler to implement. </t></li>
+				</ul>
+				<t>
+					UUIDs SHOULD be treated as opaque values and implementations SHOULD NOT examine the bits in a UUID to whatever extent is possible.
+				</t>
+				<t>
+					Where necessary, the version number may be extracted by first verifying the variant field bits 64 and 65 contain 1 and 0 respectively, and then extract the version from bits 48 through 51.
+					UUID versions 7 and 8 can be identified by checking octet 8 for the values 0xE7 or 0xE8 respectively.
+					The version number can then be used to inspect the remainder of the UUID according to the specification for that version.
+					See <xref target="variant_and_version_fields"/> for more information on determining a UUID version based on the inspected variant bits.
+				</t>
 			</section>
 		</section>
-	</section>
-        <section anchor="uuidv8layout" title="UUIDv8 Layout and Bit Order">
-		<t>
-        UUIDv8 offers variable-size timestamp, clock sequence, and node values
-        which allow for a highly customizable UUID that fits a given application needs.
-		</t>
-		<t>
-        UUIDv8 SHOULD only be utilized if an implementation cannot utilize UUIDv1, UUIDv6, or UUIDv7.
-        Some situations in which UUIDv8 usage could occur:
-		</t>
-		<ul>
-            <li><t>An implementation would like to utilize a timestamp source
-              not defined by the current time-based UUIDs.</t></li>
-            <li><t>An implementation would like to utilize a timestamp bit layout
-              not defined by the current time-based UUIDs.</t></li>
-			<li><t>An implementation would like to avoid truncating a 64 bit Unix to 36 bits as defined by UUIDv7.</t></li>
-            <li><t>An implementation would like a specific level of precision
-              within the timestamp not offered by current time-based UUIDs.</t></li>
-            <li><t>An implementation would like to embed extra information
-              within the UUID node other than what is defined in this document.</t></li>
-            <li><t>An implementation has other application/language restrictions which
-              inhibit the usage of one of the current time-based UUIDs.</t></li>
-		</ul>
-		<t>
-        Roughly speaking a properly formatted UUIDv8 SHOULD contain
-        the following sections adding up to a total of 128 bits.
-		</t>
-		<ul spacing="compact" empty="true">
-            <li><t>- Timestamp Bits (Variable Length)</t></li>
-            <li><t>- Clock Sequence Bits (Variable Length)</t></li>
-            <li><t>- Node Bits (Variable Length)</t></li>
-            <li><t>- UUIDv8 Version Bits (4 bits)</t></li>
-            <li><t>- UUID Variant Bits (2 Bits)</t></li>
-		</ul>
-		<t>
-        The only explicitly defined bits are the Version and Variant leaving 122 bits
-        for implementation specific time-based UUIDs. To be clear:
-        UUIDv8 is not a replacement for UUIDv4 where all 122 extra bits are
-        filled with random data. UUIDv8's 128 bits (including the version and variant)
-        SHOULD contain at the minimum a timestamp of some format in the most
-        significant bit position followed directly by a clock sequence counter
-        and finally a node containing either random data or implementation specific data.
-		</t>
-		<t>
-        A sample format in Figure 6 is used to further illustrate the point
-        for the 16-octet, 128 bit UUIDv8.
-		</t>
-<figure>
-<name>UUIDv8 Field and Bit Layout</name>
-<artwork>
-     0                   1                   2                   3
-     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                          timestamp_32                         |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |           timestamp_48        |  ver  |      time_or_seq      |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |var|  seq_or_node  |          node                             |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                              node                             |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</artwork></figure>
-		<dl newline="true">
-        <dt>timestamp_32:</dt> <dd>The most significant 32 bits of the desired timestamp source.
-            Occupies bits 0 through 31 (octets 0-3).</dd>
-        <dt>timestamp_48:</dt> <dd>The next 16 bits of the timestamp source when a timestamp
-            source with at least 48 bits is used. When a 32 bit timestamp source
-            is utilized, these bits are set to 0. Occupies bits 32 through 47</dd>
-        <dt>ver:</dt> <dd>The 4 bit UUIDv8 version (1000). Occupies bits 48 through 51.</dd>
-        <dt>time_or_seq:</dt> <dd>If a 60 bit, or larger, timestamp is used these 12 bits are used to
-            fill out the remaining timestamp. If a 32 or 48 bit timestamp
-            is leveraged a 12 bit clock sequence MAY be used. 
-			Together ver and time_or_seq occupy bits 48 through 63 (octets 6-7)</dd>
-        <dt>var:</dt> <dd>2 bit UUID variant (10)</dd>
-        <dt>seq_or_node:</dt> <dd>If a 60 bit, or larger, timestamp source is leverages these 8 bits
-            SHOULD be allocated for an 8 bit clock sequence counter. If
-            a 32 or 48 bit timestamp source is used these 8 bits SHOULD be set to random.</dd>
-        <dt>node:</dt> <dd>In most implementations these bits will likely be set to
-            pseudo-random data. However, implementations utilize the node as they see fit.
-            Together var, seq_or_node, and node occupy Bits 64 through 127 (octets 8-15)</dd>
-		</dl>
-            <section anchor="uuidv8timestamp" title="UUIDv8 Timestamp Usage">
-			<t>
-            UUIDv8's usage of timestamp relaxes both the timestamp source
-            and timestamp length. Implementations are free to utilize
-            any monotonically stable timestamp source for UUIDv8.
+		<section anchor="IANA" title="IANA Considerations">
+			<t>This document has no IANA actions.</t>
+		</section>
+
+		<section anchor="Security" title="Security Considerations">
+			<t> 
+				MAC addresses pose inherent security risks and SHOULD not be used within a UUID. 
+				Instead CSPRNG data SHOULD selected from a source with sufficient entropy to ensure guaranteed
+				uniqueness among UUID generation. See <xref target="unguessability"/> for more information. 
 			</t>
 			<t>
-            Some examples include:
+				Timestamps embedded in the UUID do pose a very small attack surface. The timestamp in conjunction with 
+				an embedded counter does signal the order of creation for a given UUID and it's corresponding data but 
+				does not define anything about the data itself or the application as a whole. If UUIDs are required for
+				use with any security operation within an application context in any shape or form then <xref target="RFC4122"/> UUIDv4 SHOULD be utilized.
 			</t>
-			<ul spacing="compact"  empty="true">
-                <li><t>- Custom Epoch</t></li>
-                <li><t>- NTP timestamp</t></li>
-                <li><t>- ISO 8601 timestamp</t></li>
-                <li><t>- Full, Non-truncated 64 bit Unix Epoch timestamp</t></li>
-			</ul>
-			<t>
-            The relaxed nature UUIDv8 timestamps also works to future proof
-            this specification and allow implementations a method to create
-            compliant time-based UUIDs using timestamp source that might not yet be defined.
+		</section>
+
+		<section anchor="Acknowledgements" title="Acknowledgements">
+			<t>The authors gratefully acknowledge the contributions of 
+				Ben Campbell,
+				Ben Ramsey,
+				Fabio Lima,
+				Gonzalo Salgueiro, 
+				Martin Thomson,
+				Murray S. Kucherawy,
+				Rick van Rein,
+				Rob Wilton,
+				Sean Leonard,
+				Theodore Y. Ts'o.,
+				Robert Kieffer,
+				sergeyprokhorenko,
+				LiosK
+				As well as all of those in the IETF community and on GitHub to who contributed to the discussions which resulted in this document.
 			</t>
-			<t>
-            Timestamps come in many sizes and UUIDv8 defines three fields
-            that can easily used for the majority of timestamp lengths:
-			</t>
-			<ul>
-                <li><t>32 bit timestamp: using timestamp_32 and setting timestamp_48 to 0s</t></li>
-                <li><t>48 bit timestamp: using timestamp_32 and timestamp_48 entirely</t></li>
-                <li><t>60 bit timestamp: using timestamp_32, timestamp_48, and time_or_seq</t></li>
-                <li><t>64 bit timestamp: using timestamp_32, timestamp_48, and time_or_seq
-                  and truncating the timestamp the 60 most significant bits.</t></li>
-			</ul>
-			<t>
-            Although it is possible to create a timestamp larger than 64 bits in size
-            The usage and bit layout of that timestamp format is up to the implementation.
-            When a timestamp exceeds the 64th bit (octet 7), extra care must be taken to
-            ensure the Variant bits are properly inserted at their respective location
-            in the UUID. Likewise, the Version MUST always be implemented at the appropriate
-            location.
-			</t>
-			<t>
-            Any timestamps that does not entirely fill the timestamp_32, timestamp_48
-            or time_or_seq MUST set all leftover bits in the least significant position
-            of the respective field to 0. For example a 36 bit timestamp source would
-            fully utilize timestamp_32 and 4 bits of timestamp_48.
-            The remaining 12 bits in timestamp_48 MUST be set to 0.
-			</t>
-			<t>
-            By using implementation-specific timestamp sources it is not
-            guaranteed that devices outside of the application context are able to
-            extract and parse the timestamp from UUIDv8 without some pre-existing
-            knowledge of the source timestamp used by the UUIDv8 implementation.
-			</t>
-            </section>
-            <section anchor="uuidv8sequence" title="UUIDv8 Clock Sequence Usage">
-			<t>
-            A clock sequence MUST be used with UUIDv8 as added sequencing guarantees
-            when multiple UUIDv8 will be created on the same clock tick.
-            The amount of bits allocated to the clock sequence depends on the
-            precision of the timestamp source. For example, a more accurate timestamp source using
-            nanosecond precision will require less clock sequence bits than a timestamp
-            source utilizing seconds for precision.
-			</t>
-			<t>
-            The UUIDv8 layout in Figure 6 generically defines two possible
-            clock sequence values that can leveraged:
-			</t>
-			<ul spacing="compact">
-                <li><t>12 bit clock sequence using time_or_seq for use when the timestamp
-                  is less than 48 bits which allows for 4095 UUIDs per clock tick.</t></li>
-                <li><t>8 bit clock sequence using seq_or_node when the timestamp uses
-                  more than 48 bits which allows for 255 UUIDs per clock tick.</t></li>
-			</ul>
-			<t>
-            An implementation MAY use both time_or_seq and seq_or_node for clock sequencing
-            however it is highly unlikely that 20 bits of clock sequence are needed
-            for a given clock tick. Furthermore, more bits from the node MAY be used
-            for clock sequencing in the event that 8 bits is not sufficient.
-			</t>
-			<t>
-            The clock sequence MUST start at zero and increment monotonically
-            for each new UUIDv8 created on by the application on the same timestamp.
-            When the timestamp increments the clock sequence MUST be reset to zero.
-            The clock sequence MUST NOT rollover or reset to zero unless the timestamp
-            has incremented. Care MUST be given to ensure that an adequate sized
-            clock sequence is selected for a given application based on expected
-            timestamp precision and expected UUIDv8 generation rates.
-			</t>
-            </section>
-            <section anchor="uuidv8node" title="UUIDv8 Node Usage">
-			<t>
-            The UUIDv8 Node MAY contain any set of data an implementation desires however
-            the node MUST NOT be set to all 0s which does not ensure global uniqueness.
-            In most scenarios the node will be filled with pseudo-random data.
-			</t>
-			<t>
-            The UUIDv8 layout in Figure 6 defines 2 sizes of Node
-            depending on the timestamp size:
-			</t>
-			<ul spacing="compact">
-                <li><t>62 bit node encompassing seq_or_node and node
-                  Used when a timestamp of 48 bits or less is leveraged.</t></li>
-                <li><t>54 bit node when all 60 bits of the timestamp are
-                  in use and the seq_or_node is used as clock sequencing.</t></li>
-			</ul>
-			<t>
-            An implementation MAY choose to allocate bits from the node to the timestamp,
-            clock sequence or application-specific embedded field.
-            It is recommended that implementation utilize a node of at least 48 bits to
-            ensure global uniqueness can be guaranteed.
-			</t>
-            </section>
-            <section anchor="uuidv8pseudo" title="UUIDv8 Basic Creation Algorithm">
-			<t>
-            The entire usage of UUIDv8 is meant to be variable
-            and allow as much customization as possible to meet
-            specific application/language requirements.
-            As such any UUIDv8 implementations will likely vary among applications.
-			</t>
-			<t>
-            The following algorithm is a generic implementation using Figure 6
-            and the recommendations outlined in this specification.
-			</t>
-			<t>
-            <strong>32 bit timestamp, 12 bit sequence counter, 62 bit node:</strong>
-			</t>
-			<ol>
-				<li><t>From a system-wide shared stable store (e.g., a file) or global variable,
-				  read the UUID generator state: the values of the timestamp
-				  and clock sequence used to generate the last UUID.</t></li>
-				<li><t>Obtain the current time from the selected clock source as 32 bits.</t></li>
-				<li><t>Set the 32 bit field timestamp_32 to the 32 bits from the timestamp</t></li>
-				<li><t>Set 16 bit timestamp_48 to all 0s</t></li>
-				<li><t>Set the version to 8 (1000)</t></li>
-				<li><t>If the state was unavailable (e.g., non-existent or corrupted) or
-				  the timestamp is greater than the current timestamp;
-				  set the 12 bit clock sequence value (time_or_seq) to 0</t></li>
-				<li><t>If the state was available, but the saved timestamp is less than
-				  or equal to the current timestamp, increment the clock sequence
-				  value (time_or_seq).</t></li>
-				<li><t>Set the variant to binary 10</t></li>
-				<li><t>Generate 62 random bits and fill in 8 bits for seq_or_node and
-				  54 bits for the node.</t></li>
-				<li><t>Format by concatenating the 128 bits as:
-				  timestamp_32|timestamp_48|version|time_or_seq|variant|seq_or_node|node</t></li>
-				<li><t>Save the state (current timestamp and clock sequence)
-				  back to the stable store</t></li>
-			</ol>
-			<t>
-            <strong>48 bit timestamp, 12 bit sequence counter, 62 bit node:</strong>
-			</t>
-			<ol>
-				<li><t>From a system-wide shared stable store (e.g., a file) or global variable,
-				  read the UUID generator state: the values of the timestamp
-				  and clock sequence used to generate the last UUID.</t></li>
-				<li><t>Obtain the current time from the selected clock source as 32 bits.</t></li>
-				<li><t>Set the 32 bit field timestamp_32 to the 32 most significant bits
-				  from the timestamp</t></li>
-				<li><t>Set 16 bit timestamp_48 to the 16 least significant bits
-				  from the timestamp</t></li>
-				<li><t>The rest of the steps are the same as the previous example.</t></li>
-			</ol>
-			<t>
-            <strong>60 bit timestamp, 8 bit sequence counter, 54 bit node:</strong>
-			</t>
-			<ol>
-				<li><t>From a system-wide shared stable store (e.g., a file) or global variable,
-				  read the UUID generator state: the values of the timestamp
-				  and clock sequence used to generate the last UUID.</t></li>
-				<li><t>Obtain the current time from the selected clock source as 32 bits.</t></li>
-				<li><t>Set the 32 bit field timestamp_32 to the 32 bits from the timestamp</t></li>
-				<li><t>Set 16 bit timestamp_48 to the 16 middle bits from the timestamp</t></li>
-				<li><t>Set the version to 8 (1000)</t></li>
-				<li><t>Set 12 bit time_or_seq to the 12 least significant bits from the timestamp</t></li>
-				<li><t>Set the variant to 10</t></li>
-				<li><t>If the state was unavailable (e.g., non-existent or corrupted)
-				  or the timestamp is greater than the current timestamp;
-				  set the 12 bit clock sequence value (seq_or_node) to 0</t></li>
-				<li><t>If the state was available, but the saved timestamp is less than
-				  or equal to the current timestamp, increment the clock sequence
-				  value (seq_or_node).</t></li>
-				<li><t>Generate 54 random bits and fill in the node</t></li>
-				<li><t>Format by concatenating the 128 bits as:
-				  timestamp_32|timestamp_48|version|time_or_seq|variant|seq_or_node|node</t></li>
-				<li><t>Save the state (current timestamp and clock sequence) back to the stable store</t></li>
-			</ol>
-			<t>
-            <strong>64 bit timestamp, 8 bit sequence counter, 54 bit node:</strong>
-			</t>
-			<ol>
-				<li><t>The same steps as the 60 bit timestamp can be utilized
-				  if the 64 bit timestamp is truncated to 60 bits.</t></li>
-				<li><t>Implementations MAY chose to truncate the most or least significant
-				  bits but it is recommended to utilize the most significant 60 bits
-				  and lose 4 bits of precision in the nanoseconds or microseconds position.</t></li>
-			</ol>
-			<t>
-            <strong>General algorithm for generation of UUIDv8 not defined here:</strong>
-			</t>
-			<ol>
-				<li><t>From a system-wide shared stable store (e.g., a file) or global variable,
-				  read the UUID generator state: the values of the timestamp
-				  and clock sequence used to generate the last UUID.</t></li>
-				<li><t>Obtain the current time from the selected clock source as desired bit total</t></li>
-				<li><t>Set total amount of bits for timestamp as required in the most significant
-				  positions of the 128 bit UUID</t></li>
-				<li><t>Care MUST be taken to ensure that the UUID Version and UUID Variant are in the correct bit positions.</t>
-				  <t>UUID Version: Bits 48 through 51</t>
-				  <t>UUID Variant: Bits 64 and 65</t></li>
-				<li><t>If the state was unavailable (e.g., non-existent or corrupted)
-				  or the timestamp is greater than the current timestamp;
-				  set the desired clock sequence value to 0</t></li>
-				<li><t>If the state was available, but the saved timestamp is less than
-				  or equal to the current timestamp, increment the clock sequence value.</t></li>
-				<li><t>Set the remaining bits to the node as pseudo-random data</t></li>
-				<li><t>Format by concatenating the 128 bits together</t></li>
-				<li><t>Save the state (current timestamp and clock sequence)
-				  back to the stable store</t></li>
-			</ol>  
-            </section>
-        </section>
-    </section>
-    <section anchor="encoding" title="Encoding and Storage">
-        <t>
-        The existing UUID hex and dash format of 8-4-4-4-12 is retained for both
-        backwards compatibility and human readability.
-		</t>
-		<t>
-        For many applications such as databases
-        this format is unnecessarily verbose totaling 288 bits.
-		</t>
-		<ul spacing="compact">
-			<li><t>8 bits for each of the 32 hex characters = 256 bits</t></li>
-			<li><t>8 bits for each of the 4 hyphens = 32 bits</t></li>
-		</ul>
-		<t>
-        Where possible UUIDs SHOULD be stored within
-        database applications as the underlying 128 bit binary value.
-        </t>
-    </section>
-    <section anchor="uniquness" title="Global Uniqueness">
-        <t>
-        UUIDs created by this specification offer the same guarantees for global uniqueness 
-		as those found in <xref target="RFC4122"/>. Furthermore, the time-based UUIDs defined in this specification 
-		are geared towards database applications but MAY be used for a wide variety of use-cases. 
-		Just as global uniqueness is guaranteed, UUIDs are guaranteed to be unique within an application 
-		context within the enterprise domain.
-        </t>
-	</section>
-    <section anchor="distributed" title="Distributed UUID Generation">
-        <t>
-        Some implementations might desire to utilize multi-node, clustered, applications which involve 2 or more 
-		applications independently generating UUIDs that will be stored in a common location. UUIDs already feature sufficient 
-		entropy to ensure that the chances of collision are low. However, implementations MAY dedicate a 
-		portion of the node's most significant random bits to a pseudo-random machineID which helps identify 
-		UUIDs created by a given node. This works to add an extra layer of collision avoidance.
-		</t>
-		<t>
-		This machine ID MUST be placed in the UUID after the timestamp and sequence counter bits. 
-		This position is selected to ensure that the sorting by timestamp and clock sequence is still possible. 
-		The machineID MUST NOT be an IEEE 802 MAC address. The creation and negotiation of the machineID 
-		among distributed nodes is out of scope for this specification.
-        </t>
-    </section>
-    <section anchor="IANA" title="IANA Considerations">
-        <t>This document has no IANA actions.</t>
-    </section>
-    <section anchor="Security" title="Security Considerations">
-        <t> 
-        MAC addresses pose inherent security risks and MUST not be used for node generation. 
-		As such they have been strictly forbidden from time-based UUIDs within this specification.
-		Instead pseudo-random bits SHOULD selected from a source with sufficient entropy to ensure guaranteed
-		uniqueness among UUID generation.
-        </t>
-        <t>
-        Timestamps embedded in the UUID do pose a very small attack surface. The timestamp in conjunction with 
-		the clock sequence does signal the order of creation for a given UUID and it's corresponding data but 
-		does not define anything about the data itself or the application as a whole. If UUIDs are required for
-		use with any security operation within an application context in any shape or form then <xref target="RFC4122"/> UUIDv4 
-		SHOULD be utilized.
-        </t>
-        <t>
-        The machineID portion of node, described in <xref target="distributed"/>, does 
-		provide small unique identifier which could be used to determine which application is generating 
-		data but this machineID alone is not enough to identify a node on the network without other corresponding 
-		data points. Furthermore the machineID, like the timestamp+sequence, does not provide any context about 
-		the data the corresponds to the UUID or the current state of the application as a whole.
-        </t>
-    </section>
-    <section anchor="Acknowledgements" title="Acknowledgements">
-        <t>The authors gratefully acknowledge the contributions of 
-            Ben Campbell,
-            Ben Ramsey,
-            Fabio Lima,
-            Gonzalo Salgueiro, 
-            Martin Thomson,
-            Murray S. Kucherawy,
-            Rick van Rein,
-            Rob Wilton,
-            Sean Leonard,
-            Theodore Y. Ts'o.
-            As well as all of those in and outside the IETF community to who contributed to the discussions which resulted in this document.</t>
-    </section>
-  </middle>
-  <back>
-    <references title="Normative References">
-		<reference anchor="RFC2119" target="https://www.rfc-editor.org/info/rfc2119" quoteTitle="true" derivedAnchor="RFC2119">
-          <front>
-            <title>Key words for use in RFCs to Indicate Requirement Levels</title>
-            <author initials="S." surname="Bradner" fullname="S. Bradner">
-              <organization showOnFrontPage="true"/>
-            </author>
-            <date year="1997" month="March"/>
-            <abstract>
-              <t indent="0">In many standards track documents several words are used to signify the requirements in the specification.  These words are often capitalized. This document defines these words as they should be interpreted in IETF documents.  This document specifies an Internet Best Current Practices for the Internet Community, and requests discussion and suggestions for improvements.</t>
-            </abstract>
-          </front>
-          <seriesInfo name="BCP" value="14"/>
-          <seriesInfo name="RFC" value="2119"/>
-          <seriesInfo name="DOI" value="10.17487/RFC2119"/>
-        </reference>
-    	<reference anchor="RFC4122" target="https://www.rfc-editor.org/info/rfc4122">
-			<front>
-			  <title>A Universally Unique IDentifier (UUID) URN Namespace</title>
-			  <author initials="P." surname="Leach" fullname="P. Leach">
-			    <organization/>
-			  </author>
-			  <author initials="M." surname="Mealling" fullname="M. Mealling">
-				<organization/>
-			  </author>
-			  <author initials="R." surname="Salz" fullname="R. Salz">
-				<organization/>
-			  </author>
-			  <date year="2005" month="July"/>
-			  <abstract>
-				<t>This specification defines a Uniform Resource Name namespace for UUIDs (Universally Unique IDentifier), also known as GUIDs (Globally Unique IDentifier). A UUID is 128 bits long, and can guarantee uniqueness across space and time. UUIDs were originally used in the Apollo Network Computing System and later in the Open Software Foundation\'s (OSF) Distributed Computing Environment (DCE), and then in Microsoft Windows platforms.</t>
-				<t>This specification is derived from the DCE specification with the kind permission of the OSF (now known as The Open Group). Information from earlier versions of the DCE specification have been incorporated into this document. [STANDARDS-TRACK]</t>
-			  </abstract>
+		</section>
+
+	</middle>
+
+	<back>
+		<references title="Normative References">
+			<reference anchor="RFC2119" target="https://www.rfc-editor.org/info/rfc2119" quoteTitle="true" derivedAnchor="RFC2119">
+				<front>
+					<title>Key words for use in RFCs to Indicate Requirement Levels</title>
+					<author initials="S." surname="Bradner" fullname="S. Bradner">
+						<organization showOnFrontPage="true"/>
+					</author>
+					<date year="1997" month="March"/>
+					<abstract>
+						<t indent="0">In many standards track documents several words are used to signify the requirements in the specification.  These words are often capitalized. This document defines these words as they should be interpreted in IETF documents.  This document specifies an Internet Best Current Practices for the Internet Community, and requests discussion and suggestions for improvements.</t>
+					</abstract>
+				</front>
+				<seriesInfo name="BCP" value="14"/>
+				<seriesInfo name="RFC" value="2119"/>
+				<seriesInfo name="DOI" value="10.17487/RFC2119"/>
+			</reference>
+			<reference anchor="RFC8174" target="https://www.rfc-editor.org/info/rfc8174" quoteTitle="true" derivedAnchor="RFC8174">
+			  <front>
+				<title>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</title>
+				<author initials="B." surname="Leiba" fullname="B. Leiba">
+				  <organization showOnFrontPage="true"/>
+				</author>
+				<date year="2017" month="May"/>
+				<abstract>
+				  <t indent="0">RFC 2119 specifies common key words that may be used in protocol  specifications.  This document aims to reduce the ambiguity by clarifying that only UPPERCASE usage of the key words have the  defined special meanings.</t>
+				</abstract>
 			  </front>
-			  <seriesInfo name="RFC" value="4122"/>
-			  <seriesInfo name="DOI" value="10.17487/RFC4122"/>
-		</reference>
-    </references>
-	<references title="Informative References">
-	    <reference anchor="LexicalUUID" target="https://github.com/twitter-archive/cassie">
-			<front>
-				<title>A Scala client for Cassandra</title>
-				<author>
-					<organization showOnFrontPage="true">Twitter</organization>
-				</author>
-				<date month="November" year="2012" />
-			</front>
-			<seriesInfo name="commit" value="f6da4e0" />
-		</reference>
-		<reference anchor="Snowflake" target="https://github.com/twitter-archive/snowflake/releases/tag/snowflake-2010">
-			<front>
-				<title>Snowflake is a network service for generating unique ID numbers at high scale with some simple guarantees.</title>
-				<author>
-					<organization showOnFrontPage="true">Twitter</organization>
-				</author>
-				<date month="May" year="2014" />
-			</front>
-			<seriesInfo name="Commit" value="b3f6a3c" />
-		</reference>
-		<reference anchor="Flake" target="https://github.com/boundary/flake">
-			<front>
-				<title>Flake: A decentralized, k-ordered id generation service in Erlang</title>
-				<author>
-					<organization showOnFrontPage="true">Boundary</organization>
-				</author>
-				<date month="February" year="2017" />
-			</front>
-			<seriesInfo name="Commit" value="15c933a" />
-		</reference>
-		<reference anchor="ShardingID" target="https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c">
-			<front>
-				<title>Sharding &#038; IDs at Instagram</title>
-				<author>
-					<organization showOnFrontPage="true">Instagram Engineering</organization>
-				</author>
-				<date month="December" year="2012" />
-			</front>
-		</reference>
-		<reference anchor="KSUID" target="https://github.com/segmentio/ksuid">
-			<front>
-				<title>K-Sortable Globally Unique IDs</title>
-				<author>
-					<organization showOnFrontPage="true">Segment</organization>
-				</author>
-				<date month="July" year="2020" />
-			</front>
-			<seriesInfo name="Commit" value="bf376a7" />
-		</reference>
-		<reference anchor="Elasticflake" target="https://github.com/ppearcy/elasticflake">
-			<front>
-				<title>Sequential UUID / Flake ID generator pulled out of elasticsearch common</title>
-				<author initials="P" surname="Pearcy" fullname="Paul Pearcy">
-					<organization />
-				</author>
-				<date month="January" year="2015" />
-			</front>
-			<seriesInfo name="Commit" value="dd71c21" />
-		</reference>
-		<reference anchor="FlakeID" target="https://github.com/T-PWK/flake-idgen">
-			<front>
-				<title>Flake ID Generator</title>
-				<author initials="T" surname="Pawlak" fullname="Tom Pawlak">
-					<organization />
-				</author>
-				<date month="April" year="2020" />
-			</front>
-			<seriesInfo name="Commit" value="fcd6a2f" />
-		</reference>
-		<reference anchor="Sonyflake" target="https://github.com/sony/sonyflake">
-			<front>
-				<title>A distributed unique ID generator inspired by Twitter's Snowflake</title>
-				<author>
-					<organization showOnFrontPage="true">Sony</organization>
-				</author>
-				<date month="August" year="2020" />
-			</front>
-			<seriesInfo name="Commit" value="848d664" />
-		</reference>
-		<reference anchor="orderedUuid" target="https://itnext.io/laravel-the-mysterious-ordered-uuid-29e7500b4f8">
-			<front>
-				<title>Laravel: The mysterious "Ordered UUID"</title>
-				<author initials="IT" surname="Cabrera" fullname="Italo Baeza Cabrera">
-					<organization />
-				</author>
-				<date month="January" year="2020" />
-			</front>
-		</reference>
-		<reference anchor="COMBGUID" target="https://github.com/richardtallent/RT.Comb">
-			<front>
-				<title>Creating sequential GUIDs in C# for MSSQL or PostgreSql</title>
-				<author initials="R" surname="Tallent" fullname="Richard Tallent">
-					<organization />
-				</author>
-				<date month="December" year="2020" />
-			</front>
-			<seriesInfo name="Commit" value="2759820" />
-		</reference>
-		<reference anchor="ULID" target="https://github.com/ulid/spec">
-			<front>
-				<title>Universally Unique Lexicographically Sortable Identifier</title>
-				<author initials="A" surname="Feerasta" fullname="Alizain Feerasta">
-					<organization />
-				</author>
-				<date month="May" year="2019" />
-			</front>
-			<seriesInfo name="Commit" value="d0c7170" />
-		</reference>
-		<reference anchor="SID" target="https://github.com/chilts/sid">
-			<front>
-				<title>sid : generate sortable identifiers</title>
-				<author initials="A" surname="Chilton" fullname="Andrew Chilton">
-					<organization />
-				</author>
-				<date month="June" year="2019" />
-			</front>
-			<seriesInfo name="Commit" value="660e947" />
-		</reference>
-		<reference anchor="pushID" target="https://firebase.googleblog.com/2015/02/the-2120-ways-to-ensure-unique_68.html">
-			<front>
-				<title>The 2^120 Ways to Ensure Unique Identifiers</title>
-				<author>
-					<organization showOnFrontPage="true">Google</organization>
-				</author>
-				<date month="February" year="2015" />
-			</front>
-		</reference>
-		<reference anchor="XID" target="https://github.com/rs/xid">
-			<front>
-				<title>Globally Unique ID Generator</title>
-				<author initials="O" surname="Poitrey" fullname="Olivier Poitrey">
-					<organization />
-				</author>
-				<date month="October" year="2020" />
-			</front>
-			<seriesInfo name="Commit" value="efa678f" />
-		</reference>
-		<reference anchor="ObjectID" target="https://docs.mongodb.com/manual/reference/method/ObjectId/">
-			<front>
-				<title>ObjectId - MongoDB Manual</title>
-				<author>
-					<organization showOnFrontPage="true">MongoDB</organization>
-				</author>
-			</front>
-		</reference>
-		<reference anchor="CUID" target="https://github.com/ericelliott/cuid">
-			<front>
-				<title>Collision-resistant ids optimized for horizontal scaling and performance.</title>
-				<author initials="E" surname="Elliott" fullname="Eric Elliott">
-					<organization />
-				</author>
-				<date month="October" year="2020" />
-			</front>
-			<seriesInfo name="Commit" value="215b27b" />
-		</reference>
-	</references>
-  </back>
+			  <seriesInfo name="BCP" value="14"/>
+			  <seriesInfo name="RFC" value="8174"/>
+			  <seriesInfo name="DOI" value="10.17487/RFC8174"/>
+			</reference>
+			<reference anchor="RFC4122" target="https://www.rfc-editor.org/info/rfc4122">
+				<front>
+					<title>A Universally Unique IDentifier (UUID) URN Namespace</title>
+					<author initials="P." surname="Leach" fullname="P. Leach">
+						<organization/>
+					</author>
+					<author initials="M." surname="Mealling" fullname="M. Mealling">
+						<organization/>
+					</author>
+					<author initials="R." surname="Salz" fullname="R. Salz">
+						<organization/>
+					</author>
+					<date year="2005" month="July"/>
+					<abstract>
+						<t>This specification defines a Uniform Resource Name namespace for UUIDs (Universally Unique IDentifier), also known as GUIDs (Globally Unique IDentifier). A UUID is 128 bits long, and can guarantee uniqueness across space and time. UUIDs were originally used in the Apollo Network Computing System and later in the Open Software Foundation\'s (OSF) Distributed Computing Environment (DCE), and then in Microsoft Windows platforms.</t>
+						<t>This specification is derived from the DCE specification with the kind permission of the OSF (now known as The Open Group). Information from earlier versions of the DCE specification have been incorporated into this document. [STANDARDS-TRACK]</t>
+					</abstract>
+				</front>
+				<seriesInfo name="RFC" value="4122"/>
+				<seriesInfo name="DOI" value="10.17487/RFC4122"/>
+			</reference>
+		</references>
+		<references title="Informative References">
+			<reference anchor="LexicalUUID" target="https://github.com/twitter-archive/cassie">
+				<front>
+					<title>A Scala client for Cassandra</title>
+					<author>
+						<organization showOnFrontPage="true">Twitter</organization>
+					</author>
+					<date month="November" year="2012" />
+				</front>
+				<seriesInfo name="commit" value="f6da4e0" />
+			</reference>
+			<reference anchor="Snowflake" target="https://github.com/twitter-archive/snowflake/releases/tag/snowflake-2010">
+				<front>
+					<title>Snowflake is a network service for generating unique ID numbers at high scale with some simple guarantees.</title>
+					<author>
+						<organization showOnFrontPage="true">Twitter</organization>
+					</author>
+					<date month="May" year="2014" />
+				</front>
+				<seriesInfo name="Commit" value="b3f6a3c" />
+			</reference>
+			<reference anchor="Flake" target="https://github.com/boundary/flake">
+				<front>
+					<title>Flake: A decentralized, k-ordered id generation service in Erlang</title>
+					<author>
+						<organization showOnFrontPage="true">Boundary</organization>
+					</author>
+					<date month="February" year="2017" />
+				</front>
+				<seriesInfo name="Commit" value="15c933a" />
+			</reference>
+			<reference anchor="ShardingID" target="https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c">
+				<front>
+					<title>Sharding &#038; IDs at Instagram</title>
+					<author>
+						<organization showOnFrontPage="true">Instagram Engineering</organization>
+					</author>
+					<date month="December" year="2012" />
+				</front>
+			</reference>
+			<reference anchor="KSUID" target="https://github.com/segmentio/ksuid">
+				<front>
+					<title>K-Sortable Globally Unique IDs</title>
+					<author>
+						<organization showOnFrontPage="true">Segment</organization>
+					</author>
+					<date month="July" year="2020" />
+				</front>
+				<seriesInfo name="Commit" value="bf376a7" />
+			</reference>
+			<reference anchor="Elasticflake" target="https://github.com/ppearcy/elasticflake">
+				<front>
+					<title>Sequential UUID / Flake ID generator pulled out of elasticsearch common</title>
+					<author initials="P" surname="Pearcy" fullname="Paul Pearcy">
+						<organization />
+					</author>
+					<date month="January" year="2015" />
+				</front>
+				<seriesInfo name="Commit" value="dd71c21" />
+			</reference>
+			<reference anchor="FlakeID" target="https://github.com/T-PWK/flake-idgen">
+				<front>
+					<title>Flake ID Generator</title>
+					<author initials="T" surname="Pawlak" fullname="Tom Pawlak">
+						<organization />
+					</author>
+					<date month="April" year="2020" />
+				</front>
+				<seriesInfo name="Commit" value="fcd6a2f" />
+			</reference>
+			<reference anchor="Sonyflake" target="https://github.com/sony/sonyflake">
+				<front>
+					<title>A distributed unique ID generator inspired by Twitter's Snowflake</title>
+					<author>
+						<organization showOnFrontPage="true">Sony</organization>
+					</author>
+					<date month="August" year="2020" />
+				</front>
+				<seriesInfo name="Commit" value="848d664" />
+			</reference>
+			<reference anchor="orderedUuid" target="https://itnext.io/laravel-the-mysterious-ordered-uuid-29e7500b4f8">
+				<front>
+					<title>Laravel: The mysterious "Ordered UUID"</title>
+					<author initials="IT" surname="Cabrera" fullname="Italo Baeza Cabrera">
+						<organization />
+					</author>
+					<date month="January" year="2020" />
+				</front>
+			</reference>
+			<reference anchor="COMBGUID" target="https://github.com/richardtallent/RT.Comb">
+				<front>
+					<title>Creating sequential GUIDs in C# for MSSQL or PostgreSql</title>
+					<author initials="R" surname="Tallent" fullname="Richard Tallent">
+						<organization />
+					</author>
+					<date month="December" year="2020" />
+				</front>
+				<seriesInfo name="Commit" value="2759820" />
+			</reference>
+			<reference anchor="ULID" target="https://github.com/ulid/spec">
+				<front>
+					<title>Universally Unique Lexicographically Sortable Identifier</title>
+					<author initials="A" surname="Feerasta" fullname="Alizain Feerasta">
+						<organization />
+					</author>
+					<date month="May" year="2019" />
+				</front>
+				<seriesInfo name="Commit" value="d0c7170" />
+			</reference>
+			<reference anchor="SID" target="https://github.com/chilts/sid">
+				<front>
+					<title>sid : generate sortable identifiers</title>
+					<author initials="A" surname="Chilton" fullname="Andrew Chilton">
+						<organization />
+					</author>
+					<date month="June" year="2019" />
+				</front>
+				<seriesInfo name="Commit" value="660e947" />
+			</reference>
+			<reference anchor="pushID" target="https://firebase.googleblog.com/2015/02/the-2120-ways-to-ensure-unique_68.html">
+				<front>
+					<title>The 2^120 Ways to Ensure Unique Identifiers</title>
+					<author>
+						<organization showOnFrontPage="true">Google</organization>
+					</author>
+					<date month="February" year="2015" />
+				</front>
+			</reference>
+			<reference anchor="XID" target="https://github.com/rs/xid">
+				<front>
+					<title>Globally Unique ID Generator</title>
+					<author initials="O" surname="Poitrey" fullname="Olivier Poitrey">
+						<organization />
+					</author>
+					<date month="October" year="2020" />
+				</front>
+				<seriesInfo name="Commit" value="efa678f" />
+			</reference>
+			<reference anchor="ObjectID" target="https://docs.mongodb.com/manual/reference/method/ObjectId/">
+				<front>
+					<title>ObjectId - MongoDB Manual</title>
+					<author>
+						<organization showOnFrontPage="true">MongoDB</organization>
+					</author>
+				</front>
+			</reference>
+			<reference anchor="CUID" target="https://github.com/ericelliott/cuid">
+				<front>
+					<title>Collision-resistant ids optimized for horizontal scaling and performance.</title>
+					<author initials="E" surname="Elliott" fullname="Eric Elliott">
+						<organization />
+					</author>
+					<date month="October" year="2020" />
+				</front>
+				<seriesInfo name="Commit" value="215b27b" />
+			</reference>
+			<reference anchor="IEEE754" target="https://standards.ieee.org/ieee/754/6210/">
+				<front>
+					<title>Collision-resistant ids optimized for horizontal scaling and performance.</title>
+					<author>
+						<organization showOnFrontPage="true">IEEE</organization>
+					</author>
+					<date month="July" year="2019" />
+				</front>
+				<seriesInfo name="Series" value="754-2019" />
+			</reference>
+		</references>
+		<section anchor="example_code" title="Example Code">
+			<section anchor="creating_a_uuidv6_value" title="Creating a UUIDv6 Value">
+				<t>This section details a function in C which converts from a UUID version 1 to version 6:
+				</t>
+				<figure>
+					<name>UUIDv6 Function in C</name>
+					<artwork><![CDATA[
+#include <stdio.h>
+#include <stdint.h>
+#include <inttypes.h>
+#include <arpa/inet.h>
+#include <uuid/uuid.h>
+
+/* Converts UUID version 1 to version 6 in place. */
+void uuidv1tov6(uuid_t u) {
+
+  uint64_t ut;
+  unsigned char *up = (unsigned char *)u;
+
+  // load ut with the first 64 bits of the UUID
+  ut = ((uint64_t)ntohl(*((uint32_t*)up))) << 32;
+  ut |= ((uint64_t)ntohl(*((uint32_t*)&up[4])));
+
+  // dance the bit-shift...
+  ut = 
+    ((ut >> 32) & 0x0FFF) | // 12 least significant bits
+    (0x6000) | // version number
+    ((ut >> 28) & 0x0000000FFFFF0000) | // next 20 bits
+    ((ut << 20) & 0x000FFFF000000000) | // next 16 bits
+    (ut << 52); // 12 most significant bits
+
+  // store back in UUID
+  *((uint32_t*)up) = htonl((uint32_t)(ut >> 32));
+  *((uint32_t*)&up[4]) = htonl((uint32_t)(ut));
+
+}
+					]]></artwork>
+				</figure>
+			</section>
+			<section anchor="creating_a_uuidv7_value" title="Creating a UUIDv7 Value">
+				<figure>
+					<name>UUIDv7 Function in C</name>
+					<artwork><![CDATA[
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <time.h>
+
+// ...
+
+// csprng data source
+FILE *rndf;
+rndf = fopen("/dev/urandom", "r");
+if (rndf == 0) {
+	printf("fopen /dev/urandom error\n");
+	return 1;
+}
+
+// ...
+
+// generate one UUIDv7
+uint8_t u[16];
+struct timespec ts;
+int ret;
+
+ret = clock_gettime(CLOCK_REALTIME, &ts);
+if (ret != 0) {
+	printf("clock_gettime error: %d\n", ret);
+	return 1;
+}
+
+uint64_t tms;
+
+tms = ((uint64_t)ts.tv_sec) * 1000;
+tms += ((uint64_t)ts.tv_nsec) / 1000000;
+
+printf("tms: %lld\n", tms);
+
+memset(u, 0, 16);
+
+fread(&u[6], 10, 1, rndf); // fill everything after the timestamp with random bytes
+
+*((uint64_t*)(u)) |= htonll(tms << 16); // shift time into first 48 bits and OR into place
+
+u[8] = 0xE7; // set var-ver field
+					]]></artwork>
+				</figure>
+			</section>
+			<section anchor="creating_a_uuidv8_value" title="Creating a UUIDv7 Value">
+				<t>UUIDv8 will vary greatly from implementation to implementation. A good candidate use case for UUIDv8 is to embed exotic timestamps like the one found in this example which employs approximately 0.25 milliseconds and approximately 5 microseconds per timestamp tick as a 48 bit value.</t>
+				<figure>
+					<name>UUID8 Function in C</name>
+					<artwork><![CDATA[
+#include <stdint.h>
+#include <stdio.h>
+#include <time.h>
+
+int main() {
+  struct timespec tp;
+  clock_gettime(CLOCK_REALTIME, &tp);
+  uint64_t timestamp = (uint64_t)tp.tv_sec << 12;
+
+  // compute 12-bit (~0.25 msec precision) fraction from nsecs
+  timestamp |= ((uint64_t)tp.tv_nsec << 12) / 1000000000;
+
+  printf("%08llx-%04llx\n", timestamp >> 16, timestamp & 0xFFFF);
+  return 0;
+}
+					]]></artwork>
+				</figure>
+			</section>
+		</section>
+		<section anchor="test_vectors" title="Test Vectors">
+			<t>Both UUIDv1 and UUIDv6 test vectors utilize the same 60-bit timestamp: 0x1EC9414C232AB00 (138648505420000000) Tuesday, February 22, 2022 2:22:22.000000 PM GMT-05:00</t>
+			<t>Both UUIDv1 and UUIDv6 utilize the same values in clk_seq_hi_res, clock_seq_low, and node. All of which have been generated with random data.</t>
+				<figure>
+					<name>Test Vector Timestamp Pseudo-code</name>
+					<artwork><![CDATA[
+# Unix Nanosecond precision to Gregorian 100-nanosecond intervals
+gregorian_100_ns = (unix_64_bit_nanoseconds / 100) + gregorian_unix_offset
+
+# Gregorian to Unix Offset:
+# The number of 100-ns intervals between the
+# UUID epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
+# gregorian_unix_offset = 0x01b21dd213814000 or 122192928000000000
+
+# Unix 64 bit Nanosecond Timestamp:
+# Unix NS: Tuesday, February 22, 2022 2:22:22 PM GMT-05:00
+# unix_64_bit_nanoseconds = 0x16D6320C3D4DCC00 or 1645557742000000000
+
+# Work:
+# gregorian_100_ns = (1645557742000000000 / 100) + 122192928000000000
+# (138648505420000000 - 122192928000000000) * 100 = unix_64_bit_nanoseconds
+
+# Final:
+# gregorian_100_ns = 0x1EC9414C232AB00 or 138648505420000000
+
+# Original: 000111101100100101000001010011000010001100101010101100000000
+# UUIDv1:   11000010001100101010101100000000|1001010000010100|0001|000111101100
+# UUIDv6:   00011110110010010100000101001100|0010001100101010|0110|101100000000
+					]]></artwork>
+				</figure>			
+			<section anchor="uuidv6_example" title="Example of a UUIDv6 Value">
+				<figure>
+					<name>UUIDv1 Example Test Vector</name>
+					<artwork><![CDATA[
+----------------------------------------------
+field                 bits    value_hex       
+----------------------------------------------
+time_low              32      0xC232AB00      
+time_mid              16      0x9414          
+time_hi_and_version   16      0x11EC          
+clk_seq_hi_res         8      0xB3            
+clock_seq_low          8      0xC8            
+node                  48      0x9E6BDECED846  
+----------------------------------------------
+total                128
+----------------------------------------------
+final_hex: C232AB00-9414-11EC-B3C8-9E6BDECED846
+					]]></artwork>
+				</figure>
+				<figure>
+					<name>UUIDv6 Example Test Vector</name>
+					<artwork><![CDATA[
+-----------------------------------------------
+field                 bits    value_hex        
+-----------------------------------------------
+time_high              32      0x1EC9414C      
+time_mid               16      0x232A          
+time_low_and_version   16      0x6B00          
+clk_seq_hi_res          8      0xB3            
+clock_seq_low           8      0xC8            
+node                   48      0x9E6BDECED846  
+-----------------------------------------------
+total                 128
+-----------------------------------------------
+final_hex: 1EC9414C-232A-6B00-B3C8-9E6BDECED846
+					]]></artwork>
+				</figure>
+			</section>
+			<section anchor="uuidv7_example" title="Example of a UUIDv7 Value">
+				<t>This example UUIDv7 test vector utilizes a well-known 32-bit unix epoch with additional millisecond precision to fill the first 48 bits</t>
+				<t>rand_a and rand_b are filled with random data.</t>
+				<t>The timestamp is Tuesday, February 22, 2022 2:22:22.00 PM GMT-05:00 represented as 0x17F21CFD130 or 1645539742000</t>
+				<figure>
+					<name>UUIDv7 Example Test Vector</name>
+					<artwork><![CDATA[
+-------------------------------
+field      bits    value
+-------------------------------
+unix_ts_ms   48    0x017F21CFD130
+rand_a       16    0xF8B8
+var_ver       8    0xE7
+rand_b       56    0xD6A139DC9535C5
+-------------------------------
+total        128               
+-------------------------------
+final: 017F21CF-D130-F8B8-E7D6-A139DC9535C5
+					]]></artwork>
+				</figure>
+			</section>
+			<section anchor="uuidv8_example" title="Example of a UUIDv8 Value">
+				<t>This example UUIDv8 test vector utilizes a well-known 64-bit unix epoch with nanosecond precision to fill the first 64 bits through ver_var.</t>
+				<t>The final 56 bits are filled with random data.</t>
+				<t>Timestamp is Tuesday, February 22, 2022 2:22:22.000000 PM GMT-05:00 represented as 0x16D6320C3D4DCC00 or 1645557742000000000</t>
+				<t>It should be noted that this example is just to illustrate one scenario for UUIDv8. Test vectors will likely be implementation specific and vary greatly from this simple example.</t>
+				<figure>
+					<name>UUIDv8 Example Test Vector</name>
+					<artwork><![CDATA[
+-------------------------------
+field      bits    value
+-------------------------------
+custom_a     64    0x16D6320C3D4DCC00
+var_ver       8    0xE8
+custom_b     56    0x3C2D06302FC417
+-------------------------------
+total        128               
+-------------------------------
+final: 16D6320C-3D4D-CC00-E83C-2D06302FC417
+					]]></artwork>
+				</figure>
+			</section>
+		</section>
+	</back>
 </rfc>
