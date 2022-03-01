@@ -28,12 +28,12 @@ Draft 02, Section 5.1.  Timestamp Granularity
 
 ####  Current Text:
 ```
-UUIDs SHOULD be universally unique.
+UUIDs MAY be universally unique.
 ```
 
 #### Proposed Text:
 ```
-UUIDs MUST be universally unique.
+UUIDs SHOULD be universally unique.
 ```
 
 ---
