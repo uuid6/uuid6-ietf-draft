@@ -14,10 +14,10 @@ please see http://xml.resource.org/authoring/README.html. -->
 <!-- control vertical white space: 
 (using these PIs as follows is recommended by the RFC Editor) -->
 <!-- end of popular PIs -->
-<rfc version="3" category="std" updates="4122" submissionType="IETF" consensus="true" ipr="trust200902" docName="draft-peabody-dispatch-new-uuid-format-02">
+<rfc version="3" category="std" updates="4122" submissionType="IETF" consensus="true" ipr="trust200902" docName="draft-peabody-dispatch-new-uuid-format-03">
 	<front>
 		<title abbrev="new-uuid-format">New UUID Formats</title>
-		<seriesInfo name="Internet-Draft" value="draft-peabody-dispatch-new-uuid-format-02" stream="IETF"/>
+		<seriesInfo name="Internet-Draft" value="draft-peabody-dispatch-new-uuid-format-03" stream="IETF"/>
 		<author fullname="Brad G. Peabody" initials="BGP" surname="Peabody">
 			<address>
 				<email>brad@peabody.io</email>
@@ -152,8 +152,9 @@ please see http://xml.resource.org/authoring/README.html. -->
 
 			<ol spacing="compact">
 				<li><t>UUID version 6: A re-ordering of UUID version 1 so it is sortable as an opaque sequence of bytes.  Easy to implement given an existing UUIDv1 implementation. See <xref target="uuidv6"/></t></li>
-				<li><t>UUID version 7: An entirely new time-based UUID bit layout sourced from the widely implemented and well known Unix Epoch timestamp source. See <xref target="uuidv7"/></t></li>
-				<li><t>UUID version 8: A free-form UUID format which has no explicit requirements except maintaining backward compatibility. See <xref target="uuidv8"/></t></li>
+				<li><t>UUID version 7E: An entirely new time-based UUID bit layout sourced from the widely implemented and well known Unix Epoch timestamp source. See <xref target="uuidv7"/></t></li>
+				<li><t>UUID version 8E: A free-form UUID format which has no explicit requirements except maintaining backward compatibility. See <xref target="uuidv8"/></t></li>
+				<li><t>Max UUID: A specialized UUID which is the inverse of <xref target="RFC4122" sectionFormat="comma" section="4.1.7"/> See <xref target="maxuuid"/></t></li>
 			</ol>
 
 			<section anchor="changelog" title="changelog">
@@ -162,20 +163,21 @@ please see http://xml.resource.org/authoring/README.html. -->
 				<ul spacing="compact" empty="true">
 					<li><t>- Reworked the draft body to make the content more concise</t></li>
 					<li><t>- UUIDv6 section reworked to just the reorder of the timestamp</t></li>
-					<li><t>- UUIDv7 changed to simplify timestamp mechanism to just millisecond unix timestamp</t></li>
-					<li><t>- UUIDv8 relaxed to be custom in all elements except version and variant</t></li>
-					<li><t>- Changed UUIDv7 and UUIDv8 to use Variant 111.</t></li>
+					<li><t>- UUIDv7E changed to simplify timestamp mechanism to just millisecond unix timestamp</t></li>
+					<li><t>- UUIDv8E relaxed to be custom in all elements except version and variant</t></li>
+					<li><t>- Changed UUIDv7E and UUIDv8E to use Variant 111.</t></li>
 					<li><t>- Added C code samples in Appendix.</t></li>
 					<li><t>- Added test vectors in Appendix.</t></li>
 					<li><t>- Version and Variant section combined into one section.</t></li>
 					<li><t>- Changed from pseudo-random number generators to cryptographically secure pseudo-random number generator (CSPRNG).</t></li>
-					<li><t>- Split Encoding and Storage section into more sections: Text Format and Storing UUIDs, Opacity</t></li>
+					<li><t>- Split Encoding and Storage renamed Storing UUIDs, Opacity</t></li>
 					<li><t>- Reworked Global Uniqueness under new section Global and Local Uniqueness</t></li>
 					<li><t>- Combined redundant topics from all UUIDs into sections such as Timestamp granularity, Monotonicity and Counters, Collision Resistance, Sorting, and Unguessability, etc.</t></li>
-					<li><t>- Node verbiage only used in UUIDv6 and v7 and v8 reference random instead</t></li>
+					<li><t>- Node verbiage only used in UUIDv6 and v7E and v8E reference random instead</t></li>
 					<li><t>- Clock sequence verbiage changed simply to counter in any section other than UUIDv6</t></li>
 					<li><t>- Added Abbreviations section</t></li>
 					<li><t>- Updated IETF Draft XML Layout</t></li>
+					<li><t>- Added information about little-endian UUIDs</t></li>
 				</ul>
 				<t>draft-02</t>
 				<ul spacing="compact" empty="true">
@@ -202,88 +204,112 @@ please see http://xml.resource.org/authoring/README.html. -->
 			</section>
 		</section>
 		<section anchor="format" title="Format">
-			<t>The UUID format is 16 octets; some bits of the eight octet variant field specified below determine finer structure.</t>
+			<t>
+				The UUID format is 16 octets; The variant bits in conjunction with the version bits described in the next section in determine finer structure.
+			</t>
 			<section anchor="variant_and_version_fields" title="Variant and Version Fields">
 				<t>
-				The variant bits utilized by UUIDs in this specification 
-				remain in the same octet as originally defined by <xref target="RFC4122" sectionFormat="comma" section="4.1.1"/>. 
+					The variant bits utilized by UUIDs in this specification 
+					remain in the same octet as originally defined by <xref target="RFC4122" sectionFormat="comma" section="4.1.1"/>. 
+				</t>								
+				<t>
+					This specification makes use of the unused variant bits of 111 defined in <xref target="RFC4122" sectionFormat="comma" section="4.1.1"/>.
+					This variant will move the 4-bit version to the same octet as the variant to overcoming many bit shuffling techniques found in UUID implementations.
+					All UUIDs utilizing this variant SHOULD be referenced by their version number plus the uppercase E character to represent the hex character 0xE which will frequent the text representation of UUIDs.
+					The placement of the version within the same octet as the variant leaves room for a future variant as described below:
+				</t>								
+				<ul spacing="compact">
+					<li><t>UUID Version 7E and 8E specified by this document MUST set the first 3 bits of octet 8 to 111 and the fourth bit to 0. The 4 bit version MUST follow the variant to fill out the final bits of octet 8.</t></li>
+					<li><t>Future specifications that wish to utilize variant 111 for a different version position (or any other bit layout position) MUST set the first 3 bits of octet 8 to 111 and then the fourth bit to 1.</t></li>
+				</ul>
+				<t>
+					The table below detail the three variants described in this document where the letter "x" indicates a "don't-care" value.
 				</t>
-				<t>For UUIDv6 the version and variant field placement from <xref target="RFC4122"/> are unchanged and a new version (0110b [6]) has been added.				
+				<table>
+				<name>UUID Variant defined by this specification</name>
+				<thead>
+					<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Hex</td><td>Description</td></tr>
+				</thead>
+				<tbody>
+					<tr><td>1</td><td>0</td><td>x</td><td>x</td><td>8/9/A/B</td><td>The variant specified by <xref target="RFC4122" sectionFormat="comma" section="4.1.1"/>.</td></tr>
+					<tr><td>1</td><td>1</td><td>1</td><td>0</td><td>E</td><td>The variant specified in this document.</td></tr>
+					<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>F</td><td>Reserved for future definition.</td></tr>
+				</tbody>
+				</table>
+
+				<t>
+					UUID Versions defined within the RFC 4122 Variant are distinct from UUID versions defined by the new variant.
 				</t>
-				<figure>
-					<name>UUIDv6 Version and Variant Examples</name>
-					<artwork><![CDATA[
+
+				<t>
+					The next table details Variant 10xx and the new versions defined by this specification. 
+					A complete guide to all versions within this variant has been includes in <xref target="old_var_table"/>.
+				</t>
+
+				<table>
+					<name>New UUID variant 10xx versions</name>
+					<thead>
+						<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Version</td><td>Description</td></tr>
+					</thead>
+					<tbody>
+						<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>6</td><td>Reordered Gregorian time-based UUID specified in this document.</td></tr>
+					</tbody>
+				</table>
+				
+				<t>
+					For UUIDv6 the version and variant field placement from <xref target="RFC4122"/> are unchanged and a new version (0110b [6]) has been added.
+					An example version/variant layout for UUIDv6 follows the table where M is the version and N is the variant.
+				</t>
+				
+                <figure>
+                    <name>UUIDv6 Variant Examples</name>
+                    <artwork><![CDATA[
 00000000-0000-6000-8000-000000000000
 00000000-0000-6000-9000-000000000000
 00000000-0000-6000-A000-000000000000
 00000000-0000-6000-B000-000000000000
 xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
-					]]></artwork>
-				</figure>
-				<dl newline="false">
-					<dt>M:</dt> <dd>Version (0110b [6])</dd>
-					<dt>N:</dt> <dd>Variant (1000b [8], 1001b [9], 1010b [A] or 1011b [B]) are all valid values</dd>
-				</dl>
+                    ]]></artwork>
+                </figure>
+				
 				<t>
-					For UUID versions 7 and 8, the variant field has been incremented and the version field has been moved to the same octet as the variant. Since the bits of the variant remain in the same place as described in <xref target="RFC4122"/> but utilized the previously reserved value 111, this allows a UUID to simply define octet 8 as var_ver, and the values 0xE7 and 0xE8 indicate UUID versions 7 and 8 respectively.
+					The next table details Variant 110 and the new versions defined by this specification.
+					A complete guide to all versions within this variant has been includes in <xref target="new_var_table"/>.
 				</t>
-				<figure>
-					<name>UUIDv7 Version and Variant Examples</name>
-					<artwork><![CDATA[
+				
+				<table>
+					<name>UUID variant 1110 versions defined by this specification</name>
+					<thead>
+						<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Version</td><td>Description</td></tr>
+					</thead>
+					<tbody>
+						<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>7</td><td>Unix Epoch time-based UUID specified in this document.</td></tr>
+						<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>8</td><td>Reserved for custom UUID formats specified in this document</td></tr>
+					</tbody>
+				</table>
+				
+                <t>
+                    For UUID versions 7E and 8E, the variant field has been incremented and the version field has been moved to the same octet as the variant. 
+					Since the bits of the variant remain in the same place as described in <xref target="RFC4122"/> but utilized the previously reserved value 111, this allows a UUID to simply define octet 8 as var_ver, and the values 0xE7 and 0xE8 indicate UUID versions 7 and 8 respectively.
+					An example version/variant layout for versions 7E and 8E follows the table where M is the version and N is the variant.
+                </t>
+                <figure>
+                    <name>UUID version 7E and 8E Variant Examples</name>
+                    <artwork><![CDATA[
 00000000-0000-0000-E700-000000000000
 xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 
 00000000-0000-0000-E800-000000000000
 xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
-					]]></artwork>
-				</figure>
-				<dl newline="false">
-					<dt>N:</dt> <dd>Variant (1110b [E])</dd>
-					<dt>M:</dt> <dd>Version (0111b [7] or 1000 [8])</dd>
-				</dl>
-								
-				<t>
-				While this specification makes use of the unused variant bits of 111 defined in <xref target="RFC4122" sectionFormat="comma" section="4.1.1"/>; the placement of the version within the same octet as the variant leaves room for a future variant.
-				</t>
-				<t>
-				UUID Version 7 and 8 specified by this document MUST set the first 3 bits of octet 8 to 111 and the fourth bit to 0. The 4 bit version MUST follow the variant to fill out the final bits of octet 8.
-				</t>
-				<t>
-				Future specifications that wish to utilize variant 111 for a different version position (or any other bit layout position) MUST set the first 3 bits of octet 8 to 111 and then the fourth bit to 1.
-				</t>
-				<t>
-				As such the tables below detail the three variants and versions described in this document where the letter "x" indicates a "don't-care" value.
-				</t>
-				<table>
-				<name>UUID Variant defined by this specification</name>
-				<thead>
-					<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Description</td></tr>
-				</thead>
-				<tbody>
-					<tr><td>1</td><td>0</td><td>x</td><td>x</td><td>The variant specified by <xref target="RFC4122"/>. Hex characters 8, 9, A, B.</td></tr>
-					<tr><td>1</td><td>1</td><td>1</td><td>0</td><td>The variant specified in this document. Hex character E,</td></tr>
-					<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>Reserved for future definition. Hex Character F.</td></tr>
-				</tbody>
-				</table>
-
-				<table>
-				<name>UUID versions defined by this specification</name>
-				<thead>
-					<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Version</td><td>Description</td></tr>
-				</thead>
-				<tbody>
-					<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>6</td><td>Reordered Gregorian time-based UUID</td></tr>
-					<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>7</td><td>Unix Epoch time-based UUID</td></tr>
-					<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>8</td><td>Custom UUID</td></tr>
-				</tbody>
-				</table>
+                    ]]></artwork>
+                </figure>
 				
 			</section>
 			<section anchor="uuidv6" title="UUID Version 6">
 				<t>
 					UUID version 6 is a field-compatible version of UUIDv1, reordered for improved DB locality. 
 					It is expected that UUIDv6 will primarily be used in contexts where there are existing v1 UUIDs.
-					Systems that do not involve legacy UUIDv1 SHOULD consider using UUIDv7 instead.
+					Systems that do not involve legacy UUIDv1 SHOULD consider using UUIDv7E instead.
 				</t>
 
 				<t>
@@ -341,7 +367,7 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 		</dl>
 		
 						<t>
-				With UUIDv6 the steps for splitting the timestamp into time_high and time_mid are optional
+				With UUIDv6 the steps for splitting the timestamp into time_high and time_mid are OPTIONAL
 				since the 48 bits of time_high and time_mid will remain in the same order.
 				An extra step of splitting the first 48 bits of the timestamp into the most significant 
 				32 bits and least significant 16 bits proves useful when reusing an existing UUIDv1 implementation.
@@ -359,13 +385,13 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 				</tbody>
 				</table>
 			</section>
-			<section anchor="uuidv7" title="UUID Version 7">
+			<section anchor="uuidv7" title="UUID Version 7E">
 				<t>
-					UUID version 7 features a time-ordered value field derived from the widely implemented and well known Unix Epoch timestamp source, as well as improved entropy characteristics over versions 1 or 6.
-					Implementations SHOULD utilize UUID version 7 over UUID version 1 and 6 if possible. 
+					UUID version 7E features a time-ordered value field derived from the widely implemented and well known Unix Epoch timestamp source, as well as improved entropy characteristics over versions 1 or 6.
+					Implementations SHOULD utilize UUID version 7E over UUID version 1 and 6 if possible. 
 				</t>
 				<figure>
-					<name>UUIDv7 Field and Bit Layout</name>
+					<name>UUIDv7E Field and Bit Layout</name>
 					<artwork><![CDATA[
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -390,23 +416,23 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 				</dl>
 
 			</section>
-			<section anchor="uuidv8" title="UUID Version 8">
+			<section anchor="uuidv8" title="UUID Version 8E">
 				<t>
-					UUID version 8 provides an RFC-compatible format for experimental or vendor-specific use cases.
+					UUID version 8E provides an RFC-compatible format for experimental or vendor-specific use cases.
 					The only requirement is that the variant and version bits MUST be set as defined in <xref target="variant_and_version_fields"/>. 
-					UUIDv8's uniqueness will be implementation-specific and should not be assumed.
+					UUIDv8E's uniqueness will be implementation-specific and SHOULD NOT be assumed.
 				</t>
 				<t>
-				UUIDv8 SHOULD only be utilized if an implementation cannot utilize another UUID in this document or <xref target="RFC4122"/>.
+				UUIDv8E SHOULD only be utilized if an implementation cannot utilize another UUID in this document or <xref target="RFC4122"/>.
 				</t>
 				<t>
 				The only explicitly defined bits are the Version and Variant leaving 120 bits
 				for implementation specific time-based UUIDs. To be clear:
-				UUIDv8 is not a replacement for UUIDv4 where all 122 extra bits are
+				UUIDv8E is not a replacement for UUIDv4 where all 122 extra bits are
 				filled with random data.
 				</t>
 				<t>
-				Some example situations in which UUIDv8 usage could occur:
+				Some example situations in which UUIDv8E usage could occur:
 				</t>
 				<ul>
 					<li><t>An implementation would like to embed extra information
@@ -415,7 +441,7 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 					  inhibit the use of one of the current UUIDs.</t></li>
 				</ul>
 				<figure>
-					<name>UUIDv8 Field and Bit Layout</name>
+					<name>UUIDv8E Field and Bit Layout</name>
 					<artwork><![CDATA[
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -436,6 +462,16 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 					<dt>var_ver:</dt> <dd>The 8 bit combined variant and version field with the value 0xE8 as defined by <xref target="variant_and_version_fields"/>.</dd>
 					<dt>custom_b:</dt> <dd>The final 56 bits of the layout immediatly following the var_var field to be filled as an implementation sees fit.</dd>
 				</dl>
+			</section>
+			<section anchor="maxuuid" title="Max UUID">
+				<t>The Max UUID is special form of UUID that is specified to have all 128 bits set to 1.</t>
+				<figure>
+					<name>Max UUID Format</name>
+					<artwork><![CDATA[
+FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
+					]]></artwork>
+
+				</figure>
 			</section>			
 		</section>
 
@@ -457,17 +493,17 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 					<dt>Reliability:</dt>
 						<dd>Implementations SHOULD use the current timestamp from a reliable source to provide values that are time-ordered and continually increasing. Care SHOULD be taken to ensure the timestamp does not move backwards which will impact UUID sorting.</dd>
 					<dt>Source:</dt>
-						<dd>UUID version 1 and 6 both utilize a Gregorian epoch timestamp while UUIDv7 utilizes a Unix Epoch timestamp. If other timestamp sources or a custom timestamp epoch are required UUIDv8 SHOULD be leveraged.</dd>
+						<dd>UUID version 1 and 6 both utilize a Gregorian epoch timestamp while UUIDv7E utilizes a Unix Epoch timestamp. If other timestamp sources or a custom timestamp epoch are required UUIDv8E SHOULD be leveraged.</dd>
 					<dt>Sub-second Precision and Accuracy:</dt>
-						<dd>Many levels of precision exist for timestamps: milliseconds, microseconds, nanoseconds, and beyond. Additionally fractional representations of sub-second precision may be desired to mix various levels of precision in a time-ordered manner. With UUID version 1 and 6, 100-nanoseconds of precision are present while UUIDv7 features fixed millisecond level of precision within the Unix epoch. If additional levels of precision are required UUIDv8 SHOULD be utilized.</dd>
+						<dd>Many levels of precision exist for timestamps: milliseconds, microseconds, nanoseconds, and beyond. Additionally fractional representations of sub-second precision may be desired to mix various levels of precision in a time-ordered manner. With UUID version 1 and 6, 100-nanoseconds of precision are present while UUIDv7E features fixed millisecond level of precision within the Unix epoch. If additional levels of precision are required UUIDv8E SHOULD be utilized.</dd>
 					<dt>Length:</dt>
-						<dd>The length of a given timestamp directly impacts how long a given UUID will be valid. Care should be given to ensure that the proper length is selected for a given timestamp. UUID version 1 and 6 utilize a 60 bit timestamp and UUIDv7 features a 48 bit timestamp.</dd>
+						<dd>The length of a given timestamp directly impacts how long a given UUID will be valid. Care should be given to ensure that the proper length is selected for a given timestamp. UUID version 1 and 6 utilize a 60 bit timestamp and UUIDv7E features a 48 bit timestamp.</dd>
 					<dt>Fuzzing:</dt>
 						<dd>Implementations MAY fuzz a timestamp. Some examples included security considerations around providing a real clock value within a UUID or to correct inaccurate clocks. This specification makes no requirement or guarantee about how close the clock value needs to be to actual time.</dd>
 					<dt>Padding:</dt>
-						<dd>When timestamp padding is required, implementations MUST pad the most significant bits (left-most) bits with zeros. An example is padding the most significant, left-most bits of a 32 bit unix timestamp with zero's to fill out the 48 bit timestamp in UUIDv7.</dd>
+						<dd>When timestamp padding is required, implementations MUST pad the most significant bits (left-most) bits with zeros. An example is padding the most significant, left-most bits of a 32 bit unix timestamp with zero's to fill out the 48 bit timestamp in UUIDv7E.</dd>
 					<dt>Truncating:</dt>
-						<dd>Similarly, when timestamps need to be truncated: the lower, least significant bits MUST be used. An example would be truncating a 64 bit unix timestamp to the least significant, right-most 48 bits for UUIDv7.</dd>
+						<dd>Similarly, when timestamps need to be truncated: the lower, least significant bits MUST be used. An example would be truncating a 64 bit unix timestamp to the least significant, right-most 48 bits for UUIDv7E.</dd>
 				</dl>
 			</section>
 			<section anchor="monotonicity_counters" title="Monotonicity and Counters">
@@ -482,17 +518,17 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 					For single-node UUID implementations that do not need to create batches of UUIDs, the embedded timestamp within UUID version 1, 6, and 7 can provide sufficient monotonicity guarantees by simply ensuring that timestamp increments before creating a new UUID. For the topic of Distributed Nodes please refer to <xref target="distributed_shared_knowledge"/>
 				</t>
 				<t>
-					The following methods SHOULD be employed for single-node UUID implementations that do require batch UUID creation.
+					Implementations SHOULD choose one method for single-node UUID implementations that require batch UUID creation.
 				</t>
 				<dl newline="true">
-					<dt>Fixed-Length Dedicated Counter Bits (Position A):</dt> 
+					<dt>Fixed-Length Dedicated Counter Bits (Method 1):</dt> 
 						<dd>
 						This references the practice of allocating a specific number of bits in the UUID layout to the sole purpose of tallying the total number of UUIDs created during a given UUID timestamp tick.
-						Positioning of a fixed bit-length counter SHOULD be immediatly after the embedded timestamp. This promotes sortability and allows random data generation for each counter increment. UUIDs utilizing this method should be created using UUIDv8.
+						Positioning of a fixed bit-length counter SHOULD be immediatly after the embedded timestamp. This promotes sortability and allows random data generation for each counter increment. UUIDs utilizing this method SHOULD be created using UUIDv8E.
 						</dd>
-					<dt>Fixed-Length Dedicated Counter Bits (Position B):</dt> 
+					<dt>Fixed-Length Dedicated Counter Bits (Method 2):</dt> 
 						<dd>
-						An alternative approach to the previous method is to dedicate a number of bits in the least significant position of the UUID. With this alternative method, the random data MUST be frozen for a given timestamp tick else sorting will be impacted. UUIDs utilizing this method should be created using UUIDv8.
+						An alternative approach to the previous method is to dedicate a number of bits in the least significant position of the UUID. With this alternative method, the random data MUST be frozen for a given timestamp tick else sorting will be impacted. UUIDs utilizing this method SHOULD be created using UUIDv8E.
 						</dd>
 					<dt>Fixed-Length Dedicated Counter Seeding:</dt> 
 						<dd>
@@ -502,11 +538,11 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 						<dd>Care MUST be taken to select a counter bit-length that can properly handle the level of timestamp precision in use. For example, millisecond precision SHOULD require a larger counter than a timestamp with nanosecond precision. General Guidance is that the counter SHOULD be at least 12 bits and no more than a maximum of 24 bits.</dd>
 					<dt>Fixed-Length Dedicated Counter Rollover Handling</dt>
 						<dd>
-						Counter rollovers SHOULD be handled by the application to avoid sorting issues. The general guidance is that applications should freeze the counter and wait for the timestamp to advance which ensures monotonicity is not broken.
+						Counter rollovers SHOULD be handled by the application to avoid sorting issues. The general guidance is that applications SHOULD freeze the counter and wait for the timestamp to advance which ensures monotonicity is not broken.
 						</dd>
-					<dt>Monotonic Random:</dt> 
+					<dt>Monotonic Random (Method 3):</dt> 
 						<dd>
-						With this method the random data is extended to also double as a counter. This monotonic random can be thought of as a "randomly seeded counter" which MUST be incremented in the least significant position for each UUID created on a given timestamp tick. This is similar to the Fixed-Length Dedicated Counter Bits (Position B) method described in the previous bullets but does not suffer from rollover issues, length problems, or wasted entropy bits plagued by both fixed-length counter bit positions. As such, UUIDv7 SHOULD utilize this method to handle batch UUID generation during a single timestamp tick.
+						With this method the random data is extended to also double as a counter. This monotonic random can be thought of as a "randomly seeded counter" which MUST be incremented in the least significant position for each UUID created on a given timestamp tick. This is similar to the Fixed-Length Dedicated Counter Bits (Position B) method described in the previous bullets but does not suffer from rollover issues, length problems, or wasted entropy bits plagued by both fixed-length counter bit positions. As such, UUIDv7E SHOULD utilize this method to handle batch UUID generation during a single timestamp tick.
 						</dd>
 				</dl>
 				<t>
@@ -537,7 +573,7 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 					<dt>Shared Knowledge System:</dt> 
 						<dd>With this method all nodes tasked with creating UUIDs consult a central registry and confirm the generated value is unique. As applications scale the communication with the central registry could become a bottleneck and impact UUID generation in a negative way. Utilization of shared knowledge schemes with central/global registries is outside the scope of this specification.</dd>
 					<dt>Node IDs:</dt> 
-						<dd>With this method, a nondescript pseudo-random Node ID value is placed within the UUID layout. This identifier ensures the bit-space for a given node is unique resulting in UUIDs that do not conflict with any other UUID created by another node with a different node id. Implementations that choose to leverage an embedded node id SHOULD utilize UUIDv8. The node id SHOULD NOT be an IEEE 802 MAC address as per <xref target="Security"/>. The location and bit length are up to implements and outside the scope of this specification. Furthermore, the creation and negotiation of a node id among distributed nodes is also out of scope for this specification.</dd>
+						<dd>With this method, a nondescript pseudo-random Node ID value is placed within the UUID layout. This identifier ensures the bit-space for a given node is unique resulting in UUIDs that do not conflict with any other UUID created by another node with a different node id. Implementations that choose to leverage an embedded node id SHOULD utilize UUIDv8E. The node id SHOULD NOT be an IEEE 802 MAC address as per <xref target="Security"/>. The location and bit length are up to implements and outside the scope of this specification. Furthermore, the creation and negotiation of a node id among distributed nodes is also out of scope for this specification.</dd>
 				</dl>
 				<t>
 					Utilization of either a shared knowledge scheme or Node ID are not required for implementing UUIDs in this specification. However implementations SHOULD utilize one of the two aforementioned methods if distributed UUID generation is a requirements.
@@ -572,15 +608,21 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 					Implementations SHOULD utilize a cryptographically secure pseudo-random number generator (CSPRNG) to provide values that are both difficult to predict ("unguessable") and have a low likelihood of collision ("unique").
 					CSPRNG ensures the best of <xref target="collision_resistance"/> and <xref target="Security"/> are present in modern UUIDs.
 				</t>
+				<t>
+					Advice on generating cryptographic-quality random numbers can be found in <xref target="RFC4086"/>
+				</t>
 			</section>
 			<section anchor="sorting" title="Sorting">
 				<t>
-					UUIDv6 and UUIDv7 are designed so that implementations that require sorting (e.g. database indexes) SHOULD sort as opaque raw bytes, without examining the contents at all.
+					UUIDv6 and UUIDv7E are designed so that implementations that require sorting (e.g. database indexes) SHOULD sort as opaque raw bytes, without examining the contents at all.
 				</t>
 				<t>
 					Time ordered monotonic UUIDs benefit from greater index locality because the new values are near each other in the index. 
 					As a result objects can much more easily be clustered together for better performance.  
 					The real-world differences in this approach of index locality vs random data inserts can be quite large.
+				</t>
+				<t>
+					UUIDs created by this specification are crafted with big-ending byte order (network byte order) in mind. If Little-endian style is required a custom UUID format SHOULD be created using UUIDv8E.
 				</t>
 			</section>
 			<section anchor="storing_uuids_opacity" title="Storing UUIDs, Opacity">
@@ -605,7 +647,7 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 					UUIDs SHOULD be treated as opaque values and implementations SHOULD NOT examine the bits in a UUID to whatever extent is possible.
 				</t>
 				<t>
-					Where necessary, the version number may be extracted by first verifying the variant field bits 64 and 65 contain 1 and 0 respectively, and then extract the version from bits 48 through 51.
+					Where necessary, the version number can be extracted by first verifying the variant field bits 64 and 65 contain 1 and 0 respectively, and then extract the version from bits 48 through 51.
 					UUID versions 7 and 8 can be identified by checking octet 8 for the values 0xE7 or 0xE8 respectively.
 					The version number can then be used to inspect the remainder of the UUID according to the specification for that version.
 					See <xref target="variant_and_version_fields"/> for more information on determining a UUID version based on the inspected variant bits.
@@ -703,6 +745,27 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 				</front>
 				<seriesInfo name="RFC" value="4122"/>
 				<seriesInfo name="DOI" value="10.17487/RFC4122"/>
+			</reference>
+			<reference anchor="RFC4086" target="https://www.rfc-editor.org/info/rfc4122">
+				<front>
+					<title>Randomness Requirements for Security</title>
+					<author initials="D." surname="Eastlake 3rd" fullname="D. Eastlake 3rd">
+						<organization/>
+					</author>
+					<author initials="J." surname="Schiller" fullname="J. Schiller">
+						<organization/>
+					</author>
+					<author initials="S." surname="Crocker" fullname="S. Crocker">
+						<organization/>
+					</author>
+					<date year="2005" month="JUne"/>
+					<abstract>
+						<t>Security systems are built on strong cryptographic algorithms that foil pattern analysis attempts. However, the security of these systems is dependent on generating secret quantities for passwords, cryptographic keys, and similar quantities. The use of pseudo-random processes to generate secret quantities can result in pseudo-security. A sophisticated attacker may find it easier to reproduce the environment that produced the secret quantities and to search the resulting small set of possibilities than to locate the quantities in the whole of the potential number space.</t>
+						<t>Choosing random quantities to foil a resourceful and motivated adversary is surprisingly difficult. This document points out many pitfalls in using poor entropy sources or traditional pseudo-random number generation techniques for generating such quantities. It recommends the use of truly random hardware techniques and shows that the existing hardware on many systems can be used for this purpose. It provides suggestions to ameliorate the problem when a hardware solution is not available, and it gives examples of how large such quantities need to be for some applications. This document specifies an Internet Best Current Practices for the Internet Community, and requests discussion and suggestions for improvements.</t>
+					</abstract>
+				</front>
+				<seriesInfo name="RFC" value="4086"/>
+				<seriesInfo name="DOI" value="10.17487/RFC4086"/>
 			</reference>
 		</references>
 		<references title="Informative References">
@@ -911,9 +974,9 @@ void uuidv1tov6(uuid_t u) {
 					]]></artwork>
 				</figure>
 			</section>
-			<section anchor="creating_a_uuidv7_value" title="Creating a UUIDv7 Value">
+			<section anchor="creating_a_uuidv7_value" title="Creating a UUIDv7E Value">
 				<figure>
-					<name>UUIDv7 Function in C</name>
+					<name>UUIDv7E Function in C</name>
 					<artwork><![CDATA[
 #include <stdio.h>
 #include <stdlib.h>
@@ -933,7 +996,7 @@ if (rndf == 0) {
 
 // ...
 
-// generate one UUIDv7
+// generate one UUIDv7E
 uint8_t u[16];
 struct timespec ts;
 int ret;
@@ -961,8 +1024,8 @@ u[8] = 0xE7; // set var-ver field
 					]]></artwork>
 				</figure>
 			</section>
-			<section anchor="creating_a_uuidv8_value" title="Creating a UUIDv7 Value">
-				<t>UUIDv8 will vary greatly from implementation to implementation. A good candidate use case for UUIDv8 is to embed exotic timestamps like the one found in this example which employs approximately 0.25 milliseconds and approximately 5 microseconds per timestamp tick as a 48 bit value.</t>
+			<section anchor="creating_a_uuidv8_value" title="Creating a UUIDv7E Value">
+				<t>UUIDv8E will vary greatly from implementation to implementation. A good candidate use case for UUIDv8E is to embed exotic timestamps like the one found in this example which employs approximately 0.25 milliseconds and approximately 5 microseconds per timestamp tick as a 48 bit value.</t>
 				<figure>
 					<name>UUID8 Function in C</name>
 					<artwork><![CDATA[
@@ -1053,12 +1116,12 @@ final_hex: 1EC9414C-232A-6B00-B3C8-9E6BDECED846
 					]]></artwork>
 				</figure>
 			</section>
-			<section anchor="uuidv7_example" title="Example of a UUIDv7 Value">
-				<t>This example UUIDv7 test vector utilizes a well-known 32-bit unix epoch with additional millisecond precision to fill the first 48 bits</t>
+			<section anchor="uuidv7_example" title="Example of a UUIDv7E Value">
+				<t>This example UUIDv7E test vector utilizes a well-known 32-bit unix epoch with additional millisecond precision to fill the first 48 bits</t>
 				<t>rand_a and rand_b are filled with random data.</t>
 				<t>The timestamp is Tuesday, February 22, 2022 2:22:22.00 PM GMT-05:00 represented as 0x17F21CFD130 or 1645539742000</t>
 				<figure>
-					<name>UUIDv7 Example Test Vector</name>
+					<name>UUIDv7E Example Test Vector</name>
 					<artwork><![CDATA[
 -------------------------------
 field      bits    value
@@ -1074,13 +1137,13 @@ final: 017F21CF-D130-F8B8-E7D6-A139DC9535C5
 					]]></artwork>
 				</figure>
 			</section>
-			<section anchor="uuidv8_example" title="Example of a UUIDv8 Value">
-				<t>This example UUIDv8 test vector utilizes a well-known 64-bit unix epoch with nanosecond precision to fill the first 64 bits through ver_var.</t>
+			<section anchor="uuidv8_example" title="Example of a UUIDv8E Value">
+				<t>This example UUIDv8E test vector utilizes a well-known 64-bit unix epoch with nanosecond precision to fill the first 64 bits through ver_var.</t>
 				<t>The final 56 bits are filled with random data.</t>
 				<t>Timestamp is Tuesday, February 22, 2022 2:22:22.000000 PM GMT-05:00 represented as 0x16D6320C3D4DCC00 or 1645557742000000000</t>
-				<t>It should be noted that this example is just to illustrate one scenario for UUIDv8. Test vectors will likely be implementation specific and vary greatly from this simple example.</t>
+				<t>It should be noted that this example is just to illustrate one scenario for UUIDv8E. Test vectors will likely be implementation specific and vary greatly from this simple example.</t>
 				<figure>
-					<name>UUIDv8 Example Test Vector</name>
+					<name>UUIDv8E Example Test Vector</name>
 					<artwork><![CDATA[
 -------------------------------
 field      bits    value
@@ -1094,6 +1157,60 @@ total        128
 final: 16D6320C-3D4D-CC00-E83C-2D06302FC417
 					]]></artwork>
 				</figure>
+			</section>
+		</section>
+		<section anchor="var_tables" title="Version and Variant Tables">
+			<section anchor="old_var_table" title="Variant 10xx Versions">
+                <table>
+					<name>All UUID variant 10xx version definitions.</name>
+					<thead>
+						<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Version</td><td>Description</td></tr>
+					</thead>
+					<tbody>
+						<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>Unused</td></tr>
+						<tr><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>The Gregorian time-based UUID from in <xref target="RFC4122" sectionFormat="comma" section="4.1.3"/></td></tr>
+						<tr><td>0</td><td>0</td><td>1</td><td>0</td><td>2</td><td>DCE Security version, with embedded POSIX UIDs from <xref target="RFC4122" sectionFormat="comma" section="4.1.3"/></td></tr>
+						<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>3</td><td>The name-based version specified in <xref target="RFC4122" sectionFormat="comma" section="4.1.3"/> that uses MD5 hashing.</td></tr>
+						<tr><td>0</td><td>1</td><td>0</td><td>0</td><td>4</td><td>The randomly or pseudo-randomly generated version specified in <xref target="RFC4122" sectionFormat="comma" section="4.1.3"/>.</td></tr>
+						<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>5</td><td>The name-based version specified in <xref target="RFC4122" sectionFormat="comma" section="4.1.3"/> that uses SHA-1 hashing.</td></tr>
+						<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>6</td><td>Reordered Gregorian time-based UUID specified in this document.</td></tr>
+						<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>7</td><td>Reserved for future definition.</td></tr>
+						<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>8</td><td>Reserved for future definition.</td></tr>
+						<tr><td>1</td><td>0</td><td>0</td><td>1</td><td>9</td><td>Reserved for future definition.</td></tr>
+						<tr><td>1</td><td>0</td><td>1</td><td>0</td><td>10</td><td>Reserved for future definition.</td></tr>
+						<tr><td>1</td><td>0</td><td>1</td><td>1</td><td>11</td><td>Reserved for future definition.</td></tr>
+						<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>12</td><td>Reserved for future definition.</td></tr>
+						<tr><td>1</td><td>1</td><td>0</td><td>1</td><td>13</td><td>Reserved for future definition.</td></tr>
+						<tr><td>1</td><td>1</td><td>1</td><td>0</td><td>14</td><td>Reserved for future definition.</td></tr>
+						<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>15</td><td>Reserved for future definition.</td></tr>
+					</tbody>
+                </table>
+			</section>
+			<section anchor="new_var_table" title="Variant 1110 Versions">
+                <table>
+					<name>All UUID variant 1110 version definitions.</name>
+					<thead>
+						<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Version</td><td>Description</td></tr>
+					</thead>
+					<tbody>
+						<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0E</td><td>Reserved for future definition.</td></tr>
+						<tr><td>0</td><td>0</td><td>0</td><td>1</td><td>1E</td><td>Reserved for future definition.</td></tr>
+						<tr><td>0</td><td>0</td><td>1</td><td>0</td><td>2E</td><td>Reserved for future definition.</td></tr>
+						<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>3E</td><td>Reserved for future definition.</td></tr>
+						<tr><td>0</td><td>1</td><td>0</td><td>0</td><td>4E</td><td>Reserved for future definition.</td></tr>
+						<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>5E</td><td>Reserved for future definition.</td></tr>
+						<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>6E</td><td>Reserved for future definition.</td></tr>
+						<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>7E</td><td>Unix Epoch time-based UUID specified in this document.</td></tr>
+						<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>8E</td><td>Reserved for custom UUID formats specified in this document</td></tr>
+						<tr><td>1</td><td>0</td><td>0</td><td>1</td><td>9E</td><td>Reserved for future definition.</td></tr>
+						<tr><td>1</td><td>0</td><td>1</td><td>0</td><td>10E</td><td>Reserved for future definition.</td></tr>
+						<tr><td>1</td><td>0</td><td>1</td><td>1</td><td>11E</td><td>Reserved for future definition.</td></tr>
+						<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>12E</td><td>Reserved for future definition.</td></tr>
+						<tr><td>1</td><td>1</td><td>0</td><td>1</td><td>13E</td><td>Reserved for future definition.</td></tr>
+						<tr><td>1</td><td>1</td><td>1</td><td>0</td><td>14E</td><td>Reserved for future definition.</td></tr>
+						<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>15E</td><td>Reserved for future definition.</td></tr>
+					</tbody>
+                </table>
 			</section>
 		</section>
 	</back>
