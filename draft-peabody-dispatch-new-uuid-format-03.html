@@ -40,7 +40,7 @@
     setuptools 40.6.2
     six 1.15.0
 -->
-<link href="/tmp/t8NViIaik_.dir/draft-peabody-dispatch-new-uuid-format-03.xml" rel="alternate" type="application/rfc+xml">
+<link href="/tmp/qL4j7dD5w6.dir/draft-peabody-dispatch-new-uuid-format-03.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">/*
 
@@ -2330,7 +2330,9 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
  As a result objects can much more easily be clustered together for better performance.  
  The real-world differences in this approach of index locality vs random data inserts can be quite large.<a href="#section-5.7-2" class="pilcrow">¶</a></p>
 <p id="section-5.7-3">
- UUIDs created by this specification are crafted with big-ending byte order (network byte order) in mind. If Little-endian style is required a custom UUID format SHOULD be created using UUIDv8E.<a href="#section-5.7-3" class="pilcrow">¶</a></p>
+ UUIDs formats created by this specification SHOULD be Lexicographically sortable while in the textual representation..<a href="#section-5.7-3" class="pilcrow">¶</a></p>
+<p id="section-5.7-4">
+ UUIDs created by this specification are crafted with big-ending byte order (network byte order) in mind. If Little-endian style is required a custom UUID format SHOULD be created using UUIDv8E.<a href="#section-5.7-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="storing_uuids_opacity">

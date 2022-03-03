@@ -622,6 +622,9 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 					The real-world differences in this approach of index locality vs random data inserts can be quite large.
 				</t>
 				<t>
+					UUIDs formats created by this specification SHOULD be Lexicographically sortable while in the textual representation..
+				</t>
+				<t>
 					UUIDs created by this specification are crafted with big-ending byte order (network byte order) in mind. If Little-endian style is required a custom UUID format SHOULD be created using UUIDv8E.
 				</t>
 			</section>

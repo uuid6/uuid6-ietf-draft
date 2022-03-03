@@ -1016,6 +1016,9 @@ Internet-Draft               new-uuid-format                  March 2022
    performance.  The real-world differences in this approach of index
    locality vs random data inserts can be quite large.
 
+   UUIDs formats created by this specification SHOULD be
+   Lexicographically sortable while in the textual representation..
+
    UUIDs created by this specification are crafted with big-ending byte
    order (network byte order) in mind.  If Little-endian style is
    required a custom UUID format SHOULD be created using UUIDv8E.
@@ -1054,9 +1057,6 @@ Internet-Draft               new-uuid-format                  March 2022
 6.  IANA Considerations
 
    This document has no IANA actions.
-
-
-
 
 
 
