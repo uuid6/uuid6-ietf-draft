@@ -398,7 +398,7 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                           unix_ts_ms                          |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|          unix_ts_ms           |             rand              |
+|          unix_ts_ms           |            rand_a             |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |    var_ver    |            rand_b                             |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -409,10 +409,10 @@ xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
 				</figure>
 
 				<dl newline="true">
-					<dt>unix_ts_ms:</dt> <dd>48 bit big-endian unsigned number of unix epoch timestamp as per <xref target="timestamp_granularity"/></dd>
-					<dt>rand_a:</dt> <dd>16 bits pseudo-random data to provide uniqueness as per <xref target="unguessability"/></dd>
+					<dt>unix_ts_ms:</dt> <dd>48 bit big-endian unsigned number of unix epoch timestamp as per <xref target="timestamp_granularity"/>.</dd>
+					<dt>rand_a:</dt> <dd>16 bits pseudo-random data to provide uniqueness as per <xref target="monotonicity_counters"/> and <xref target="unguessability"/>.</dd>
 					<dt>var_ver:</dt> <dd>The 8 bit combined variant and version field with the value 0xE7 as defined by <xref target="variant_and_version_fields"/>.</dd>
-					<dt>rand_b:</dt> <dd>The final 56 bits of pseudo-random data to provide uniqueness as per <xref target="unguessability"/> and <xref target="monotonicity_counters"/>.</dd>
+					<dt>rand_b:</dt> <dd>The final 56 bits of pseudo-random data to provide uniqueness as per <xref target="monotonicity_counters"/> and <xref target="unguessability"/>.</dd>
 				</dl>
 
 			</section>
@@ -524,7 +524,7 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 					<dt>Fixed-Length Dedicated Counter Bits (Method 1):</dt> 
 						<dd>
 						This references the practice of allocating a specific number of bits in the UUID layout to the sole purpose of tallying the total number of UUIDs created during a given UUID timestamp tick.
-						Positioning of a fixed bit-length counter SHOULD be immediatly after the embedded timestamp. This promotes sortability and allows random data generation for each counter increment. UUIDs utilizing this method SHOULD be created using UUIDv8E.
+						Positioning of a fixed bit-length counter SHOULD be immediatly after the embedded timestamp. This promotes sortability and allows random data generation for each counter increment. With this method the rand_a section of UUIDv7 MAY be utilized as fixed-length dedicated counter bits..
 						</dd>
 					<dt>Fixed-Length Dedicated Counter Bits (Method 2):</dt> 
 						<dd>
