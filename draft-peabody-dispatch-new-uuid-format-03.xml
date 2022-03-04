@@ -37,7 +37,7 @@ please see http://xml.resource.org/authoring/README.html. -->
 				This document presents three new Universally Unique Identifier (UUID) formats.
 			</t>
 			<t>
-				A common case for modern applications is to create a unique identifier for use as a primary key in a database table.
+				A common case for modern applications is to create a unique identifier for use as a database key.
 				This identifier usually implements an embedded timestamp that is sortable using the monotonic creation time in the most significant bits. 
 				In addition the identifier is highly collision resistant, difficult to guess, and provides minimal security attack surfaces.
 				None of the existing UUID versions, including UUIDv1, fulfill each of these requirements in the most efficient possible way.
@@ -52,12 +52,12 @@ please see http://xml.resource.org/authoring/README.html. -->
 				Many things have changed in the time since UUIDs were originally created.
 				Modern applications have a need to create and utilize UUIDs as the primary
 				identifier for a variety of different items in complex computational systems,
-				including but not limited to database primary keys, file names, machine
+				including but not limited to database keys, file names, machine
 				or system names, identifiers for transactions or other objects or processes.
 			</t>
 
 			<t>
-				A specific use case for UUIDs which has gained popularity is as database primary keys.
+				A specific use case for UUIDs which has gained popularity is as database keys.
 				The motivation for this stems primarily from the fact that applications
 				are increasingly distributed in nature. Simplistic "auto increment" schemes
 				with integers in sequence do not work well in a distributed system since the effort required to
@@ -247,7 +247,7 @@ please see http://xml.resource.org/authoring/README.html. -->
 				</t>
 
 				<table>
-					<name>New UUID variant 10xx versions</name>
+					<name>New UUID variant 10xx versions defined by this specification</name>
 					<thead>
 						<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Version</td><td>Description</td></tr>
 					</thead>
@@ -283,8 +283,8 @@ xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
 						<tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Version</td><td>Description</td></tr>
 					</thead>
 					<tbody>
-						<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>7</td><td>Unix Epoch time-based UUID specified in this document.</td></tr>
-						<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>8</td><td>Reserved for custom UUID formats specified in this document</td></tr>
+						<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>7E</td><td>Unix Epoch time-based UUID specified in this document.</td></tr>
+						<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>8E</td><td>Reserved for custom UUID formats specified in this document</td></tr>
 					</tbody>
 				</table>
 				
@@ -532,7 +532,7 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 						</dd>
 					<dt>Fixed-Length Dedicated Counter Seeding:</dt> 
 						<dd>
-						Implementations utilizing fixed-length counter bits SHOULD initialize the counter at zero to ensure the full bit-space is utilized and help avoid counter rollovers.
+							Implementations utilizing either fixed-length counter method MAY randomly initialize the counter with each new timestamp tick. However, when the timestamp has not incremented; the counter SHOULD be frozen and incremented by one. When utilizing a randomly seeded counter alongside Method 1; the random MAY be regenerated with each counter increment without impacting sortability. The downside is that Method 1 is prone to overflows if a counter of adequate length is not selected or the random data generated leaves little room for the required number of increments. A randomly seeded counter alongside Method 2 is more-or-less the same as Monotonic Random (Method 3). Implementations utilizing either fixed-length counter method MAY also choose to initialize the counter at zero to ensure the full bit-space is utilized and help avoid counter rollovers. This approach has less entropy and more guessibility but ensures the most of the counter bit space.
 						</dd>
 					<dt>Fixed-Length Dedicated Counter Length</dt>
 						<dd>Care MUST be taken to select a counter bit-length that can properly handle the level of timestamp precision in use. For example, millisecond precision SHOULD require a larger counter than a timestamp with nanosecond precision. General Guidance is that the counter SHOULD be at least 12 bits and no more than a maximum of 24 bits.</dd>
@@ -622,7 +622,7 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 					The real-world differences in this approach of index locality vs random data inserts can be quite large.
 				</t>
 				<t>
-					UUIDs formats created by this specification SHOULD be Lexicographically sortable while in the textual representation..
+					UUIDs formats created by this specification SHOULD be Lexicographically sortable while in the textual representation.
 				</t>
 				<t>
 					UUIDs created by this specification are crafted with big-ending byte order (network byte order) in mind. If Little-endian style is required a custom UUID format SHOULD be created using UUIDv8E.
@@ -647,13 +647,7 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 					<li><t>Storing as text requires more space but may require less translation if the resulting text form is to be used after retrieval and thus maybe simpler to implement. </t></li>
 				</ul>
 				<t>
-					UUIDs SHOULD be treated as opaque values and implementations SHOULD NOT examine the bits in a UUID to whatever extent is possible.
-				</t>
-				<t>
-					Where necessary, the version number can be extracted by first verifying the variant field bits 64 and 65 contain 1 and 0 respectively, and then extract the version from bits 48 through 51.
-					UUID versions 7 and 8 can be identified by checking octet 8 for the values 0xE7 or 0xE8 respectively.
-					The version number can then be used to inspect the remainder of the UUID according to the specification for that version.
-					See <xref target="variant_and_version_fields"/> for more information on determining a UUID version based on the inspected variant bits.
+					UUIDs SHOULD be treated as opaque values and implementations SHOULD NOT examine the bits in a UUID to whatever extent is possible. However, where necessary inspectors please review <xref target="variant_and_version_fields"/> for more information on determining a UUID version based on the inspected variant bits.
 				</t>
 			</section>
 		</section>
@@ -1027,7 +1021,7 @@ u[8] = 0xE7; // set var-ver field
 					]]></artwork>
 				</figure>
 			</section>
-			<section anchor="creating_a_uuidv8_value" title="Creating a UUIDv7E Value">
+			<section anchor="creating_a_uuidv8_value" title="Creating a UUIDv8E Value">
 				<t>UUIDv8E will vary greatly from implementation to implementation. A good candidate use case for UUIDv8E is to embed exotic timestamps like the one found in this example which employs approximately 0.25 milliseconds and approximately 5 microseconds per timestamp tick as a 48 bit value.</t>
 				<figure>
 					<name>UUID8 Function in C</name>
