@@ -16,11 +16,17 @@ Various discussion will need to occur to arrive at a standard and this repo will
 
 ## High Level Overview
 1. **UUID version 6**: A re-ordering of UUID version 1 so it is sortable as an opaque sequence of bytes. Easy to implement given an existing UUIDv1 implementation.
-  - `time_high|time_mid|time_low_and_version|clk_seq_hi_res|clk_seq_low|node`
+
+    `time_high|time_mid|time_low_and_version|clk_seq_hi_res|clk_seq_low|node`
 2. **UUID version 7**: An entirely new time-based UUID bit layout sourced from the widely implemented and well known Unix Epoch timestamp source.
-  - `unix_ts_ms|rand_a|var_ver|rand_b`
+
+    `unix_ts_ms|rand_a|var_ver|rand_b`
 3. **UUID version 8**: A free-form UUID format which has no explicit requirements except maintaining backward compatibility.
- - `custom_a|var_ver|custom_b`
+
+    `custom_a|var_ver|custom_b`
+4. **Max UUID**: A specialized UUID which is the inverse of the Nil UUID from RFC4122.
+
+    `FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF`
 
 ---
 
@@ -37,6 +43,7 @@ For more information on any of these items refer to the XML, TXT, HTML draft, re
 - [Version and Variant Bit Usage](https://github.com/uuid6/uuid6-ietf-draft/issues/26)
 - Distributed UUID Generation best practices
   - Sub-Topics: [Shared Knowledge Schemes and embedded nondescript node identifiers](https://github.com/uuid6/uuid6-ietf-draft/issues/36) 
+- [Max UUID Usage](https://github.com/uuid6/uuid6-ietf-draft/issues/62)
 
 ### In Scope Topics - UUID Best Practices as it relates to the previous topics
 - Global and Local Uniqueness (collision resistance mechanisms)
@@ -73,7 +80,7 @@ For more information on any of these items refer to the XML, TXT, HTML draft, re
 - Utilize the issue tracker to discuss topics, solutions, problems, typos and anything else.
   - Where possible contribute to an existing [Discussion Thread](https://github.com/uuid6/uuid6-ietf-draft/issues?q=is%3Aissue+is%3Aopen+label%3ADiscussion) vs creating a new thread.
   - Reviewing is the pre-Draft 01 [Research efforts](https://github.com/uuid6/uuid6-ietf-draft/tree/master/research) is encouraged before diving into discussion threads.
-  - New threads that propose alternative text should utilize `Proposed Draft Change` GitHub issue template proper information is captured for the draft authors.
+  - New threads that propose alternative text SHOULD utilize `Proposed Draft Change` GitHub issue template to ensure proper information is captured for the draft authors.
   - Be civil!
 - Pull requests will be accepted  *as long as the text is concise, clear and objective.* 
   - PRs will not be accepted for changes to the decision made for the draft without full discussion. 
