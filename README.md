@@ -18,10 +18,10 @@ Various discussion will need to occur to arrive at a standard and this repo will
 1. **UUID version 6**: A re-ordering of UUID version 1 so it is sortable as an opaque sequence of bytes. Easy to implement given an existing UUIDv1 implementation.
 
     `time_high|time_mid|time_low_and_version|clk_seq_hi_res|clk_seq_low|node`
-2. **UUID version 7**: An entirely new time-based UUID bit layout sourced from the widely implemented and well known Unix Epoch timestamp source.
+2. **UUID version 7#**: An entirely new time-based UUID bit layout sourced from the widely implemented and well known Unix Epoch timestamp source.
 
     `unix_ts_ms|rand_a|var_ver|rand_b`
-3. **UUID version 8**: A free-form UUID format which has no explicit requirements except maintaining backward compatibility.
+3. **UUID version 8E**: A free-form UUID format which has no explicit requirements except maintaining backward compatibility.
 
     `custom_a|var_ver|custom_b`
 4. **Max UUID**: A specialized UUID which is the inverse of the Nil UUID from RFC4122.
