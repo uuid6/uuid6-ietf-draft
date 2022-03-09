@@ -18,15 +18,28 @@ Various discussion will need to occur to arrive at a standard and this repo will
 1. **UUID version 6**: A re-ordering of UUID version 1 so it is sortable as an opaque sequence of bytes. Easy to implement given an existing UUIDv1 implementation.
 
     `time_high|time_mid|time_low_and_version|clk_seq_hi_res|clk_seq_low|node`
-2. **UUID version 7E**: An entirely new time-based UUID bit layout sourced from the widely implemented and well known Unix Epoch timestamp source.
+2. **UUID version 7**: An entirely new time-based UUID bit layout sourced from the widely implemented and well known Unix Epoch timestamp source.
+
+    `unix_ts_ms|ver|rand_a|var|rand_b`
+3. **UUID version 7E**: An alternate variant for UUIDv7.
 
     `unix_ts_ms|rand_a|var_ver|rand_b`
-3. **UUID version 8E**: A free-form UUID format which has no explicit requirements except maintaining backward compatibility.
+4. **UUID version 8**: A free-form UUID format which has no explicit requirements except maintaining backward compatibility.
+
+    `custom_a|ver|custom_b|var|custom_c`
+5. **UUID version 8E**: An alternate variant for UUIDv8.
 
     `custom_a|var_ver|custom_b`
-4. **Max UUID**: A specialized UUID which is the inverse of the Nil UUID from RFC4122.
+6. **Max UUID**: A specialized UUID which is the inverse of the Nil UUID from RFC4122.
 
     `FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF`
+7. **UUID Long**: A generalized name for any variable length UUID longer than 128-bits.
+
+    `8-4-4-4-12-<any_number_of_hex_characters>`
+	
+8. **Alternate Encodings**: The technique of encoding a UUID value as something other than binary, decimal, text 8-4-4-4-12 hex-dashes.
+
+    `urn:uuid:<alternate_encoded_uuid>`
 
 ---
 
@@ -54,9 +67,7 @@ For more information on any of these items refer to the XML, TXT, HTML draft, re
 - Any and all UUID security concerns!
   - Sub-Topics: [MAC address usage in next-generation UUIDs](https://github.com/uuid6/uuid6-ietf-draft/issues/13)
 
----
-
-### Topics being scoped
+### Other Topics
 - [Alternative text encoding techniques (Crockfords Base32, Base64, etc)](https://github.com/uuid6/uuid6-ietf-draft/issues/2)
 - [Variable length UUIDs](https://github.com/uuid6/uuid6-ietf-draft/issues/59)
 
