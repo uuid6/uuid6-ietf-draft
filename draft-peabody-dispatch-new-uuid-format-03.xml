@@ -685,13 +685,16 @@ UUIDv4 b36: urn:uuid:6V1GDX0NNGFV95EFF5TPJ0TR1
 				<dl newline="true">
 					<dt>Fixed-Length Dedicated Counter Seeding:</dt> 
 						<dd>
-							Implementations utilizing fixed-length counter method MAY randomly initialize the counter with each new timestamp tick. However, when the timestamp has not incremented; the counter SHOULD be frozen and incremented by one. When utilizing a randomly seeded counter alongside Method 1; the random MAY be regenerated with each counter increment without impacting sortability. The downside is that Method 1 is prone to overflows if a counter of adequate length is not selected or the random data generated leaves little room for the required number of increments. Implementations utilizing fixed-length counter method MAY also choose to initialize the counter at zero to ensure the full bit-space is utilized and help avoid counter rollovers. This approach has less entropy and more guessibility but ensures the most of the counter bit space.
+							Implementations utilizing fixed-length counter method SHOULD randomly initialize the counter with each new timestamp tick. 
+							However, when the timestamp has not incremented; the counter SHOULD be frozen and incremented by one. 
+							When utilizing a randomly seeded counter alongside Method 1; the random MAY be regenerated with each counter increment without impacting sortability. The downside is that Method 1 is prone to overflows if a counter of adequate length is not selected or the random data generated leaves little room for the required number of increments. 
+							Implementations utilizing fixed-length counter method MAY also choose to randomly initialize a portion counter rather than the entire counter. For example, a 24 bit counter could have the 23 bits in least-significant, right-most, position randomly initialized. The remaining most significant, left-most counter bits are initialized as zero for the sole purpose of guarding against counter rollovers.
 						</dd>
 					<dt>Fixed-Length Dedicated Counter Length</dt>
-						<dd>Care MUST be taken to select a counter bit-length that can properly handle the level of timestamp precision in use. For example, millisecond precision SHOULD require a larger counter than a timestamp with nanosecond precision. General Guidance is that the counter SHOULD be at least 12 bits and no more than a maximum of 24 bits.</dd>
+						<dd>Care MUST be taken to select a counter bit-length that can properly handle the level of timestamp precision in use. For example, millisecond precision SHOULD require a larger counter than a timestamp with nanosecond precision. General Guidance is that the counter SHOULD be at least 12 bits but can be longer. Care SHOULD also be given to ensure that the counter length selected leaves room for sufficient entropy in the random portion of the UUID after the counter. This entropy helps improve the unguessability characteristics of UUIDs created within the batch.</dd>
 					<dt>Fixed-Length Dedicated Counter Rollover Handling</dt>
 						<dd>
-						Counter rollovers SHOULD be handled by the application to avoid sorting issues. The general guidance is that applications SHOULD freeze the counter and wait for the timestamp to advance which ensures monotonicity is not broken.
+						Counter rollovers SHOULD be handled by the application to avoid sorting issues. The general guidance is that applications SHOULD freeze the counter and wait for the timestamp to advance which ensures monotonicity is not broken. The technique from Fixed-Length Dedicated Counter Seeding which describes allocating a segment of the fixed-length counter as a rollover guard is also recommended and SHOULD be employed to help mitigate counter rollover issues.
 						</dd>
 				</dl>
 				<t>

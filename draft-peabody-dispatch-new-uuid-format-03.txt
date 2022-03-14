@@ -5,8 +5,8 @@
 dispatch                                                    BGP. Peabody
 Internet-Draft                                                          
 Updates: 4122 (if approved)                                     K. Davis
-Intended status: Standards Track                            9 March 2022
-Expires: 10 September 2022
+Intended status: Standards Track                           14 March 2022
+Expires: 15 September 2022
 
 
                             New UUID Formats
@@ -33,7 +33,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 10 September 2022.
+   This Internet-Draft will expire on 15 September 2022.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Peabody & Davis         Expires 10 September 2022               [Page 1]
+Peabody & Davis         Expires 15 September 2022               [Page 1]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -84,7 +84,7 @@ Table of Contents
      8.3.  Distributed UUID Generation . . . . . . . . . . . . . . .  22
      8.4.  Collision Resistance  . . . . . . . . . . . . . . . . . .  23
      8.5.  Global and Local Uniqueness . . . . . . . . . . . . . . .  23
-     8.6.  Unguessability  . . . . . . . . . . . . . . . . . . . . .  23
+     8.6.  Unguessability  . . . . . . . . . . . . . . . . . . . . .  24
      8.7.  Sorting . . . . . . . . . . . . . . . . . . . . . . . . .  24
      8.8.  Opacity . . . . . . . . . . . . . . . . . . . . . . . . .  24
      8.9.  DBMS and Database Considerations  . . . . . . . . . . . .  24
@@ -93,8 +93,8 @@ Table of Contents
    11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  25
    12. Normative References  . . . . . . . . . . . . . . . . . . . .  25
    13. Informative References  . . . . . . . . . . . . . . . . . . .  26
-   Appendix A.  Example Code . . . . . . . . . . . . . . . . . . . .  27
-     A.1.  Creating a UUIDv6 Value . . . . . . . . . . . . . . . . .  27
+   Appendix A.  Example Code . . . . . . . . . . . . . . . . . . . .  28
+     A.1.  Creating a UUIDv6 Value . . . . . . . . . . . . . . . . .  28
      A.2.  Creating a UUIDv7E Value  . . . . . . . . . . . . . . . .  28
      A.3.  Creating a UUIDv8E Value  . . . . . . . . . . . . . . . .  30
    Appendix B.  Test Vectors . . . . . . . . . . . . . . . . . . . .  30
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Peabody & Davis         Expires 10 September 2022               [Page 2]
+Peabody & Davis         Expires 15 September 2022               [Page 2]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -165,7 +165,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022               [Page 3]
+Peabody & Davis         Expires 15 September 2022               [Page 3]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -221,7 +221,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022               [Page 4]
+Peabody & Davis         Expires 15 September 2022               [Page 4]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -269,7 +269,7 @@ Internet-Draft               new-uuid-format                  March 2022
       Section 5.2
 
    UUID version 7E (UUIDv7E)
-      An alternate format for UUIDv7.  See Section 6.1
+      An alternate variant for UUIDv7.  See Section 6.1
 
    UUID version 8 (UUIDv8)
       A free-form UUID format which has no explicit requirements except
@@ -277,13 +277,13 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022               [Page 5]
+Peabody & Davis         Expires 15 September 2022               [Page 5]
 
 Internet-Draft               new-uuid-format                  March 2022
 
 
    UUID version 8E (UUIDv8E)
-      An alternate format for UUIDv8.  See Section 6.2
+      An alternate variant for UUIDv8.  See Section 6.2
 
    Max UUID
       A specialized UUID which is the inverse of [RFC4122],
@@ -333,7 +333,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022               [Page 6]
+Peabody & Davis         Expires 15 September 2022               [Page 6]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -389,7 +389,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022               [Page 7]
+Peabody & Davis         Expires 15 September 2022               [Page 7]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -445,7 +445,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022               [Page 8]
+Peabody & Davis         Expires 15 September 2022               [Page 8]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -501,7 +501,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022               [Page 9]
+Peabody & Davis         Expires 15 September 2022               [Page 9]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -557,7 +557,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 10]
+Peabody & Davis         Expires 15 September 2022              [Page 10]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -613,7 +613,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 11]
+Peabody & Davis         Expires 15 September 2022              [Page 11]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -669,7 +669,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 12]
+Peabody & Davis         Expires 15 September 2022              [Page 12]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -725,7 +725,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 13]
+Peabody & Davis         Expires 15 September 2022              [Page 13]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -781,7 +781,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 14]
+Peabody & Davis         Expires 15 September 2022              [Page 14]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -837,7 +837,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 15]
+Peabody & Davis         Expires 15 September 2022              [Page 15]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -893,7 +893,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 16]
+Peabody & Davis         Expires 15 September 2022              [Page 16]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -949,7 +949,7 @@ UUIDv4: 73E94FE0-E951-4153-AAF3-50E4E6089D9D
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 17]
+Peabody & Davis         Expires 15 September 2022              [Page 17]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1005,7 +1005,7 @@ UUIDv4 b36: urn:uuid:6V1GDX0NNGFV95EFF5TPJ0TR1
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 18]
+Peabody & Davis         Expires 15 September 2022              [Page 18]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1061,7 +1061,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 19]
+Peabody & Davis         Expires 15 September 2022              [Page 19]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1117,40 +1117,49 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 20]
+Peabody & Davis         Expires 15 September 2022              [Page 20]
 
 Internet-Draft               new-uuid-format                  March 2022
 
 
    Fixed-Length Dedicated Counter Seeding:
-      Implementations utilizing fixed-length counter method MAY randomly
-      initialize the counter with each new timestamp tick.  However,
-      when the timestamp has not incremented; the counter SHOULD be
-      frozen and incremented by one.  When utilizing a randomly seeded
-      counter alongside Method 1; the random MAY be regenerated with
-      each counter increment without impacting sortability.  The
-      downside is that Method 1 is prone to overflows if a counter of
-      adequate length is not selected or the random data generated
-      leaves little room for the required number of increments.
-      Implementations utilizing fixed-length counter method MAY also
-      choose to initialize the counter at zero to ensure the full bit-
-      space is utilized and help avoid counter rollovers.  This approach
-      has less entropy and more guessibility but ensures the most of the
-      counter bit space.
+      Implementations utilizing fixed-length counter method SHOULD
+      randomly initialize the counter with each new timestamp tick.
+      However, when the timestamp has not incremented; the counter
+      SHOULD be frozen and incremented by one.  When utilizing a
+      randomly seeded counter alongside Method 1; the random MAY be
+      regenerated with each counter increment without impacting
+      sortability.  The downside is that Method 1 is prone to overflows
+      if a counter of adequate length is not selected or the random data
+      generated leaves little room for the required number of
+      increments.  Implementations utilizing fixed-length counter method
+      MAY also choose to randomly initialize a portion counter rather
+      than the entire counter.  For example, a 24 bit counter could have
+      the 23 bits in least-significant, right-most, position randomly
+      initialized.  The remaining most significant, left-most counter
+      bits are initialized as zero for the sole purpose of guarding
+      against counter rollovers.
 
    Fixed-Length Dedicated Counter Length
       Care MUST be taken to select a counter bit-length that can
       properly handle the level of timestamp precision in use.  For
       example, millisecond precision SHOULD require a larger counter
       than a timestamp with nanosecond precision.  General Guidance is
-      that the counter SHOULD be at least 12 bits and no more than a
-      maximum of 24 bits.
+      that the counter SHOULD be at least 12 bits but can be longer.
+      Care SHOULD also be given to ensure that the counter length
+      selected leaves room for sufficient entropy in the random portion
+      of the UUID after the counter.  This entropy helps improve the
+      unguessability characteristics of UUIDs created within the batch.
 
    Fixed-Length Dedicated Counter Rollover Handling
       Counter rollovers SHOULD be handled by the application to avoid
       sorting issues.  The general guidance is that applications SHOULD
       freeze the counter and wait for the timestamp to advance which
-      ensures monotonicity is not broken.
+      ensures monotonicity is not broken.  The technique from Fixed-
+      Length Dedicated Counter Seeding which describes allocating a
+      segment of the fixed-length counter as a rollover guard is also
+      recommended and SHOULD be employed to help mitigate counter
+      rollover issues.
 
    Implementations MAY use the following logic to ensure UUIDs featuring
    embedded counters are monotonic in nature:
@@ -1159,24 +1168,20 @@ Internet-Draft               new-uuid-format                  March 2022
        timestamp.
    2.  If the current timestamp is equal to the previous timestamp;
        increment desired counter logic.
+
+
+
+
+
+Peabody & Davis         Expires 15 September 2022              [Page 21]
+
+Internet-Draft               new-uuid-format                  March 2022
+
+
    3.  If the current timestamp is greater than the previous timestamp;
        re-initialize the counter to the new timestamp and generate new
        random bytes (if the bytes were frozen or being used as the seed
        for a monotonic counter).
-
-
-
-
-
-
-
-
-
-
-Peabody & Davis         Expires 10 September 2022              [Page 21]
-
-Internet-Draft               new-uuid-format                  March 2022
-
 
    Implementations SHOULD check if the the currently generated UUID is
    greater than the previously generated UUID.  If this is not the case
@@ -1222,17 +1227,17 @@ Internet-Draft               new-uuid-format                  March 2022
       node id among distributed nodes is also out of scope for this
       specification.
 
+
+
+Peabody & Davis         Expires 15 September 2022              [Page 22]
+
+Internet-Draft               new-uuid-format                  March 2022
+
+
    Utilization of either a shared knowledge scheme or Node ID are not
    required for implementing UUIDs in this specification.  However
    implementations SHOULD utilize one of the two aforementioned methods
    if distributed UUID generation is a requirements.
-
-
-
-Peabody & Davis         Expires 10 September 2022              [Page 22]
-
-Internet-Draft               new-uuid-format                  March 2022
-
 
 8.4.  Collision Resistance
 
@@ -1275,6 +1280,16 @@ Internet-Draft               new-uuid-format                  March 2022
    a shared knowledge scheme introduced in Section 8.3 as they see fit
    to extend the uniqueness guaranteed this specification and [RFC4122].
 
+
+
+
+
+
+Peabody & Davis         Expires 15 September 2022              [Page 23]
+
+Internet-Draft               new-uuid-format                  March 2022
+
+
 8.6.  Unguessability
 
    Implementations SHOULD utilize a cryptographically secure pseudo-
@@ -1282,13 +1297,6 @@ Internet-Draft               new-uuid-format                  March 2022
    difficult to predict ("unguessable") and have a low likelihood of
    collision ("unique").  CSPRNG ensures the best of Section 8.4 and
    Section 10 are present in modern UUIDs.
-
-
-
-Peabody & Davis         Expires 10 September 2022              [Page 23]
-
-Internet-Draft               new-uuid-format                  March 2022
-
 
    Advice on generating cryptographic-quality random numbers can be
    found in [RFC4086]
@@ -1330,6 +1338,14 @@ Internet-Draft               new-uuid-format                  March 2022
    *  8 bits for each of the 32 hex characters = 256 bits
    *  8 bits for each of the 4 hyphens = 32 bits
 
+
+
+
+Peabody & Davis         Expires 15 September 2022              [Page 24]
+
+Internet-Draft               new-uuid-format                  March 2022
+
+
    For other systems, UUIDs MAY be stored in binary form or as text, as
    appropriate.  The trade offs to both approaches are as such:
 
@@ -1338,13 +1354,6 @@ Internet-Draft               new-uuid-format                  March 2022
    *  Storing as text requires more space but may require less
       translation if the resulting text form is to be used after
       retrieval and thus maybe simpler to implement.
-
-
-
-Peabody & Davis         Expires 10 September 2022              [Page 24]
-
-Internet-Draft               new-uuid-format                  March 2022
-
 
    DBMS vendors are encouraged to provide functionality to generate and
    store UUID formats defined by this specification for use as
@@ -1386,6 +1395,13 @@ Internet-Draft               new-uuid-format                  March 2022
 
 12.  Normative References
 
+
+
+Peabody & Davis         Expires 15 September 2022              [Page 25]
+
+Internet-Draft               new-uuid-format                  March 2022
+
+
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
@@ -1394,13 +1410,6 @@ Internet-Draft               new-uuid-format                  March 2022
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
-
-
-
-Peabody & Davis         Expires 10 September 2022              [Page 25]
-
-Internet-Draft               new-uuid-format                  March 2022
-
 
    [RFC4122]  Leach, P., Mealling, M., and R. Salz, "A Universally
               Unique IDentifier (UUID) URN Namespace", RFC 4122,
@@ -1442,6 +1451,13 @@ Internet-Draft               new-uuid-format                  March 2022
    [KSUID]    Segment, "K-Sortable Globally Unique IDs", Commit bf376a7,
               July 2020, <https://github.com/segmentio/ksuid>.
 
+
+
+Peabody & Davis         Expires 15 September 2022              [Page 26]
+
+Internet-Draft               new-uuid-format                  March 2022
+
+
    [Elasticflake]
               Pearcy, P., "Sequential UUID / Flake ID generator pulled
               out of elasticsearch common", Commit dd71c21, January
@@ -1449,14 +1465,6 @@ Internet-Draft               new-uuid-format                  March 2022
 
    [FlakeID]  Pawlak, T., "Flake ID Generator", Commit fcd6a2f, April
               2020, <https://github.com/T-PWK/flake-idgen>.
-
-
-
-
-Peabody & Davis         Expires 10 September 2022              [Page 26]
-
-Internet-Draft               new-uuid-format                  March 2022
-
 
    [Sonyflake]
               Sony, "A distributed unique ID generator inspired by
@@ -1499,20 +1507,19 @@ Internet-Draft               new-uuid-format                  March 2022
               scaling and performance.", Series 754-2019, July 2019,
               <https://standards.ieee.org/ieee/754/6210/>.
 
+
+
+Peabody & Davis         Expires 15 September 2022              [Page 27]
+
+Internet-Draft               new-uuid-format                  March 2022
+
+
 Appendix A.  Example Code
 
 A.1.  Creating a UUIDv6 Value
 
    This section details a function in C which converts from a UUID
    version 1 to version 6:
-
-
-
-
-Peabody & Davis         Expires 10 September 2022              [Page 27]
-
-Internet-Draft               new-uuid-format                  March 2022
-
 
    #include <stdio.h>
    #include <stdint.h>
@@ -1558,14 +1565,7 @@ A.2.  Creating a UUIDv7E Value
 
 
 
-
-
-
-
-
-
-
-Peabody & Davis         Expires 10 September 2022              [Page 28]
+Peabody & Davis         Expires 15 September 2022              [Page 28]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1621,7 +1621,7 @@ u[8] = 0xE7; // set var-ver field
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 29]
+Peabody & Davis         Expires 15 September 2022              [Page 29]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1677,7 +1677,7 @@ Appendix B.  Test Vectors
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 30]
+Peabody & Davis         Expires 15 September 2022              [Page 30]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1733,7 +1733,7 @@ B.1.  Example of a UUIDv6 Value
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 31]
+Peabody & Davis         Expires 15 September 2022              [Page 31]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1789,7 +1789,7 @@ B.3.  Example of a UUIDv7E Value
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 32]
+Peabody & Davis         Expires 15 September 2022              [Page 32]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1845,7 +1845,7 @@ B.4.  Example of a UUIDv8 Value
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 33]
+Peabody & Davis         Expires 15 September 2022              [Page 33]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1901,7 +1901,7 @@ C.1.  Variant 10xx Versions
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 34]
+Peabody & Davis         Expires 15 September 2022              [Page 34]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1957,7 +1957,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 35]
+Peabody & Davis         Expires 15 September 2022              [Page 35]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -2013,7 +2013,7 @@ C.2.  Variant 1110 Versions
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 36]
+Peabody & Davis         Expires 15 September 2022              [Page 36]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -2069,4 +2069,4 @@ Authors' Addresses
 
 
 
-Peabody & Davis         Expires 10 September 2022              [Page 37]
+Peabody & Davis         Expires 15 September 2022              [Page 37]
