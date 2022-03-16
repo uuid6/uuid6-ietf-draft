@@ -21,25 +21,14 @@ Various discussion will need to occur to arrive at a standard and this repo will
 2. **UUID version 7**: An entirely new time-based UUID bit layout sourced from the widely implemented and well known Unix Epoch timestamp source.
 
     `unix_ts_ms|ver|rand_a|var|rand_b`
-3. **UUID version 7E**: An alternate variant for UUIDv7.
 
-    `unix_ts_ms|rand_a|var_ver|rand_b`
-4. **UUID version 8**: A free-form UUID format which has no explicit requirements except maintaining backward compatibility.
+3. **UUID version 8**: A free-form UUID format which has no explicit requirements except maintaining backward compatibility.
 
     `custom_a|ver|custom_b|var|custom_c`
-5. **UUID version 8E**: An alternate variant for UUIDv8.
 
-    `custom_a|var_ver|custom_b`
-6. **Max UUID**: A specialized UUID which is the inverse of the Nil UUID from RFC4122.
+5. **Max UUID**: A specialized UUID which is the inverse of the Nil UUID from RFC4122.
 
     `FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF`
-7. **UUID Long**: A generalized name for any variable length UUID longer than 128-bits.
-
-    `8-4-4-4-12-<any_number_of_hex_characters>`
-	
-8. **Alternate Encodings**: The technique of encoding a UUID value as something other than binary, decimal, text 8-4-4-4-12 hex-dashes.
-
-    `urn:uuid:<alternate_encoded_uuid>`
 
 ---
 
@@ -53,7 +42,6 @@ For more information on any of these items refer to the XML, TXT, HTML draft, re
 - [Monotonicity and Counters for same Timestamp-tick collision avoidance during batch UUID creation](https://github.com/uuid6/uuid6-ietf-draft/issues/60)
    - Sub-Topics: Counter position, length, rollover handling and seeding.
 - [Pseudo-random formatting, length and generation methods](https://github.com/uuid6/uuid6-ietf-draft/issues/55)
-- [Version and Variant Bit Usage](https://github.com/uuid6/uuid6-ietf-draft/issues/26)
 - Distributed UUID Generation best practices
   - Sub-Topics: [Shared Knowledge Schemes and embedded nondescript node identifiers](https://github.com/uuid6/uuid6-ietf-draft/issues/36) 
 - [Max UUID Usage](https://github.com/uuid6/uuid6-ietf-draft/issues/62)
@@ -67,7 +55,11 @@ For more information on any of these items refer to the XML, TXT, HTML draft, re
 - Any and all UUID security concerns!
   - Sub-Topics: [MAC address usage in next-generation UUIDs](https://github.com/uuid6/uuid6-ietf-draft/issues/13)
 
-### Other Topics
+
+---
+
+### Out of Scope Topics (being rolled into a new Draft)
+- [Variant Bit E Usage](https://github.com/uuid6/uuid6-ietf-draft/issues/26)
 - [Alternative text encoding techniques (Crockfords Base32, Base64, etc)](https://github.com/uuid6/uuid6-ietf-draft/issues/2)
 - [Variable length UUIDs](https://github.com/uuid6/uuid6-ietf-draft/issues/59)
 
