@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<?xml-stylesheet type="text/xsl" href="rfc2629.xslt" ?> <!-- used by XSLT processors -->
+<!-- OPTIONS, known as processing instructions (PIs) go here. -->
+<!-- For a complete list and description of PIs,
+please see http://xml.resource.org/authoring/README.html. -->
+<!-- Below are generally applicable PIs that most I-Ds might want to use. -->
+<?rfc strict="yes" ?> <!-- give errors regarding ID-nits and DTD validation -->
+<!-- control the table of contents (ToC): -->
+<?rfc toc="yes"?> <!-- generate a ToC -->
+<?rfc tocdepth="3"?> <!-- the number of levels of subsections in ToC. default: 3 -->
+<!-- control references: -->
+<?rfc symrefs="yes"?> <!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
+<?rfc sortrefs="yes" ?> <!-- sort the reference entries alphabetically -->
+<!-- control vertical white space: 
+(using these PIs as follows is recommended by the RFC Editor) -->
+<!-- end of popular PIs -->
+<rfc version="3" category="std" updates="4122" submissionType="IETF" consensus="true" ipr="trust200902" docName="draft-davis-peabody-dispatch-new-uuid-encoding-techniques-00">
+	<front>
+		<title abbrev="new-uuid-format">New UUID Encoding Techniques</title>
+		<seriesInfo name="Internet-Draft" value="draft-davis-peabody-dispatch-new-uuid-encoding-techniques-00" stream="IETF"/>
+		<author fullname="Brad G. Peabody" initials="BGP" surname="Peabody">
+			<address>
+				<email>brad@peabody.io</email>
+			</address>
+		</author>
+		<author fullname="Kyzer R. Davis" initials="K" surname="Davis">
+			<address>
+				<email>kydavis@cisco.com</email>
+			</address>
+		</author>
+		<date year="2022" />
+		<area>ART</area>
+		<workgroup>dispatch</workgroup>
+		<keyword>uuid</keyword>
+		<abstract>
+			<t>
+				This document presents new Universally Unique Identifier (UUID) encoding techniques which facilitate greater efficiency in storage or transport versus the unnecessarily verbose text representation from <xref target="RFC4122"/>.
+				Furthermore UUID can now be been extended beyond 128 bits to facilitate enhanced collision resistance or for embedding additional data within a given UUID value.
+			</t>
+		</abstract>
+	</front>
+	<middle>
+		<section anchor="Background" title="Introduction">
+			<t>
+				The original "hex and dash", 8-4-4-4-12, format of UUIDs defined by <xref target="RFC4122"/> represents a 128 bit UUID value as a 288 bit value. 
+				While this may be great for human readability; the only available UUID text representation suffers poorly for storage, transmission and application parsing.
+			</t>
+			<t>
+				Furthermore, UUIDs static length of 128 bits has lead to many alternative, non-standard, Globally Unique Identifiers which aim to pack more information into a larger bit space.
+			</t>
+		</section>
+		<section title="Terminology">
+			<section anchor="requirements_language" title="Requirements Language">
+				<t>
+					The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"/> <xref target="RFC8174"/> when, and only when, they appear in all capitals, as shown here.
+				</t>
+			</section>
+			<section anchor="acronyms" title="Abbreviations">
+				<t>The following abbreviations are used in this document: </t>
+				<dl newline="false" spacing="normal" indent="14" pn="section-2.2-2">
+					<dt>UUID</dt><dd>Universally Unique Identifier <xref target="RFC4122"/></dd>
+					<dt>URN</dt><dd>Uniform Resource Name <xref target="RFC8141"/></dd>
+				</dl>
+			</section>
+		</section>
+		<section anchor="changelog" title="changelog">
+			<t>RFC EDITOR PLEASE DELETE THIS SECTION.</t>
+			<t>draft-00</t>
+			<ul spacing="compact" empty="true">
+				<li><t>- Initial Release</t></li>
+			</ul>
+		</section>
+		
+		<section anchor="extended_uuid_namespace" title="Extended URN UUID Namespace">
+			<t>
+				The Existing UUID URN introduced by <xref target="RFC4122"/> will remain as urn:uuid:{uuid_value} however a new, extended URN structures will be leveraged to convey finer topics introduced by this document.
+			</t>
+			<t>
+				The UUIDs defined by this document MUST leverage the extended URN UUID namespace such that the encoding technique and length of the UUID are easily parsable using <xref target="RFC8141"/> compatible logic.
+				If an application does not care about parsing, converting, or otherwise ascertaining information from a given UUID value then that application MAY choose to simply store the actual UUID value in the desired format and omit any UUID URN information.				
+			</t>
+			<t>
+				The Extended UUID namespace syntax is composed of the following parts:
+			</t>
+			<dl newline="true">
+				<dt>urn</dt><dd>Uniform Resource Name as defined by <xref target="RFC8141"/></dd>
+				<dt>uuid</dt><dd>Universally Unique IDentifier as defined by <xref target="RFC4122"/></dd>
+				<dt>{uuid_value}</dt><dd>The actual UUID Value which may have been encoded using <xref target="uuid_encoding"/> or longer than 128 bits as per <xref target="uuid_long"/>. Any colon character (:) within this field MUST be percent-encoded as "%3A"</dd>
+				<dt>{uuid_length}</dt><dd>Variable entry which describes the total length of encoded UUID Value (uuid_value) as an integer value.</dd>
+				<dt>{uuid_encoding}</dt><dd>Variable entry which describes the encoding of the UUID Value (uuid_value). This value MAY include dashes characters thus base32 is the same as base-32.</dd>
+			</dl>
+			<t>
+				The existing UUID URN is equivalent to an Extended UUID URN via the following syntax where "base16hd" is a shorthand key for the 128 bit, base16 "Hex and Dashes" format introduced by <xref target="RFC4122"/>.
+			</t>
+			<figure>
+                    <name>Extended URN UUID Example:</name>
+                    <artwork><![CDATA[
+urn:uuid:73e94fe0-e951-4153-aaf3-50e4e6089d9d
+urn:uuid:73e94fe0-e951-4153-aaf3-50e4e6089d9d:128:base16hd
+                    ]]></artwork>
+			</figure>
+			<t>
+				The next section defines some other Extended UUID URN namespace usage examples for alternate encodings for the same UUID Version 4 example as Base 16 Hex and Dashes (base16hd), Base2 (Binary), and Base10 (Decimal) values.
+			</t>
+			<figure>
+                    <name>Extended URN UUID Example:</name>
+                    <artwork><![CDATA[
+urn:uuid:73e94fe0-e951-4153-aaf3-50e4e6089d9d:128:base16hd
+urn:uuid:1110011111010010100111111100000111010010101000101000001010100111010101011110011010100001110010011100110000010001001110110011101:128:base2
+urn:uuid:154072644812979270675542139334331768221:128:base10
+                    ]]></artwork>
+			</figure>
+		</section>
+		
+		<section anchor="uuid_encoding" title="Alternate Encodings">
+                <t>
+                    The existing UUID hex and dash format of 8-4-4-4-12 is retained for both backwards compatibility and human readability. This format MUST be implemented for all UUIDs.
+                </t>
+                <t>
+                    Where required, UUIDs defined by this specification and <xref target="RFC4122"/> MAY be encoded utilizing new techniques such as, but not limited to, Base32, Base36, or Base64. 
+					Applications MAY also utilize other encoding techniques such as modulo division or alternate alphabets such as Crockford's base32. 
+					When selecting an alternate encoding implementations SHOULD take into consideration items such as: uppercase/lowercase/mixed character encoding for application sortability, special character inclusions or omissions, and the exclusion of key letters like "I", "L", "O", and "U" which may impact sortability of UUID values and collision resistance provided by all UUIDs.
+                </t>
+                <t>
+                    When utilizing alternate encoding techniques with other applications; 
+					the encoded UUID MUST be prefixed with extended "urn:uuid:" to signal that the value therein is that of a UUID. 
+					Additionally the UUID MUST and post-fixed with the required extended UUID URN values as defined by <xref target="extended_uuid_namespace"/> to signal the alternate encoding technique in use and the length of the underlying encoded UUID.
+                </t>
+                <t>
+                    The conversion from UUID to a new encoding technique SHOULD be done utilizing the underlying integer or binary value for a given UUID versus converting the hex representation. Two examples for UUIDv4 encoded as base-32 and base-36 are included below.
+                </t>
+                <figure>
+                    <name>Alternate Encoding Examples</name>
+                    <artwork><![CDATA[
+urn:uuid:73e94fe0-e951-4153-aaf3-50e4e6089d9d:128:base16hd
+urn:uuid:3JT57U1QAH859QLSQGSJJ0H7CT:128:base32
+urn:uuid:6V1GDX0NNGFV95EFF5TPJ0TR1:128:base36
+                    ]]></artwork>
+                </figure>
+                <t>
+                    For information on converting a UUID into Base 16, Base 32 or Base 64 refer to <xref target="RFC4648"/>.
+                </t>
+				<t>
+					Furthermore, when utilizing alternate encoding techniques along with Extended UUID URN namespaces; remember that disallowed characters MUST be percent-encoded as per <xref target="RFC8141"/>.
+				</t>
+		</section>
+		
+		<section anchor="uuid_long" title="UUID Long">
+                <t>
+                    UUID Long generally references any variable length UUID longer than 128 bits. There are two main driving factors behind extending UUID beyond 128 bits:
+                </t>
+                <dl newline="true">
+                    <dt>Increased Entropy:</dt>
+                        <dd>
+							While existing UUID formats provide sufficient entropy for most use cases; there exists scenarios where even more entropy is required to further reduce collision probabilities or guessability.
+					    </dd>
+                    <dt>Requirements for additional embedded items:</dt>
+                        <dd>
+							Some implementations require more than 128 bits to properly embed all of the application specific data they require. 
+							Some examples include database metadata like entity types, checksum values, shard/partition identifiers, and even node identifiers for distributed UUID generation.
+						</dd>
+                </dl>
+                <t>
+                    UUID Long is compatible with any UUID specified in this document and <xref target="RFC4122"/>. 
+					UUID long is variable in length and there is no minimum or maximum value for UUID Long; however, UUID Long SHOULD leverage natural byte boundaries. 
+					UUID long is defined by appending an additional dash to the existing 8-4-4-4-12 hex and dash format to create 8-4-4-4-12-{variable_length} text format. 
+					
+				</t>
+				<t>
+					The next example shows a UUID Long +32, +64 and +128 example for UUIDv4 with random data filling the values beyond 128 bits.
+                </t>
+                <figure>
+                    <name>UUID Long Examples</name>
+                    <artwork><![CDATA[
+urn:uuid:73e94fe0-e951-4153-aaf3-50e4e6089d9d:128:base16hd
+urn:uuid:73e94fe0-e951-4153-aaf3-50e4e6089d9d-05fa17aaac4f8954d9fac2df2fce30f6:160:base16hd
+urn:uuid:73e94fe0-e951-4153-aaf3-50e4e6089d9d-02df3f4babc63a3b2775e27804528a6d23c679eed60fe31df3f8b014e7915595:192:base16hd
+urn:uuid:73e94fe0-e951-4153-aaf3-50e4e6089d9d-8fe05412f24ca9974637a10c0b372a7109fb810f61068c0074b480f09f18b30fe03ae7bf09c98b241e8c9c0d51516b963ac75abe447dbff34177093b4b781a46:256:base16hd
+                    ]]></artwork>
+                </figure>
+                <t>
+                    Where required, for compatibility with legacy UUID implementations, the most significant, left-most, 128 bits MUST be leveraged to truncate from UUID Long back to a regular UUID.
+                </t>
+				<t>
+					UUID Long values MAY be coupled with alternate encoding techniques described in this document.
+				</t>
+                <!-- <t>
+                    When UUID Long is utilized with Nil UUID or Max UUID all bits should be set as specified. That is for Nil UUID Long all bits MUST be set to 0 while Max UUID Long all bits MUST be set to 1.
+                </t> -->
+                
+		</section>
+		
+		<section anchor="IANA" title="IANA Considerations">
+			<!--TODO Figure out how to format this section -->
+			<t>If Adopted, this document SHOULD be listed in https://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml.</t>
+		</section>
+
+		<section anchor="Security" title="Security Considerations">
+			<t>This document has no security considerations.</t>
+		</section>
+
+		<section anchor="Acknowledgements" title="Acknowledgements">
+			<t>The authors gratefully acknowledge the contributions of 
+				Ben Campbell,
+				Ben Ramsey,
+				Fabio Lima,
+				Gonzalo Salgueiro, 
+				Martin Thomson,
+				Murray S. Kucherawy,
+				Rick van Rein,
+				Rob Wilton,
+				Sean Leonard,
+				Theodore Y. Ts'o.,
+				Robert Kieffer,
+				sergeyprokhorenko,
+				LiosK
+				As well as all of those in the IETF community and on GitHub to who contributed to the discussions which resulted in this document.
+			</t>
+		</section>
+
+	</middle>
+
+	<back>
+		<references title="Normative References">
+			<reference anchor="RFC2119" target="https://www.rfc-editor.org/info/rfc2119" quoteTitle="true" derivedAnchor="RFC2119">
+				<front>
+					<title>Key words for use in RFCs to Indicate Requirement Levels</title>
+					<author initials="S." surname="Bradner" fullname="S. Bradner">
+						<organization showOnFrontPage="true"/>
+					</author>
+					<date year="1997" month="March"/>
+					<abstract>
+						<t indent="0">In many standards track documents several words are used to signify the requirements in the specification.  These words are often capitalized. This document defines these words as they should be interpreted in IETF documents.  This document specifies an Internet Best Current Practices for the Internet Community, and requests discussion and suggestions for improvements.</t>
+					</abstract>
+				</front>
+				<seriesInfo name="BCP" value="14"/>
+				<seriesInfo name="RFC" value="2119"/>
+				<seriesInfo name="DOI" value="10.17487/RFC2119"/>
+			</reference>
+			<reference anchor="RFC8174" target="https://www.rfc-editor.org/info/rfc8174" quoteTitle="true" derivedAnchor="RFC8174">
+			  <front>
+				<title>Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</title>
+				<author initials="B." surname="Leiba" fullname="B. Leiba">
+				  <organization showOnFrontPage="true"/>
+				</author>
+				<date year="2017" month="May"/>
+				<abstract>
+				  <t indent="0">RFC 2119 specifies common key words that may be used in protocol  specifications.  This document aims to reduce the ambiguity by clarifying that only UPPERCASE usage of the key words have the  defined special meanings.</t>
+				</abstract>
+			  </front>
+			  <seriesInfo name="BCP" value="14"/>
+			  <seriesInfo name="RFC" value="8174"/>
+			  <seriesInfo name="DOI" value="10.17487/RFC8174"/>
+			</reference>
+			<reference anchor="RFC4122" target="https://www.rfc-editor.org/info/rfc4122">
+				<front>
+					<title>A Universally Unique IDentifier (UUID) URN Namespace</title>
+					<author initials="P." surname="Leach" fullname="P. Leach">
+						<organization/>
+					</author>
+					<author initials="M." surname="Mealling" fullname="M. Mealling">
+						<organization/>
+					</author>
+					<author initials="R." surname="Salz" fullname="R. Salz">
+						<organization/>
+					</author>
+					<date year="2005" month="July"/>
+					<abstract>
+						<t>This specification defines a Uniform Resource Name namespace for UUIDs (Universally Unique IDentifier), also known as GUIDs (Globally Unique IDentifier). A UUID is 128 bits long, and can guarantee uniqueness across space and time. UUIDs were originally used in the Apollo Network Computing System and later in the Open Software Foundation\'s (OSF) Distributed Computing Environment (DCE), and then in Microsoft Windows platforms.</t>
+						<t>This specification is derived from the DCE specification with the kind permission of the OSF (now known as The Open Group). Information from earlier versions of the DCE specification have been incorporated into this document. [STANDARDS-TRACK]</t>
+					</abstract>
+				</front>
+				<seriesInfo name="RFC" value="4122"/>
+				<seriesInfo name="DOI" value="10.17487/RFC4122"/>
+			</reference>
+			<reference anchor="RFC4648" target="https://www.rfc-editor.org/info/rfc4122">
+				<front>
+					<title>The Base16, Base32, and Base64 Data Encodings</title>
+					<author initials="S." surname="Josefsson" fullname="S. Josefsson">
+						<organization/>
+					</author>
+					<date year="2006" month="October"/>
+					<abstract>
+						<t> This document describes the commonly used base 64, base 32, and base 16 encoding schemes.  It also discusses the use of line-feeds in encoded data, use of padding in encoded data, use of non-alphabet characters in encoded data, use of different encoding alphabets, and canonical encodings.</t>
+					</abstract>
+				</front>
+				<seriesInfo name="RFC" value="4648"/>
+				<seriesInfo name="DOI" value="10.17487/RFC4648"/>
+			</reference>
+			<reference anchor="RFC8141" target="https://www.rfc-editor.org/info/rfc8141">
+				<front>
+					<title>Uniform Resource Names (URNs)</title>
+					<author initials="P." surname="Saint-Andre" fullname="P. Saint-Andre">
+						<organization/>
+					</author>
+					<author initials="J." surname="Klensin" fullname="J. Klensin">
+						<organization/>
+					</author>
+					<date year="2006" month="October"/>
+					<abstract>
+						<t>A Uniform Resource Name (URN) is a Uniform Resource Identifier (URI) that is assigned under the "urn" URI scheme and a particular URN namespace, with the intent that the URN will be a persistent, location-independent resource identifier. With regard to URN syntax, this document defines the canonical syntax for URNs (in a way that is consistent with URI syntax), specifies methods for determining URN-equivalence, and discusses URI conformance. With regard to URN namespaces, this document specifies a method for defining a URN namespace and associating it with a namespace identifier, and it describes procedures for registering namespace identifiers with the Internet Assigned Numbers Authority (IANA). This document obsoletes both RFCs 2141 and 3406.</t>
+					</abstract>
+				</front>
+				<seriesInfo name="RFC" value="8141"/>
+				<seriesInfo name="DOI" value="10.17487/RFC8141"/>
+			</reference>
+		</references>
+	</back>
+</rfc>

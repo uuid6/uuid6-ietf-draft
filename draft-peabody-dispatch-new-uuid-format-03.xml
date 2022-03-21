@@ -511,11 +511,21 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 							Care SHOULD also be given to ensure that the counter length selected leaves room for sufficient entropy in the random portion of the UUID after the counter. 
 							This entropy helps improve the unguessability characteristics of UUIDs created within the batch.
 						</dd>
-					<dt>Fixed-Length Dedicated Counter Rollover Handling:</dt>
+				</dl>
+				<t>
+					The following sub-topics cover rollover handling with either type of counter method:
+				</t>
+				<dl newline="true">
+					<dt>Counter Rollover Guards:</dt>
+						<dd>
+							The technique from Fixed-Length Dedicated Counter Seeding which describes allocating a segment of the fixed-length counter as a rollover guard is also recommended and SHOULD be employed to help mitigate counter rollover issues.
+							This same technique can be leveraged with Monotonic random counter methods by ensuring the total length of a possible increment in the least significant, right most position is less than the total length of the random being incremented.
+							As such the most significant, left-most, bits can be incremented as rollover guarding. 
+						</dd>
+					<dt>Counter Rollover Handling:</dt>
 						<dd>
 							Counter rollovers SHOULD be handled by the application to avoid sorting issues. 
 							The general guidance is that applications that care about absolute monotonicity and sortability SHOULD freeze the counter and wait for the timestamp to advance which ensures monotonicity is not broken.
-							The technique from Fixed-Length Dedicated Counter Seeding which describes allocating a segment of the fixed-length counter as a rollover guard is also recommended and SHOULD be employed to help mitigate counter rollover issues.
 						</dd>
 				</dl>
 				<t>
@@ -625,7 +635,7 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 					<li><t>Storing as text requires more space but may require less translation if the resulting text form is to be used after retrieval and thus maybe simpler to implement.</t></li>
 				</ul>
 				<t>
-					DBMS vendors are encouraged to provide functionality to generate and store UUID formats defined by this specification for use as identifiers such as (but not limited to) primary keys, surrogate keys for temporal databases, foreign keys included in polymorphic relationships, and keys for key-value pairs in JSON key-value databases.
+					DBMS vendors are encouraged to provide functionality to generate and store UUID formats defined by this specification for use as identifiers or left parts of identifiers such as (but not limited to) primary keys, surrogate keys for temporal databases, foreign keys included in polymorphic relationships, and keys for key-value pairs in JSON columns and key-value databases.
 					If database is monolithic than database side UUID generation ensures best UUID monotonicity in the database tables and in indexes. 
 					In addition to UUIDs, additional identifiers MAY be used to ensure integrity and feedback.
 				</t>
@@ -743,20 +753,6 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 				</front>
 				<seriesInfo name="RFC" value="4086"/>
 				<seriesInfo name="DOI" value="10.17487/RFC4086"/>
-			</reference>
-			<reference anchor="RFC4648" target="https://www.rfc-editor.org/info/rfc4122">
-				<front>
-					<title>The Base16, Base32, and Base64 Data Encodings</title>
-					<author initials="S." surname="Josefsson" fullname="S. Josefsson">
-						<organization/>
-					</author>
-					<date year="2006" month="October"/>
-					<abstract>
-						<t> This document describes the commonly used base 64, base 32, and base 16 encoding schemes.  It also discusses the use of line-feeds in encoded data, use of padding in encoded data, use of non-alphabet characters in encoded data, use of different encoding alphabets, and canonical encodings.</t>
-					</abstract>
-				</front>
-				<seriesInfo name="RFC" value="4648"/>
-				<seriesInfo name="DOI" value="10.17487/RFC4648"/>
 			</reference>
 		</references>
 		<references title="Informative References">
@@ -987,7 +983,7 @@ int main() {
   clock_gettime(CLOCK_REALTIME, &tp);
   uint64_t timestamp = (uint64_t)tp.tv_sec << 12;
 
-  // compute 12-bit (~0.25 msec precision) fraction from nsecs
+  // compute 12 bit (~0.25 msec precision) fraction from nsecs
   timestamp |= ((uint64_t)tp.tv_nsec << 12) / 1000000000;
 
   printf("%08llx-%04llx\n", timestamp >> 16, timestamp & 0xFFFF);
@@ -998,7 +994,7 @@ int main() {
 			</section>
 		</section>
 		<section anchor="test_vectors" title="Test Vectors">
-			<t>Both UUIDv1 and UUIDv6 test vectors utilize the same 60-bit timestamp: 0x1EC9414C232AB00 (138648505420000000) Tuesday, February 22, 2022 2:22:22.000000 PM GMT-05:00</t>
+			<t>Both UUIDv1 and UUIDv6 test vectors utilize the same 60 bit timestamp: 0x1EC9414C232AB00 (138648505420000000) Tuesday, February 22, 2022 2:22:22.000000 PM GMT-05:00</t>
 			<t>Both UUIDv1 and UUIDv6 utilize the same values in clk_seq_hi_res, clock_seq_low, and node. All of which have been generated with random data.</t>
 				<figure>
 					<name>Test Vector Timestamp Pseudo-code</name>
@@ -1066,7 +1062,7 @@ final_hex: 1EC9414C-232A-6B00-B3C8-9E6BDECED846
 				</figure>
 			</section>
 			<section anchor="uuidv7_example" title="Example of a UUIDv7 Value">
-				<t>This example UUIDv7 test vector utilizes a well-known 32-bit Unix epoch with additional millisecond precision to fill the first 48 bits</t>
+				<t>This example UUIDv7 test vector utilizes a well-known 32 bit Unix epoch with additional millisecond precision to fill the first 48 bits</t>
 				<t>rand_a and rand_b are filled with random data.</t>
 				<t>The timestamp is Tuesday, February 22, 2022 2:22:22.00 PM GMT-05:00 represented as 0x17F21CFD130 or 1645539742000</t>
 				<figure>
@@ -1088,7 +1084,7 @@ final: 017F21CF-D130-7CC3-98C4-DC0C0C07398F
 				</figure>
 			</section>
 			<section anchor="uuidv8_example" title="Example of a UUIDv8 Value">
-				<t>This example UUIDv8 test vector utilizes a well-known 64-bit Unix epoch with nanosecond precision, truncated to the least-significant (right-most) bits to fill the first 48 bits through version.</t>
+				<t>This example UUIDv8 test vector utilizes a well-known 64 bit Unix epoch with nanosecond precision, truncated to the least-significant (right-most) bits to fill the first 48 bits through version.</t>
 				<t>The next two segments of custom_b and custmo_c are are filled with random data.</t>
 				<t>Timestamp is Tuesday, February 22, 2022 2:22:22.000000 PM GMT-05:00 represented as 0x16D6320C3D4DCC00 or 1645557742000000000</t>
 				<t>It should be noted that this example is just to illustrate one scenario for UUIDv8. Test vectors will likely be implementation specific and vary greatly from this simple example.</t>

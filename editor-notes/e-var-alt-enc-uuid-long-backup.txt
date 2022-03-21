@@ -337,3 +337,18 @@ u[8] = 0xE7; // set var-ver field
                     ]]></artwork>
                 </figure>
             </section>
+			
+			<reference anchor="RFC4648" target="https://www.rfc-editor.org/info/rfc4122">
+				<front>
+					<title>The Base16, Base32, and Base64 Data Encodings</title>
+					<author initials="S." surname="Josefsson" fullname="S. Josefsson">
+						<organization/>
+					</author>
+					<date year="2006" month="October"/>
+					<abstract>
+						<t> This document describes the commonly used base 64, base 32, and base 16 encoding schemes.  It also discusses the use of line-feeds in encoded data, use of padding in encoded data, use of non-alphabet characters in encoded data, use of different encoding alphabets, and canonical encodings.</t>
+					</abstract>
+				</front>
+				<seriesInfo name="RFC" value="4648"/>
+				<seriesInfo name="DOI" value="10.17487/RFC4648"/>
+			</reference>
