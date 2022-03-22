@@ -1,0 +1,354 @@
+                ### Intro
+                <li><t>
+                    The textual representation of existing UUIDs utilized for storage or transport is oftentimes unnecessarily verbose.
+                </t></li>
+                <li><t>
+                    The 128 bit length of current UUIDs oftentimes leads to alternative unique identifier solutions featuring longer bit lengths.
+                </t></li>
+
+                ### New
+                <dt>UUID version 7E (UUIDv7E)</dt> 
+                    <dd>An alternate variant for UUIDv7. See <xref target="uuidv7"/></dd>
+                <dt>UUID version 8E (UUIDv8E)</dt> 
+                    <dd>An alternate variant for UUIDv8. See <xref target="uuidv8"/></dd>
+                <dt>UUID Long</dt> 
+                    <dd>An extension of the base UUID with variable length beyond 128 bits. See <xref target="uuid_long"/></dd>
+
+                    ### Changelog
+                    <li><t>- Changed UUIDv7E and UUIDv8E to use Variant 111.</t></li>
+                    <li><t>- Re-introduced variable length UUIDs as UUID Long.</t></li>
+                    <li><t>- Re-introduced alternate encoding techniques for all UUIDs.</t></li>
+
+                ### New Variant
+                <t>
+                    This specification makes use of the unused variant bits of 111 defined in <xref target="RFC4122" sectionFormat="comma" section="4.1.1"/>.
+                    This variant will move the 4-bit version to the same octet as the variant to overcoming many bit shuffling techniques found in UUID implementations.
+                    All UUIDs utilizing this variant SHOULD be referenced by their version number plus the uppercase E character to represent the hex character 0xE which will frequent the text representation of UUIDs.
+                    The placement of the version within the same octet as the variant leaves room for a future variant as described below:
+                </t>                                
+                <ul spacing="compact">
+                    <li><t>UUID Version 7E and 8E specified by this document MUST set the first 3 bits of octet 8 to 111 and the fourth bit to 0. The 4 bit version MUST follow the variant to fill out the final bits of octet 8.</t></li>
+                    <li><t>Future specifications that wish to utilize variant 111 for a different version position (or any other bit layout position) MUST set the first 3 bits of octet 8 to 111 and then the fourth bit to 1.</t></li>
+                </ul>
+                <t>
+                    The table below detail the three variants described in this document where the letter "x" indicates a "don't-care" value.
+                </t>
+                <table>
+                <name>UUID Variant defined by this specification</name>
+                <thead>
+                    <tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Hex</td><td>Description</td></tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>0</td><td>x</td><td>x</td><td>8/9/A/B</td><td>The variant specified by <xref target="RFC4122" sectionFormat="comma" section="4.1.1"/>.</td></tr>
+                    <tr><td>1</td><td>1</td><td>1</td><td>0</td><td>E</td><td>The new variant specified in this document.</td></tr>
+                    <tr><td>1</td><td>1</td><td>1</td><td>1</td><td>F</td><td>Reserved for future definition.</td></tr>
+                </tbody>
+                </table>
+
+                <t>
+                    UUID Versions defined within the RFC 4122 Variant are distinct from UUID versions defined by the new variant.
+                </t>
+
+                # Var E
+                <t>
+                    The next table details Variant 1110 (E) and the new versions defined by this specification.
+                    A complete guide to all versions within this variant has been includes in <xref target="new_var_table"/>.
+                </t>
+                
+                <table>
+                    <name>UUID variant 1110 (E) versions defined by this specification</name>
+                    <thead>
+                        <tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Version</td><td>Description</td></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>0</td><td>1</td><td>1</td><td>1</td><td>7E</td><td>Alternate Unix Epoch time-based UUID specified in this document.</td></tr>
+                        <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>8E</td><td>Alternate reservation for custom UUID formats specified in this document.</td></tr>
+                    </tbody>
+                </table>
+                
+                <t>
+                    For UUID versions 7E and 8E, the variant field has been incremented and the version field has been moved to the same octet as the variant. 
+                    Since the bits of the variant remain in the same place as described in <xref target="RFC4122"/> but utilized the previously reserved value 111, this allows a UUID to simply define octet 8 as var_ver, and the values 0xE7 and 0xE8 indicate UUID versions 7 and 8 respectively.
+                    An example version/variant layout for versions 7E and 8E follows the table where M is the version and N is the variant.
+                </t>
+                <figure>
+                    <name>UUID version 7E and 8E Variant Examples</name>
+                    <artwork><![CDATA[
+00000000-0000-0000-E700-000000000000
+xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
+
+00000000-0000-0000-E800-000000000000
+xxxxxxxx-xxxx-xxxx-NMxx-xxxxxxxxxxxx
+                    ]]></artwork>
+                </figure>
+
+                <section anchor="alternate_uuid_variants" title="Alternate Variants">
+            <t>
+                This section details alternate formats utilizing the newly defined "E" variant layout for use with UUID version 7 and version 8 of this document.
+            </t>
+            <section anchor="uuidv7" title="UUID Version 7E">
+                <t>
+                    UUID version 7E is an alternative bit layout for UUIDv7 which leverages the new simplified "E" variant introduced in this specification.
+                </t>
+                <t>
+                    With UUIDv7E the first 64 bits of the UUID layout are unbroken and the version has been moved to the same octet as the variant to produce var_ver field populated with 0xE7.
+                </t>
+                <figure>
+                    <name>UUIDv7E Field and Bit Layout</name>
+                    <artwork><![CDATA[
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                           unix_ts_ms                          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|          unix_ts_ms           |            rand_a             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    var_ver    |            rand_b                             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                            rand_b                             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                    ]]></artwork>
+
+                </figure>
+
+                <dl newline="true">
+                    <dt>unix_ts_ms:</dt> <dd>48 bit big-endian unsigned number of Unix epoch timestamp as per <xref target="timestamp_granularity"/>.</dd>
+                    <dt>rand_a:</dt> <dd>16 bits pseudo-random data to provide uniqueness as per <xref target="monotonicity_counters"/> and <xref target="unguessability"/>.</dd>
+                    <dt>var_ver:</dt> <dd>The 8 bit combined variant and version field with the value 0xE7 as defined by <xref target="variant_and_version_fields"/>.</dd>
+                    <dt>rand_b:</dt> <dd>The final 56 bits of pseudo-random data to provide uniqueness as per <xref target="monotonicity_counters"/> and <xref target="unguessability"/>.</dd>
+                </dl>
+
+            </section>
+            <section anchor="uuidv8" title="UUID Version 8E">
+                <t>
+                    UUID version 8E is an alternative bit layout for UUIDv8 which leverages the new simplified "E" variant introduced in this specification.
+                </t>
+                <t>
+                    With UUIDv8E the first 64 bits of the UUID layout are unbroken and the version has been moved to the same octet as the variant to produce the var_ver field populated with 0xE8.
+                </t>
+                <figure>
+                    <name>UUIDv8E Field and Bit Layout</name>
+                    <artwork><![CDATA[
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                           custom_a                            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                           custom_a                            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    var_ver    |           custom_b                            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                           custom_b                            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                    ]]></artwork>
+
+                </figure>
+                <dl newline="true">
+                    <dt>custom_a:</dt> <dd>The first 64 bits of the layout that can be filled as an implementation sees fit.</dd>
+                    <dt>var_ver:</dt> <dd>The 8 bit combined variant and version field with the value 0xE8 as defined by <xref target="variant_and_version_fields"/>.</dd>
+                    <dt>custom_b:</dt> <dd>The final 56 bits of the layout immediatly following the var_var field to be filled as an implementation sees fit.</dd>
+                </dl>
+            </section>  
+        </section>
+
+        ### Alt, Long
+        <section anchor="alternate_uuid_formats" title="Alternate Formats">
+            <t>
+                This section details alternate UUID formats such as the Max UUID, a longer form of UUID aptly named "UUID Long" and some alternate encoding techniques applicable to all UUIDs in this document and <xref target="RFC4122"/>.
+            </t>
+
+            <section anchor="uuid_long" title="UUID Long">
+                <t>
+                    UUID Long generally references any variable length UUID longer than 128 bits. There are two main driving factors behind extending UUID beyond 128 bits:
+                </t>
+                <dl newline="true">
+                    <dt>Increased Entropy:</dt>
+                        <dd>While existing UUID formats provide sufficient entropy for most use cases; there exists scenarios where even more entropy is required to further reduce collision probabilities (<xref target="collision_resistance"/>) or guessability (<xref target="unguessability"/>).</dd>
+                    <dt>Requirements for additional embedded items:</dt>
+                        <dd>Some implementations require more than 128 bits to properly embed all of the application specific data they require. Some examples include database metadata like entity types, checksum values, shard/partition identifiers, and even node identifiers defined by <xref target="distributed_shared_knowledge"/>.</dd>
+                </dl>
+                <t>
+                    UUID Long is compatible with any UUID specified in this document and <xref target="RFC4122"/>. UUID long is variable in length and there is no minimum or maximum value for UUID Long; however, UUID Long SHOULD leverage natural byte boundaries. UUID long is defined by appending an additional dash to the existing 8-4-4-4-12 hex format to create 8-4-4-4-12-variable_length text format. The next example shows a UUID Long +32, +64 and +128 example for UUIDv4 with random data filling the values beyond 128 bits.
+                </t>
+                <figure>
+                    <name>UUID Long Examples</name>
+                    <artwork><![CDATA[
+UUIDv4: 73E94FE0-E951-4153-AAF3-50E4E6089D9D
+   +32: 73E94FE0-E951-4153-AAF3-50E4E6089D9D-05FA17AAAC4F8954D9FAC2DF2FCE30F6
+   +64: 73E94FE0-E951-4153-AAF3-50E4E6089D9D-02DF3F4BABC63A3B2775E27804528A6D23C679EED60FE31DF3F8B014E7915595
+  +128: 73E94FE0-E951-4153-AAF3-50E4E6089D9D-8FE05412F24CA9974637A10C0B372A7109FB810F61068C0074B480F09F18B30FE03AE7BF09C98B241E8C9C0D51516B963AC75ABE447DBFF34177093B4B781A46
+                    ]]></artwork>
+                </figure>
+                <t>
+                    Where required, for compatibility with legacy UUID implementations, the most significant, left-most, 128 bits MUST be leveraged to truncate from UUID Long back to a regular UUID.
+                </t>
+                <t>
+                    When UUID Long is utilized with Nil UUID or Max UUID all bits should be set as specified. That is for Nil UUID Long all bits MUST be set to 0 while Max UUID Long all bits MUST be set to 1.
+                </t>
+                
+            </section>
+            <section anchor="uuid_encoding" title="Alternate Encodings">
+                <t>
+                    The existing UUID hex and dash format of 8-4-4-4-12 is retained for both backwards compatibility and human readability. This format MUST be implemented for all UUIDs.
+                </t>
+                <t>
+                    Where required, UUIDs defined by this specification and <xref target="RFC4122"/> MAY be encoded utilizing new techniques such as, but not limited to, Base32, Base36, or Base64. Applications MAY also utilize other encoding techniques such as modulo division or alternate alphabets such as Crockford's base32. When selecting an alternate encoding implementations SHOULD take into consideration items such as: uppercase/lowercase/mixed character encoding for application sortability, special character inclusions or omissions, and the exclusion of key letters like "I", "L", "O", and "U" which may impact sortability of UUIDv7 and UUIDv7E and collision resistance provided by all UUIDs.
+                </t>
+                <t>
+                    When utilizing alternate encoding techniques with other applications; the encoded UUID SHOULD be prefixed with "urn:uuid:" to signal that the value therein is that of a UUID.
+                </t>
+                <t>
+                    The conversion from UUID to a new encoding technique SHOULD be done utilizing the underlying integer or binary value for a given UUID versus converting the hex representation. Two examples for UUIDv4 encoded as base-32 and base-36 are included below.
+                </t>
+                <figure>
+                    <name>Alternate Encoding Examples</name>
+                    <artwork><![CDATA[
+UUIDv4 Hex: 73E94FE0-E951-4153-AAF3-50E4E6089D9D
+UUIDv4 Int: 154072644812979270675542139334331768221
+UUIDv4 Bin: 1110011111010010100111111100000111010010101000101000001010100111010101011110011010100001110010011100110000010001001110110011101
+UUIDv4 b32: urn:uuid:3JT57U1QAH859QLSQGSJJ0H7CT
+UUIDv4 b36: urn:uuid:6V1GDX0NNGFV95EFF5TPJ0TR1
+                    ]]></artwork>
+                </figure>
+                <t>
+                    For information on converting a UUID into Base 16, Base 32 or Base 64 refer to <xref target="RFC4648"/>.
+                </t>
+            </section>
+        </section>
+
+        <section anchor="uuidv7E_example" title="Example of a UUIDv7E Value">
+                <t>This example UUIDv7E test vector utilizes a well-known 32-bit Unix epoch with additional millisecond precision to fill the first 48 bits</t>
+                <t>rand_a and rand_b are filled with random data.</t>
+                <t>The timestamp is Tuesday, February 22, 2022 2:22:22.00 PM GMT-05:00 represented as 0x17F21CFD130 or 1645539742000</t>
+                <figure>
+                    <name>UUIDv7E Example Test Vector</name>
+                    <artwork><![CDATA[
+-------------------------------
+field      bits    value
+-------------------------------
+unix_ts_ms   48    0x017F21CFD130
+rand_a       16    0xF8B8
+var_ver       8    0xE7
+rand_b       56    0xD6A139DC9535C5
+-------------------------------
+total       128               
+-------------------------------
+final: 017F21CF-D130-F8B8-E7D6-A139DC9535C5
+                    ]]></artwork>
+                </figure>
+            </section>
+
+            <section anchor="uuidv8E_example" title="Example of a UUIDv8E Value">
+                <t>This example UUIDv8E test vector utilizes a well-known 64-bit Unix epoch with nanosecond precision to fill the first 64 bits through ver_var.</t>
+                <t>The final 56 bits are filled with random data.</t>
+                <t>Timestamp is Tuesday, February 22, 2022 2:22:22.000000 PM GMT-05:00 represented as 0x16D6320C3D4DCC00 or 1645557742000000000</t>
+                <t>It should be noted that this example is just to illustrate one scenario for UUIDv8E. Test vectors will likely be implementation specific and vary greatly from this simple example.</t>
+                <figure>
+                    <name>UUIDv8E Example Test Vector</name>
+                    <artwork><![CDATA[
+-------------------------------
+field      bits    value
+-------------------------------
+custom_a     64    0x16D6320C3D4DCC00
+var_ver       8    0xE8
+custom_b     56    0x3C2D06302FC417
+-------------------------------
+total       128               
+-------------------------------
+final: 16D6320C-3D4D-CC00-E83C-2D06302FC417
+                    ]]></artwork>
+                </figure>
+            </section>
+
+            <section anchor="new_var_table" title="Variant 1110 Versions">
+                <table>
+                    <name>All UUID variant 1110 version definitions.</name>
+                    <thead>
+                        <tr><td>Msb0</td><td>Msb1</td><td>Msb2</td><td>Msb3</td><td>Version</td><td>Description</td></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0E</td><td>Reserved for future definition.</td></tr>
+                        <tr><td>0</td><td>0</td><td>0</td><td>1</td><td>1E</td><td>Reserved for future definition.</td></tr>
+                        <tr><td>0</td><td>0</td><td>1</td><td>0</td><td>2E</td><td>Reserved for future definition.</td></tr>
+                        <tr><td>0</td><td>0</td><td>1</td><td>1</td><td>3E</td><td>Reserved for future definition.</td></tr>
+                        <tr><td>0</td><td>1</td><td>0</td><td>0</td><td>4E</td><td>Reserved for future definition.</td></tr>
+                        <tr><td>0</td><td>1</td><td>0</td><td>1</td><td>5E</td><td>Reserved for future definition.</td></tr>
+                        <tr><td>0</td><td>1</td><td>1</td><td>0</td><td>6E</td><td>Reserved for future definition.</td></tr>
+                        <tr><td>0</td><td>1</td><td>1</td><td>1</td><td>7E</td><td>Alternate Unix Epoch time-based UUID specified in this document.</td></tr>
+                        <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>8E</td><td>Alternate reservation for custom UUID formats specified in this document.</td></tr>
+                        <tr><td>1</td><td>0</td><td>0</td><td>1</td><td>9E</td><td>Reserved for future definition.</td></tr>
+                        <tr><td>1</td><td>0</td><td>1</td><td>0</td><td>10E</td><td>Reserved for future definition.</td></tr>
+                        <tr><td>1</td><td>0</td><td>1</td><td>1</td><td>11E</td><td>Reserved for future definition.</td></tr>
+                        <tr><td>1</td><td>1</td><td>0</td><td>0</td><td>12E</td><td>Reserved for future definition.</td></tr>
+                        <tr><td>1</td><td>1</td><td>0</td><td>1</td><td>13E</td><td>Reserved for future definition.</td></tr>
+                        <tr><td>1</td><td>1</td><td>1</td><td>0</td><td>14E</td><td>Reserved for future definition.</td></tr>
+                        <tr><td>1</td><td>1</td><td>1</td><td>1</td><td>15E</td><td>Reserved for future definition.</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+                        <section anchor="creating_a_uuidv7_value" title="Creating a UUIDv7 Value">
+                <figure>
+                    <name>UUIDv7 Function in C</name>
+                    <artwork><![CDATA[
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <time.h>
+
+// ...
+
+// csprng data source
+FILE *rndf;
+rndf = fopen("/dev/urandom", "r");
+if (rndf == 0) {
+    printf("fopen /dev/urandom error\n");
+    return 1;
+}
+
+// ...
+
+// generate one UUIDv7E
+uint8_t u[16];
+struct timespec ts;
+int ret;
+
+ret = clock_gettime(CLOCK_REALTIME, &ts);
+if (ret != 0) {
+    printf("clock_gettime error: %d\n", ret);
+    return 1;
+}
+
+uint64_t tms;
+
+tms = ((uint64_t)ts.tv_sec) * 1000;
+tms += ((uint64_t)ts.tv_nsec) / 1000000;
+
+printf("tms: %lld\n", tms);
+
+memset(u, 0, 16);
+
+fread(&u[6], 10, 1, rndf); // fill everything after the timestamp with random bytes
+
+*((uint64_t*)(u)) |= htonll(tms << 16); // shift time into first 48 bits and OR into place
+
+u[8] = 0xE7; // set var-ver field
+                    ]]></artwork>
+                </figure>
+            </section>
+			
+			<reference anchor="RFC4648" target="https://www.rfc-editor.org/info/rfc4122">
+				<front>
+					<title>The Base16, Base32, and Base64 Data Encodings</title>
+					<author initials="S." surname="Josefsson" fullname="S. Josefsson">
+						<organization/>
+					</author>
+					<date year="2006" month="October"/>
+					<abstract>
+						<t> This document describes the commonly used base 64, base 32, and base 16 encoding schemes.  It also discusses the use of line-feeds in encoded data, use of padding in encoded data, use of non-alphabet characters in encoded data, use of different encoding alphabets, and canonical encodings.</t>
+					</abstract>
+				</front>
+				<seriesInfo name="RFC" value="4648"/>
+				<seriesInfo name="DOI" value="10.17487/RFC4648"/>
+			</reference>

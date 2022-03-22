@@ -1,42 +1,97 @@
-# Update
+# Updates
 
-A new draft was submitted 07 October 2021: 
-Text: https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-02.txt
-HTML: https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-02.html
-Feedback welcome :)
+#### Draft 03 is in progress for an estimated submission of 31 March 2022
+- HTML: https://uuid6.github.io/uuid6-ietf-draft/
+- Text: https://raw.githubusercontent.com/uuid6/uuid6-ietf-draft/master/draft-peabody-dispatch-new-uuid-format-03.txt
+
+#### Draft 02 was submitted 07 October 2021: 
+- HTML: https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-02.html
+- Text: https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-02.txt
+
+---
 
 # New UUID Formats
-This is the github repo for the IETF draft surrounding the topic of new time-based UUID formats.
+This is the GitHub repo for the IETF draft surrounding the topic of new UUID formats.
 Various discussion will need to occur to arrive at a standard and this repo will be used to collect and organize that information.
 
-Pull requests will be accepted for changes to Concerns and Possible Solutions or to introduce a new Topic if it is missing,  *as long as the text is concise, clear and objective.* PRs will not be accepted for changes to the decision made for the draft without full discussion. Please make an issue to discuss such things.
+## High Level Overview
+1. **UUID version 6**: A re-ordering of UUID version 1 so it is sortable as an opaque sequence of bytes. Easy to implement given an existing UUIDv1 implementation.
 
-## Drafts
-- The XML draft in the root folder is the most recent working draft for resubmission to the IETF.
-- An HTML and Textual (.txt) RFC representation will be provided in the root folder to ease reader input and discussion.
-- Older drafts can be viewed in the "old drafts" folder
+    `time_high|time_mid|time_low_and_version|clk_seq_hi_res|clk_seq_low|node`
+2. **UUID version 7**: An entirely new time-based UUID bit layout sourced from the widely implemented and well known Unix Epoch timestamp source.
 
-## Other
-- Research efforts can be found in the "research" within the root directory.
-- Prototype Implementations for these drafts can be found in the prototypes section: https://github.com/uuid6/prototypes
+    `unix_ts_ms|ver|rand_a|var|rand_b`
 
-## RFC Scope
+3. **UUID version 8**: A free-form UUID format which has no explicit requirements except maintaining backward compatibility.
+
+    `custom_a|ver|custom_b|var|custom_c`
+
+5. **Max UUID**: A specialized UUID which is the inverse of the Nil UUID from RFC4122.
+
+    `FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF`
+
+---
+
+# RFC Scope
 In order to keep things on track the following topics have been decided as in-scope or out of scope for this particular RFC.
-For more information on any of these items refer to the XML, TXT, HTML draft, research and the issue tracker.
+For more information on any of these items refer to the XML, TXT, HTML draft, research and the issue tracker for a particular discussion (follow hyperlinks below.)
 
-### In Scope Topics
-- Timestamp format, length, accuracy and bit layout
-- Sequence counter position and length
-- Pseudo-random Node formatting
-- Big Endian vs Little Endian bit layout
+### In Scope Topics - UUID Generation
+- [Timestamp Granularity](https://github.com/uuid6/uuid6-ietf-draft/issues/23)
+   - Sub-Topics: Timestamp epoch source, format, length, accuracy and bit layout
+- [Monotonicity and Counters for same Timestamp-tick collision avoidance during batch UUID creation](https://github.com/uuid6/uuid6-ietf-draft/issues/60)
+   - Sub-Topics: Counter position, length, rollover handling and seeding.
+- [Pseudo-random formatting, length and generation methods](https://github.com/uuid6/uuid6-ietf-draft/issues/55)
+- Distributed UUID Generation best practices
+  - Sub-Topics: [Shared Knowledge Schemes and embedded nondescript node identifiers](https://github.com/uuid6/uuid6-ietf-draft/issues/36) 
+- [Max UUID Usage](https://github.com/uuid6/uuid6-ietf-draft/issues/62)
+
+### In Scope Topics - UUID Best Practices as it relates to the previous topics
+- Global and Local Uniqueness (collision resistance mechanisms)
+- Unguessability
 - Sorting/Ordering techniques
-- Multi-node and clustering UUID Genration best practices
-- UUID Database Storage best practices
-- Any and all UUID security concerns
-- Same Timestamp-tick collision handling best practices
+- Storage and Opacity best practices
+- Big Endian vs Little Endian bit layout
+- Any and all UUID security concerns!
+  - Sub-Topics: [MAC address usage in next-generation UUIDs](https://github.com/uuid6/uuid6-ietf-draft/issues/13)
 
-### Out of Scope Topics
-- Total length (128 bits retained for backwards compatibility)
-- UUID textual layout changes (anything other than 8-4-4-4-12 isn't a UUID)
-- Alternative text encoding techniques (Crockfords Base32, Base64, etc) [Possibly a future RFC!]
-- Local/Global Uniqueness (New UUIDs should provide global uniqueness the same as RFC 4122)
+
+---
+
+### Out of Scope Topics (being rolled into a new Draft)
+- [Variant Bit E Usage](https://github.com/uuid6/uuid6-ietf-draft/issues/26)
+- [Alternative text encoding techniques (Crockfords Base32, Base64, etc)](https://github.com/uuid6/uuid6-ietf-draft/issues/2)
+- [Variable length UUIDs](https://github.com/uuid6/uuid6-ietf-draft/issues/59)
+
+---
+
+### Out of Scope Topics (as as the result of discussion threads)
+- [Variable length subsecond precision encoding](https://github.com/uuid6/uuid6-ietf-draft/issues/24)
+
+### Out of Scope Topics (for backwards compatibility)
+- Changing the default 8-4-4-4-12 UUID text layout
+- Changing anything about RFC4122's UUID versions 1 through 5
+- [Changing too much about UUIDv6 that would otherwise inhibit porting v1 to v6](https://github.com/uuid6/uuid6-ietf-draft/issues/52)
+
+---
+
+# Contributing
+- The XML draft in the root folder is the most recent working draft for re-submission to the IETF.
+  - An HTML and Textual (.txt) RFC representation will be provided in the root folder to ease reader input and discussion.
+  - [Older drafts](https://github.com/uuid6/uuid6-ietf-draft/tree/master/old%20drafts) are available for view here or on the [IETF Datatracker](https://datatracker.ietf.org/doc/draft-peabody-dispatch-new-uuid-format/).
+- The RFC Draft utilize an XML formatted document that follows [RFC7742 markup](https://xml2rfc.tools.ietf.org/rfc7749.html). All XML changes MUST follow this format and pass conversion to `.txt` and `.html` via https://xml2rfc.tools.ietf.org/
+- Utilize the issue tracker to discuss topics, solutions, problems, typos and anything else.
+  - Where possible contribute to an existing [Discussion Thread](https://github.com/uuid6/uuid6-ietf-draft/issues?q=is%3Aissue+is%3Aopen+label%3ADiscussion) vs creating a new thread.
+  - Reviewing is the pre-Draft 01 [Research efforts](https://github.com/uuid6/uuid6-ietf-draft/tree/master/research) is encouraged before diving into discussion threads.
+  - New threads that propose alternative text SHOULD utilize `Proposed Draft Change` GitHub issue template to ensure proper information is captured for the draft authors.
+  - Be civil!
+- Pull requests will be accepted  *as long as the text is concise, clear and objective.* 
+  - PRs will not be accepted for changes to the decision made for the draft without full discussion. 
+  - PRs MUST include the updated `.xml` and xml2rfc generated `.txt` and `.html` documents.
+  - Draft versions are frozen until submission to the IETF; at which point new work constitutes a new draft version.
+
+---
+
+# Prototyping
+Remember first and foremost that this specification is still a draft. Breaking changes are to be expected. Prototypes SHOULD only be implemented to verify or discredit topics of the draft text.
+- [Prototype Implementations](https://github.com/uuid6/prototypes) are available via this repro.
