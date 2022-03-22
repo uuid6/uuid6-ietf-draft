@@ -80,12 +80,12 @@ Table of Contents
        4.3.1.  UUIDv6 Basic Creation Algorithm . . . . . . . . . . .   9
      4.4.  UUIDv7 Layout and Bit Order . . . . . . . . . . . . . . .  10
        4.4.1.  UUIDv7 Timestamp Usage  . . . . . . . . . . . . . . .  11
-       4.4.2.  UUIDv7 Clock Sequence Usage . . . . . . . . . . . . .  12
+       4.4.2.  UUIDv7 Counter Usage . . . . . . . . . . . . .  12
        4.4.3.  UUIDv7 Node Usage . . . . . . . . . . . . . . . . . .  12
        4.4.4.  UUIDv7 Encoding and Decoding  . . . . . . . . . . . .  12
      4.5.  UUIDv8 Layout and Bit Order . . . . . . . . . . . . . . .  17
        4.5.1.  UUIDv8 Timestamp Usage  . . . . . . . . . . . . . . .  19
-       4.5.2.  UUIDv8 Clock Sequence Usage . . . . . . . . . . . . .  20
+       4.5.2.  UUIDv8 Counter Usage . . . . . . . . . . . . .  20
        4.5.3.  UUIDv8 Node Usage . . . . . . . . . . . . . . . . . .  21
        4.5.4.  UUIDv8 Basic Creation Algorithm . . . . . . . . . . .  21
    5.  Encoding and Storage  . . . . . . . . . . . . . . . . . . . .  24
@@ -967,7 +967,7 @@ to that, show how it may be used for non-standard timestamp layouts.
    following sections adding up to a total of 128 bits.
 
       - Timestamp Bits (Variable Length)
-      - Clock Sequence Bits (Variable Length)
+      - Counter Bits (Variable Length)
       - Node Bits (Variable Length)
       - UUIDv8 Version Bits (4 bits)
       - UUID Variant Bits (2 Bits)
@@ -1021,7 +1021,7 @@ Internet-Draft               new-uuid-format               February 2022
    time_or_seq:
       If a 60 bit, or larger, timestamp is used these 12 bits are used
       to fill out the remaining timestamp.  If a 32 or 48 bit timestamp
-      is leveraged a 12 bit clock sequence MAY be used.  Together ver
+      is leveraged a 12 bit counter MAY be used.  Together ver
       and time_or_seq occupy bits 48 through 63 (octets 6-7)
 
    var:
@@ -1111,11 +1111,11 @@ Internet-Draft               new-uuid-format               February 2022
    existing knowledge of the source timestamp used by the UUIDv8
    implementation.
 
-4.5.2.  UUIDv8 Clock Sequence Usage
+4.5.2.  UUIDv8 Counter Usage
 
-   A clock sequence MUST be used with UUIDv8 as added sequencing
+   A counter MUST be used with UUIDv8 as added sequencing
    guarantees when multiple UUIDv8 will be created on the same clock
-   tick.  The amount of bits allocated to the clock sequence depends on
+   tick.  The amount of bits allocated to the counter depends on
    the precision of the timestamp source.  For example, a more accurate
    timestamp source using nanosecond precision will require less clock
    sequence bits than a timestamp source utilizing seconds for
@@ -1124,9 +1124,9 @@ Internet-Draft               new-uuid-format               February 2022
    The UUIDv8 layout in Figure 6 generically defines two possible clock
    sequence values that can leveraged:
 
-   *  12 bit clock sequence using time_or_seq for use when the timestamp
+   *  12 bit counter using time_or_seq for use when the timestamp
       is less than 48 bits which allows for 4095 UUIDs per clock tick.
-   *  8 bit clock sequence using seq_or_node when the timestamp uses
+   *  8 bit counter using seq_or_node when the timestamp uses
       more than 48 bits which allows for 255 UUIDs per clock tick.
 
    An implementation MAY use both time_or_seq and seq_or_node for clock
@@ -1150,12 +1150,12 @@ Peabody & Davis           Expires 5 August 2022                [Page 20]
 Internet-Draft               new-uuid-format               February 2022
 
 
-   The clock sequence MUST start at zero and increment monotonically for
+   The counter MUST start at zero and increment monotonically for
    each new UUIDv8 created on by the application on the same timestamp.
-   When the timestamp increments the clock sequence MUST be reset to
-   zero.  The clock sequence MUST NOT rollover or reset to zero unless
+   When the timestamp increments the counter MUST be reset to
+   zero.  The counter MUST NOT rollover or reset to zero unless
    the timestamp has incremented.  Care MUST be given to ensure that an
-   adequate sized clock sequence is selected for a given application
+   adequate sized counter is selected for a given application
    based on expected timestamp precision and expected UUIDv8 generation
    rates.
 
@@ -1175,7 +1175,7 @@ Internet-Draft               new-uuid-format               February 2022
       seq_or_node is used as clock sequencing.
 
    An implementation MAY choose to allocate bits from the node to the
-   timestamp, clock sequence or application-specific embedded field.  It
+   timestamp, counter or application-specific embedded field.  It
    is recommended that implementation utilize a node of at least 48 bits
    to ensure global uniqueness can be guaranteed.
 
@@ -1193,7 +1193,7 @@ Internet-Draft               new-uuid-format               February 2022
 
    1.   From a system-wide shared stable store (e.g., a file) or global
         variable, read the UUID generator state: the values of the
-        timestamp and clock sequence used to generate the last UUID.
+        timestamp and counter used to generate the last UUID.
 
    2.   Obtain the current time from the selected clock source as 32
         bits.
@@ -1215,10 +1215,10 @@ Internet-Draft               new-uuid-format               February 2022
 
    6.   If the state was unavailable (e.g., non-existent or corrupted)
         or the timestamp is greater than the current timestamp; set the
-        12 bit clock sequence value (time_or_seq) to 0
+        12 bit counter value (time_or_seq) to 0
 
    7.   If the state was available, but the saved timestamp is less than
-        or equal to the current timestamp, increment the clock sequence
+        or equal to the current timestamp, increment the counter
         value (time_or_seq).
 
    8.   Set the variant to binary 10
@@ -1229,14 +1229,14 @@ Internet-Draft               new-uuid-format               February 2022
    10.  Format by concatenating the 128 bits as: timestamp_32|timestamp_
         48|version|time_or_seq|variant|seq_or_node|node
 
-   11.  Save the state (current timestamp and clock sequence) back to
+   11.  Save the state (current timestamp and counter) back to
         the stable store
 
    *48 bit timestamp, 12 bit counter, 62 bit node:*
 
    1.  From a system-wide shared stable store (e.g., a file) or global
        variable, read the UUID generator state: the values of the
-       timestamp and clock sequence used to generate the last UUID.
+       timestamp and counter used to generate the last UUID.
 
    2.  Obtain the current time from the selected clock source as 32
        bits.
@@ -1253,7 +1253,7 @@ Internet-Draft               new-uuid-format               February 2022
 
    1.   From a system-wide shared stable store (e.g., a file) or global
         variable, read the UUID generator state: the values of the
-        timestamp and clock sequence used to generate the last UUID.
+        timestamp and counter used to generate the last UUID.
 
 
 
@@ -1279,10 +1279,10 @@ Internet-Draft               new-uuid-format               February 2022
 
    8.   If the state was unavailable (e.g., non-existent or corrupted)
         or the timestamp is greater than the current timestamp; set the
-        12 bit clock sequence value (seq_or_node) to 0
+        12 bit counter value (seq_or_node) to 0
 
    9.   If the state was available, but the saved timestamp is less than
-        or equal to the current timestamp, increment the clock sequence
+        or equal to the current timestamp, increment the counter
         value (seq_or_node).
 
    10.  Generate 54 random bits and fill in the node
@@ -1290,7 +1290,7 @@ Internet-Draft               new-uuid-format               February 2022
    11.  Format by concatenating the 128 bits as: timestamp_32|timestamp_
         48|version|time_or_seq|variant|seq_or_node|node
 
-   12.  Save the state (current timestamp and clock sequence) back to
+   12.  Save the state (current timestamp and counter) back to
         the stable store
 
    *64 bit timestamp, 8 bit counter, 54 bit node:*
@@ -1307,7 +1307,7 @@ Internet-Draft               new-uuid-format               February 2022
 
    1.  From a system-wide shared stable store (e.g., a file) or global
        variable, read the UUID generator state: the values of the
-       timestamp and clock sequence used to generate the last UUID.
+       timestamp and counter used to generate the last UUID.
 
 
 
@@ -1333,17 +1333,17 @@ Internet-Draft               new-uuid-format               February 2022
 
    5.  If the state was unavailable (e.g., non-existent or corrupted) or
        the timestamp is greater than the current timestamp; set the
-       desired clock sequence value to 0
+       desired counter value to 0
 
    6.  If the state was available, but the saved timestamp is less than
-       or equal to the current timestamp, increment the clock sequence
+       or equal to the current timestamp, increment the counter
        value.
 
    7.  Set the remaining bits to the node as pseudo-random data
 
    8.  Format by concatenating the 128 bits together
 
-   9.  Save the state (current timestamp and clock sequence) back to the
+   9.  Save the state (current timestamp and counter) back to the
        stable store
 
 5.  Encoding and Storage
@@ -1397,7 +1397,7 @@ Internet-Draft               new-uuid-format               February 2022
 
    This machine ID MUST be placed in the UUID after the timestamp and
    counter bits.  This position is selected to ensure that the
-   sorting by timestamp and clock sequence is still possible.  The
+   sorting by timestamp and counter is still possible.  The
    machineID MUST NOT be an IEEE 802 MAC address.  The creation and
    negotiation of the machineID among distributed nodes is out of scope
    for this specification.
@@ -1415,7 +1415,7 @@ Internet-Draft               new-uuid-format               February 2022
    guaranteed uniqueness among UUID generation.
 
    Timestamps embedded in the UUID do pose a very small attack surface.
-   The timestamp in conjunction with the clock sequence does signal the
+   The timestamp in conjunction with the counter does signal the
    order of creation for a given UUID and it's corresponding data but
    does not define anything about the data itself or the application as
    a whole.  If UUIDs are required for use with any security operation
