@@ -116,9 +116,9 @@ Internet-Draft               new-uuid-format               February 2022
 
 2.  Background
 
-   A lot of things have changed in the time since UUIDs were originally
-   created.  Modern applications have a need to use (and many have
-   already implemented) UUIDs as database primary keys.
+   Many things have changed since UUIDs were originally defined.  Modern
+   applications have a need to use (and many have already implemented)
+   UUIDs as database primary keys.
 
    The motivation for using UUIDs as database keys stems primarily from
    the fact that applications are increasingly distributed in nature.
@@ -139,22 +139,19 @@ Internet-Draft               new-uuid-format               February 2022
    values SHOULD be time-ordered to address this.
 
    While it is true that UUIDv1 does contain an embedded timestamp and
-   can be time-ordered; UUIDv1 has other issues.  It is possible to sort
-   Version 1 UUIDs by time but it is a laborious task.  The process
-   requires breaking the bytes of the UUID into various pieces, re-
-   ordering the bits, and then determining the order from the
-   reconstructed timestamp.  This is not efficient in very large
-   systems.  Implementations would be simplified with a sort order where
-   the UUID can simply be treated as an opaque sequence of bytes and
-   ordered as such.
+   can be time-ordered, its structure is not well-suited to this task.
+   Sorting such ids requires either restructuring each id, or
+   implementing custom comparison logic based on UUIDv1's specific
+   byte-layout.  Neither approach is particularly conducive to sorting
+   in large systems.  Implementations would be simplified with a sort
+   order where the UUID can simply be treated as an opaque sequence of
+   bytes and ordered as such.
 
    After the embedded timestamp, the remaining 64 bits are in essence
    used to provide uniqueness both on a global scale and within a given
-   timestamp tick.  The clock sequence value ensures that when multiple
-   UUIDs are generated for the same timestamp value are given a
-   monotonic sequence value.  This explicit sequencing helps further
-   facilitate sorting.  The remaining random bits ensure collisions are
-   minimal.
+   timestamp tick. The clock sequence identifies periods of monotonic
+   clock operation.  This explicit sequencing helps further facilitate
+   sorting.  The remaining random bits ensure collisions are minimal.
 
 
 
@@ -252,28 +249,18 @@ Internet-Draft               new-uuid-format               February 2022
 
    The first, UUIDv6, aims to be the easiest to implement for
    applications which already implement UUIDv1.  The UUIDv6
-   specification keeps the original Gregorian timestamp source but does
-   not reorder the timestamp bits as per the process utilized by UUIDv1.
-   UUIDv6 also requires that pseudo-random data MUST be used in place of
-   the MAC address.  The rest of the UUIDv1 format remains unchanged in
-   UUIDv6.  See Section 4.3
+   specification retains all of the original UUIDv1 fields, but with a
+   revised layout for improved database locality.  See Section 4.3
 
-   Next, UUIDv7 introduces an entirely new time-based UUID bit layout
-   utilizing a variable length timestamp sourced from the widely
-   implemented and well known Unix Epoch timestamp source.  The
-   timestamp is broken into a 36 bit integer sections part, and is
-   followed by a field of variable length which represents the sub-
-   second timestamp portion, encoded so that each bit from most to least
-   significant adds more precision.  See Section 4.4
+   Next, UUIDv7 introduces a new time-based UUID that utilizes a
+   timestamp based on the well known Unix Epoch.  The timestamp is
+   represented as a 36 bit integer for seconds and a 12-bit integer for
+   milliseconds, and includes a provision for encoding arbitrarily
+   precise timestamps beyond that. See Section 4.4
 
-   Finally, UUIDv8 introduces a relaxed time-based UUID format that
-   caters to application implementations that cannot utilize UUIDv1,
-   UUIDv6, or UUIDv7.  UUIDv8 also future-proofs this specification by
-   allowing time-based UUID formats from timestamp sources that are not
-   yet be defined.  The variable size timestamp offers lots of
-   flexibility to create an implementation specific RFC compliant time-
-   based UUID while retaining the properties that make UUID great.  See
-   Section 4.5
+   Finally, UUIDv8 introduces a format for application-specific use
+   cases not addressed by this specification or RFC4122.  See Section
+   4.5
 
 
 
@@ -378,14 +365,14 @@ Internet-Draft               new-uuid-format               February 2022
 
 4.3.  UUIDv6 Layout and Bit Order
 
-   UUIDv6 aims to be the easiest to implement by reusing most of the
-   layout of bits found in UUIDv1 but with changes to bit ordering for
-   the timestamp.  Where UUIDv1 splits the timestamp bits into three
-   distinct parts and orders them as time_low, time_mid,
-   time_high_and_version.  UUIDv6 instead keeps the source bits from the
-   timestamp intact and changes the order to time_high, time_mid, and
-   time_low.  Incidentally this will match the original 60 bit Gregorian
-   timestamp source with 100-nanosecond precision defined in [RFC4122],
+   UUIDv6 aims to be the easiest to implement by reusing all of the
+   fields found in UUIDv1, but with changes to bit ordering for the
+   timestamp.  Where UUIDv1 splits the timestamp bits into three
+   distinct fields ordered as time_low, time_mid, time_high_and_version,
+   UUIDv6 instead keeps the source bits from the timestamp intact and
+   changes the order to time_high, time_mid, and time_low.  Incidentally
+   this will match the original 60 bit Gregorian timestamp source with
+   100-nanosecond precision defined in [RFC4122],
 
 
 
@@ -397,7 +384,7 @@ Internet-Draft               new-uuid-format               February 2022
    Section 4.1.4 The clock sequence bits remain unchanged from their
    usage and position in [RFC4122], Section 4.1.5.  The 48 bit node
    SHOULD be set to a pseudo-random value however implementations MAY
-   choose retain the old MAC address behavior from [RFC4122],
+   choose to retain the old MAC address behavior from [RFC4122],
    Section 4.1.6 and [RFC4122], Section 4.5
 
    The format for the 16-octet, 128 bit UUIDv6 is shown in Figure 1
@@ -585,7 +572,7 @@ Internet-Draft               new-uuid-format               February 2022
 4.4.1.  UUIDv7 Timestamp Usage
 
    UUIDv7 utilizes a 36 bit big-endian unsigned Unix Timestamp value
-   (number of seconds since the epoch of 1 Jan 1970, leap seconds
+   (as seconds since the epoch of 1 Jan 1970, leap seconds
    excluded so each hour is exactly 3600 seconds long).  The 36 bit
    value was selected in order to provide more available time to the
    unix timestamp and avoid the Year 2038 problem by extending the
@@ -595,18 +582,17 @@ Internet-Draft               new-uuid-format               February 2022
    unix time are extracted verbatim into UUIDv7
 
    In the event that 32 bit Unix Timestamp are in use; four zeros MUST
-   be appended at the start in the most significant (left-most) bits of
-   the 32 bit Unix timestamp creating the 36 bit Unix timestamp.  This
-   ensures sorting compatibility with 64 bit unix timestamp which have
-   been truncated to 36 bits.
+   be prepended in the most significant (left-most) bits of the 32 bit
+   Unix timestamp creating the 36 bit Unix timestamp.  This ensures
+   sorting compatibility with 64 bit unix timestamp which have been
+   truncated to 36 bits.
 
    Additional sub-second precision (millisecond, nanosecond,
    microsecond, etc) MAY be provided for encoding and decoding in the
    remaining bits in the layout.
 
-   UUIDv8 SHOULD be used in place of UUIDv7 if an application or
-   implementation does not want to truncate a 64 bit Unix Epoch to the
-   lower 36 bits.
+   Applications using timestamps that do not conform to the above epoch
+   layout SHOULD use UUIDv8 instead of UUIDv7.
 
 
 
@@ -618,35 +604,64 @@ Peabody & Davis           Expires 5 August 2022                [Page 11]
 Internet-Draft               new-uuid-format               February 2022
 
 
-4.4.2.  UUIDv7 Clock Sequence Usage
+4.4.2.  UUIDv7 Counter Usage
 
-   UUIDv7 SHOULD utilize a monotonic sequence counter to provide
-   additional sequencing guarantees when multiple UUIDv7 values are
-   created in the same UNIXTS and SUBSEC timestamp.  The amount of bits
-   allocates to the sequence counter depend on the precision of the
-   timestamp.  For example, a more accurate timestamp source using
-   nanosecond precision will require less clock sequence bits than a
-   timestamp source utilizing seconds for precision.  For best
-   sequencing results the sequence counter SHOULD be placed immediately
-   after available sub-second bits.
+[
+RWK comment (Do not merge)
 
-   The clock sequence MUST start at zero and increment monotonically for
-   each new UUIDv7 created on by the application on the same timestamp.
-   When the timestamp increments the clock sequence MUST be reset to
-   zero.  The clock sequence MUST NOT rollover or reset to zero unless
-   the timestamp has incremented.  Care MUST be given to ensure that an
-   adequate sized clock sequence is selected for a given application
-   based on expected timestamp precision and expected UUIDv7 generation
-   rates.
+IMPORTANT: We are conflating the terms "clock sequence" and "counter"!
+These are two very different things, and we should be careful to avoid
+confusion. Specifically:
+
+Counter:  Incremented for every new ID generated during a given time
+interval.
+
+Clock Sequence: Only ever incremented if/when there is a system clock
+regression.  (Basically this identifies periods of time during which the
+system clock is stable and monotonic.)
+
+We do not have a "clock sequence" in UUIDv7 (to my knowledge).  As such,
+we should remove the term "sequence" from this section to avoid any
+confusion.
+]
+
+
+   UUIDv7 SHOULD utilize a monotonic counter to provide additional
+   sequencing guarantees when multiple UUIDv7 values are created in the
+   same UNIXTS and SUBSEC timestamp.  The amount of bits allocated to
+   the counter depend on the precision of the timestamp.  For example, a
+   more accurate timestamp source using nanosecond precision will
+   require fewer counter bits than a timestamp source utilizing seconds
+   for precision.  For best results the counter SHOULD be placed
+   immediately after available sub-second bits.
+
+
+   The counter MUST start at zero and increment monotonically for each
+   new UUIDv7 created on by the application during the same timestamp.
+   When the timestamp increments the counter MUST be reset to zero.  The
+   counter MUST NOT rollover or reset to zero unless the timestamp has
+   incremented.  Care MUST be given to ensure that an adequate sized
+   counter is selected for a given application based on expected
+   timestamp precision and expected UUIDv7 generation rates.
 
 4.4.3.  UUIDv7 Node Usage
 
+[
+RWK comment (Do not merge)
+
+I'm tempted to suggest we remove the term "node" here for similar
+reasons as for removing "sequence".  "Node" has a pretty specific
+meaning in the legacy 4122 (as a stable identifier of the host system.)
+
+Maybe call these bits the "entropy" bits?  (for lack of a better word)
+]
+
    UUIDv7 implementations, even with very detailed sub-second precision
-   and the optional sequence counter, MAY have leftover bits that will
-   be identified as the Node for this section.  The UUIDv7 Node MAY
-   contain any set of data an implementation desires however the node
-   MUST NOT be set to all 0s which does not ensure global uniqueness.
-   In most scenarios the node SHOULD be filled with pseudo-random data.
+   and the optional counter, MAY have leftover bits that will be
+   identified as the Node for this section.  The UUIDv7 Node MAY contain
+   any set of data an implementation desires however the node MUST NOT
+   be set to all 0s which does not ensure global uniqueness. In most
+   scenarios the node SHOULD be filled with pseudo-random data.
 
 4.4.4.  UUIDv7 Encoding and Decoding
 
@@ -658,7 +673,7 @@ Internet-Draft               new-uuid-format               February 2022
    Since the UUIDv7 Unix timestamp is fixed at 36 bits in length the
    exact layout for encoding UUIDv7 depends on the precision (number of
    bits) used for the sub-second portion and the sizes of the optionally
-   desired sequence counter and node bits.
+   desired counter and node bits.
 
    Three examples of UUIDv7 encoding are given below as a general
    guidelines but implementations are not limited to just these three
@@ -680,9 +695,8 @@ Internet-Draft               new-uuid-format               February 2022
    generating these values can assign whatever lengths to each field it
    deems applicable, as long as it does not break decoding compatibility
    (i.e.  Unix timestamp (unixts), version (ver) and variant (var) have
-   to stay where they are, and clock sequence counter (seq), random
-   (random) or other implementation specific values must follow the sub-
-   second encoding).
+   to stay where they are, and counter (seq), random (random) or other
+   implementation specific values must follow the sub- second encoding).
 
    In Figure 3 the UUIDv7 has been created with millisecond precision
    with the available sub-second precision bits.
@@ -698,7 +712,7 @@ Internet-Draft               new-uuid-format               February 2022
    *  The 4 Version bits remain unchanged (ver).
 
    *  All 12 bits of subsec_b have been dedicated to a monotonic clock
-      sequence counter (seq).
+      counter (seq).
 
    *  The 2 Variant bits remain unchanged (var).
 
@@ -748,7 +762,7 @@ Internet-Draft               new-uuid-format               February 2022
 
    *  The 2 Variant bits remain unchanged (var).
 
-   *  A 14 bit monotonic clock sequence counter (seq) has been embedded
+   *  A 14 bit monotonic clock counter (seq) has been embedded
       in the most significant position of subsec_seq_node
 
    *  Finally the remaining 48 bits in the subsec_seq_node section are
@@ -800,7 +814,7 @@ Internet-Draft               new-uuid-format               February 2022
       sub-second encoding for the Nanosecond precision (nsec).
 
    *  The next 8 bits of subsec_seq_node dedicated a monotonic clock
-      sequence counter (seq).
+      counter (seq).
 
    *  Finally the remaining 40 bits in the subsec_seq_node section are
       layout is filled out with random data to pad the length and
@@ -908,7 +922,22 @@ Internet-Draft               new-uuid-format               February 2022
 
 4.5.  UUIDv8 Layout and Bit Order
 
-   UUIDv8 offers variable-size timestamp, clock sequence, and node
+[
+RWK comment (Do not merge)
+
+The description of UUIDv8 here is couched in timestamp-specific terms,
+which doesn't really make sense to me.  Is the intent here that v8 *NOT*
+be used for purposes outside timestamps?  (E.g. if an application has
+some other source of uniqueness other than entropy or time, would it not
+make sense to use v8 for their purposes?)
+
+I would prefer to see this presented, first, as an open-ended format for
+experimental and application-specific purposes.  And then, subordinate
+to that, show how it may be used for non-standard timestamp layouts.
+
+]
+
+   UUIDv8 offers variable-size timestamp, counter, and node
    values which allow for a highly customizable UUID that fits a given
    application needs.
 
@@ -957,7 +986,7 @@ Internet-Draft               new-uuid-format               February 2022
    filled with random data.  UUIDv8's 128 bits (including the version
    and variant) SHOULD contain at the minimum a timestamp of some format
    in the most significant bit position followed directly by a clock
-   sequence counter and finally a node containing either random data or
+   counter and finally a node containing either random data or
    implementation specific data.
 
    A sample format in Figure 6 is used to further illustrate the point
@@ -1012,9 +1041,8 @@ Internet-Draft               new-uuid-format               February 2022
 
    seq_or_node:
       If a 60 bit, or larger, timestamp source is leverages these 8 bits
-      SHOULD be allocated for an 8 bit clock sequence counter.  If a 32
-      or 48 bit timestamp source is used these 8 bits SHOULD be set to
-      random.
+      SHOULD be allocated for an 8 bit clock counter.  If a 32 or 48 bit
+      timestamp source is used these 8 bits SHOULD be set to random.
 
    node:
       In most implementations these bits will likely be set to pseudo-
@@ -1161,7 +1189,7 @@ Internet-Draft               new-uuid-format               February 2022
    The following algorithm is a generic implementation using Figure 6
    and the recommendations outlined in this specification.
 
-   *32 bit timestamp, 12 bit sequence counter, 62 bit node:*
+   *32 bit timestamp, 12 bit counter, 62 bit node:*
 
    1.   From a system-wide shared stable store (e.g., a file) or global
         variable, read the UUID generator state: the values of the
@@ -1204,7 +1232,7 @@ Internet-Draft               new-uuid-format               February 2022
    11.  Save the state (current timestamp and clock sequence) back to
         the stable store
 
-   *48 bit timestamp, 12 bit sequence counter, 62 bit node:*
+   *48 bit timestamp, 12 bit counter, 62 bit node:*
 
    1.  From a system-wide shared stable store (e.g., a file) or global
        variable, read the UUID generator state: the values of the
@@ -1221,7 +1249,7 @@ Internet-Draft               new-uuid-format               February 2022
 
    5.  The rest of the steps are the same as the previous example.
 
-   *60 bit timestamp, 8 bit sequence counter, 54 bit node:*
+   *60 bit timestamp, 8 bit counter, 54 bit node:*
 
    1.   From a system-wide shared stable store (e.g., a file) or global
         variable, read the UUID generator state: the values of the
@@ -1265,7 +1293,7 @@ Internet-Draft               new-uuid-format               February 2022
    12.  Save the state (current timestamp and clock sequence) back to
         the stable store
 
-   *64 bit timestamp, 8 bit sequence counter, 54 bit node:*
+   *64 bit timestamp, 8 bit counter, 54 bit node:*
 
    1.  The same steps as the 60 bit timestamp can be utilized if the 64
        bit timestamp is truncated to 60 bits.
@@ -1368,7 +1396,7 @@ Internet-Draft               new-uuid-format               February 2022
    works to add an extra layer of collision avoidance.
 
    This machine ID MUST be placed in the UUID after the timestamp and
-   sequence counter bits.  This position is selected to ensure that the
+   counter bits.  This position is selected to ensure that the
    sorting by timestamp and clock sequence is still possible.  The
    machineID MUST NOT be an IEEE 802 MAC address.  The creation and
    negotiation of the machineID among distributed nodes is out of scope
