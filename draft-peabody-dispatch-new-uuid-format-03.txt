@@ -123,18 +123,15 @@ Internet-Draft               new-uuid-format                  March 2022
    file names, machine or system names, and identifiers for event-driven
    transactions.
 
-   A specific use case for UUIDs which has gained popularity is as
-   database keys.  The motivation for this stems primarily from the fact
-   that applications are increasingly distributed in nature.  Simplistic
-   "auto increment" schemes with integers in sequence do not work well
-   in a distributed system since the effort required to synchronize such
-   numbers across a network can easily become a burden.  The fact that
-   UUIDs can be used to create unique and reasonably short values in
-   distributed systems without requiring synchronization makes them a
-   good candidate for use as a database key in such environments.
-
-   However, current UUID versions (1-5) lack certain desirable
-   characteristics in some circumstances:
+   One area UUIDs have gained popularity is as database keys.  This
+   stems from the increasingly distributed in nature of modern
+   applications.  In such cases, "auto increment" schemes often used by
+   databases do not work well, as the effort required to coordinate
+   unique numeric identifiers across a network can easily become a
+   burden.  The fact that UUIDs can be used to create unique, reasonably
+   short values in distributed systems without requiring synchronization
+   makes them a good alternative, but UUID versions 1-5 lack certain
+   other desirable characteristics:
 
    1.  Non-time-ordered UUID versions such as UUIDv4 have poor database
        index locality.  Meaning new values created in succession are not
