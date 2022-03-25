@@ -124,7 +124,7 @@ Internet-Draft               new-uuid-format                  March 2022
    transactions.
 
    One area UUIDs have gained popularity is as database keys.  This
-   stems from the increasingly distributed in nature of modern
+   stems from the increasingly distributed nature of modern
    applications.  In such cases, "auto increment" schemes often used by
    databases do not work well, as the effort required to coordinate
    unique numeric identifiers across a network can easily become a
