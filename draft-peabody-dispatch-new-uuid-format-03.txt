@@ -120,8 +120,8 @@ Internet-Draft               new-uuid-format                  March 2022
    created.  Modern applications have a need to create and utilize UUIDs
    as the primary identifier for a variety of different items in complex
    computational systems, including but not limited to database keys,
-   file names, machine or system names, identifiers for event-driven
-   transactions, and other objects or processes.
+   file names, machine or system names, and identifiers for event-driven
+   transactions.
 
    A specific use case for UUIDs which has gained popularity is as
    database keys.  The motivation for this stems primarily from the fact
@@ -133,8 +133,8 @@ Internet-Draft               new-uuid-format                  March 2022
    distributed systems without requiring synchronization makes them a
    good candidate for use as a database key in such environments.
 
-   UUID versions 1 through 5 lack certain desirable characteristics in
-   some circumstances:
+   However, current UUID versions (1-5) lack certain desirable
+   characteristics in some circumstances:
 
    1.  Non-time-ordered UUID versions such as UUIDv4 have poor database
        index locality.  Meaning new values created in succession are not
@@ -427,8 +427,8 @@ Internet-Draft               new-uuid-format                  March 2022
    position in [RFC4122], Section 4.1.5.
 
    The 48 bit node SHOULD be set to a pseudo-random value however
-   implementations MAY choose retain the old MAC address behavior from
-   [RFC4122], Section 4.1.6 and [RFC4122], Section 4.5.  For more
+   implementations MAY choose to retain the old MAC address behavior
+   from [RFC4122], Section 4.1.6 and [RFC4122], Section 4.5.  For more
    information on MAC address usage within UUIDs see the Section 8
 
    The format for the 16-byte, 128 bit UUIDv6 is shown in Figure 1
@@ -681,17 +681,19 @@ Internet-Draft               new-uuid-format                  March 2022
       various levels of precision in a time-ordered manner.  With UUID
       version 1 and 6, 100-nanoseconds of precision are present while
       UUIDv7 features fixed millisecond level of precision within the
-      Unix epoch.  If additional levels of precision are required UUIDv8
-      SHOULD be utilized.
+      Unix epoch.  For other levels of precision UUIDv8 SHOULD be
+      utilized.
 
    Length:
+[comment: the text below doesn't make sense to me.  What does it mean for a UUID to become invalid? How does timestamp length impact that?]   
       The length of a given timestamp directly impacts how long a given
       UUID will be valid.  Care should be given to ensure that the
       proper length is selected for a given timestamp.  UUID version 1
       and 6 utilize a 60 bit timestamp and UUIDv7 features a 48 bit
       timestamp.
 
-   Fuzzing:
+  Fuzzing:
+   [comment: "fuzz" isn't a great word choice here.  We should either provide a definition in concrete terms (e.g. "adjustments at second or sub-second granularity") or use a different term.  Either way, this feels a bit handwavy currently.  E.g. One might read this text to mean that a timestamp need not have any correlation to real-world time at all... but is that really the intent here?]
       Implementations MAY fuzz a timestamp.  Some examples included
       security considerations around providing a real clock value within
       a UUID or to correct inaccurate clocks.  This specification makes
@@ -733,7 +735,7 @@ Internet-Draft               new-uuid-format                  March 2022
    Additionally, care MUST be taken to ensure UUIDs generated in batches
    are also monotonic.  That is, if one-thousand UUIDs are generated for
    the same timestamp; there is sufficient logic for organizing the
-   creation of order of those one-thousand UUIDs.  For batch UUID
+   creation order of those one-thousand UUIDs.  For batch UUID
    creation implements MAY utilize a monotonic counter which SHOULD
    increment for each UUID created during a given timestamp.
 
@@ -880,9 +882,9 @@ Internet-Draft               new-uuid-format                  March 2022
    the problem ensuring the next UUID generated is greater than the
    previous.
 
-   UUIDv1, and by extension UUIDv6, utilize a slightly different counter
-   in the form of "clock sequence" bits.  The usage of the clock
-   sequence will remain as defined in [RFC4122], Section 4.1.5.
+[comment: deleted, as "clock sequence" is not a form of "counter" in the
+sense it's being discussed here, and this is sufficiently addressed in
+§6.1]
 
 
 
@@ -901,10 +903,10 @@ Internet-Draft               new-uuid-format                  March 2022
 6.3.  Distributed UUID Generation
 
    Some implementations MAY desire to utilize multi-node, clustered,
-   applications which involve two or more applications independently
+   applications which involve two or more nodes independently
    generating UUIDs that will be stored in a common location.  While
    UUIDs already feature sufficient entropy to ensure that the chances
-   of collision are low as the total number of nodes increase; so does
+   of collision are low as the total number of nodes increase, so does
    the likelihood of a collision.  This section will detail the
    approaches that MAY be utilized by multi-node UUID implementations in
    distributed environments.
@@ -918,31 +920,29 @@ Internet-Draft               new-uuid-format                  March 2022
       registries is outside the scope of this specification.
 
    Node IDs:
-      With this method, a nondescript pseudo-random Node ID value is
-      placed within the UUID layout.  This identifier ensures the bit-
-      space for a given node is unique resulting in UUIDs that do not
-      conflict with any other UUID created by another node with a
-      different node id.  Implementations that choose to leverage an
-      embedded node id SHOULD utilize UUIDv8.  The node id SHOULD NOT be
-      an IEEE 802 MAC address as per Section 8.  The location and bit
-      length are up to implements and outside the scope of this
-      specification.  Furthermore, the creation and negotiation of a
-      node id among distributed nodes is also out of scope for this
-      specification.
+      With this method, a pseudo-random Node ID value is placed within
+      the UUID layout.  This identifier helps ensure the bit-space for a
+      given node is unique, resulting in UUIDs that do not conflict with
+      any other UUID created by another node with a different node id.
+      Implementations that choose to leverage an embedded node id SHOULD
+      utilize UUIDv8.  The node id SHOULD NOT be an IEEE 802 MAC address
+      as per Section 8.  The location and bit length are left to
+      implementions and are outside the scope of this specification.
+      Furthermore, the creation and negotiation of unique node ids among
+      nodes is also out of scope for this specification.
 
    Utilization of either a shared knowledge scheme or Node ID are not
    required for implementing UUIDs in this specification.  However
    implementations SHOULD utilize one of the two aforementioned methods
-   if distributed UUID generation is a requirements.
+   if distributed UUID generation is a requirement.
 
 6.4.  Collision Resistance
 
-   Implementations SHOULD weigh the importance of a collision within
-   their application and take this into account when making a selections
-   around the total entropy (random) to dedicated to a UUID layout
-   versus the other components such as Section 6.1 and Section 6.2.
-   This is especially true for distributed node collision resistance as
-   defined by Section 6.3.
+   Implementations SHOULD weigh the consequences of UUID collisions
+   within their application and when deciding between UUID versions that
+   use entropy (random) versus the other components such as Section 6.1
+   and Section 6.2. This is especially true for distributed node
+   collision resistance as defined by Section 6.3.
 
    There are two example scenarios below which help illustrate the
    varying seriousness of a collision within an application.
@@ -964,7 +964,7 @@ Internet-Draft               new-uuid-format                  March 2022
       A duplicate key causes an airplane to receive the wrong course
       which puts people's lives at risk.  In this scenario there is no
       margin for error.  Collisions MUST be avoided and failure is
-      unacceptable.  As such applications dealing with this type of
+      unacceptable.  Applications dealing with this type of
       scenario MUST employ as much collision resistance as possible
       within the given application context.
 
@@ -977,7 +977,7 @@ Internet-Draft               new-uuid-format                  March 2022
    of the application context, in other applications, or around the
    world is not required.
 
-   Although true global uniqueness is impossible to guarantee without
+   Although true global uniqueness is impossible to guarantee without a
    shared knowledge scheme; a shared knowledge scheme is not required by
    UUID to provide uniqueness guarantees.  Implementations MAY implement
    a shared knowledge scheme introduced in Section 6.3 as they see fit
@@ -998,7 +998,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
    UUIDv6 and UUIDv7 are designed so that implementations that require
    sorting (e.g. database indexes) SHOULD sort as opaque raw bytes,
-   without examining the contents at all.
+   without the need for parsing or introspection.
 
 
 
@@ -1010,11 +1010,11 @@ Peabody & Davis         Expires 22 September 2022              [Page 18]
 Internet-Draft               new-uuid-format                  March 2022
 
 
-   Time ordered monotonic UUIDs benefit from greater index locality
-   because the new values are near each other in the index.  As a result
-   objects can much more easily be clustered together for better
-   performance.  The real-world differences in this approach of index
-   locality vs random data inserts can be quite large.
+   Time ordered monotonic UUIDs benefit from greater database index
+   locality because the new values are near each other in the index.  As
+   a result objects are more easily be clustered together for
+   better performance.  The real-world differences in this approach of
+   index locality vs random data inserts can be quite large.
 
    UUIDs formats created by this specification SHOULD be
    Lexicographically sortable while in the textual representation.
@@ -1027,22 +1027,18 @@ Internet-Draft               new-uuid-format                  March 2022
 
    UUIDs SHOULD be treated as opaque values and implementations SHOULD
    NOT examine the bits in a UUID to whatever extent is possible.
-   However, where necessary inspectors please review Section 4 for more
-   information on determining a UUID version based on the inspected
-   variant bits.
+   However, where necessary, inspectors should refer to Section 4 for
+   more information on determining UUID version and variant.
 
 6.9.  DBMS and Database Considerations
 
-   For many applications, such as databases, storing UUIDs as the text
-   is unnecessarily verbose totaling 288 bits to convey the 128 bit UUID
-   value.  Due to the this, where possible, UUIDs SHOULD be stored
-   within database applications as the underlying 128 bit binary value.
-
-   *  8 bits for each of the 32 hex characters = 256 bits
-   *  8 bits for each of the 4 hyphens = 32 bits
+   For many applications, such as databases, storing UUIDs as text is
+   unnecessarily verbose, requiring 288 bits to represent 128 bit UUID
+   values.  Thus, where feasible, UUIDs SHOULD be stored within database
+   applications as the underlying 128 bit binary value.
 
    For other systems, UUIDs MAY be stored in binary form or as text, as
-   appropriate.  The trade offs to both approaches are as such:
+   appropriate.  The tradeoffs to both approaches are:
 
    *  Storing as binary requires less space and may result in faster
       data access.
@@ -1068,13 +1064,14 @@ Internet-Draft               new-uuid-format                  March 2022
 
    DBMS vendors are encouraged to provide functionality to generate and
    store UUID formats defined by this specification for use as
-   identifiers or left parts of identifiers such as (but not limited to)
+   identifiers or left-parts of identifiers such as, but not limited to,
    primary keys, surrogate keys for temporal databases, foreign keys
    included in polymorphic relationships, and keys for key-value pairs
-   in JSON columns and key-value databases.  If database is monolithic
-   than database side UUID generation ensures best UUID monotonicity in
-   the database tables and in indexes.  In addition to UUIDs, additional
-   identifiers MAY be used to ensure integrity and feedback.
+   in JSON columns and key-value databases.  Applications using a
+   monolithic database may find using database-generated UUIDs (as
+   opposed to client-generate UUIDs) provides the best UUID
+   monotonicity.  In addition to UUIDs, additional identifiers MAY be
+   used to ensure integrity and feedback.
 
 7.  IANA Considerations
 
