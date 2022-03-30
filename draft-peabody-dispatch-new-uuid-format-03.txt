@@ -5,8 +5,8 @@
 dispatch                                                    BGP. Peabody
 Internet-Draft                                                          
 Updates: 4122 (if approved)                                     K. Davis
-Intended status: Standards Track                           29 March 2022
-Expires: 30 September 2022
+Intended status: Standards Track                           30 March 2022
+Expires: 1 October 2022
 
 
                             New UUID Formats
@@ -32,7 +32,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 September 2022.
+   This Internet-Draft will expire on 1 October 2022.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Peabody & Davis         Expires 30 September 2022               [Page 1]
+Peabody & Davis          Expires 1 October 2022                 [Page 1]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Peabody & Davis         Expires 30 September 2022               [Page 2]
+Peabody & Davis          Expires 1 October 2022                 [Page 2]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -165,7 +165,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022               [Page 3]
+Peabody & Davis          Expires 1 October 2022                 [Page 3]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -221,7 +221,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022               [Page 4]
+Peabody & Davis          Expires 1 October 2022                 [Page 4]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -277,7 +277,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022               [Page 5]
+Peabody & Davis          Expires 1 October 2022                 [Page 5]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -333,7 +333,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022               [Page 6]
+Peabody & Davis          Expires 1 October 2022                 [Page 6]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -389,7 +389,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022               [Page 7]
+Peabody & Davis          Expires 1 October 2022                 [Page 7]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -445,7 +445,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022               [Page 8]
+Peabody & Davis          Expires 1 October 2022                 [Page 8]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -501,7 +501,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022               [Page 9]
+Peabody & Davis          Expires 1 October 2022                 [Page 9]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -557,7 +557,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 10]
+Peabody & Davis          Expires 1 October 2022                [Page 10]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -613,7 +613,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 11]
+Peabody & Davis          Expires 1 October 2022                [Page 11]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -669,7 +669,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 12]
+Peabody & Davis          Expires 1 October 2022                [Page 12]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -713,8 +713,8 @@ Internet-Draft               new-uuid-format                  March 2022
    are also monotonic.  That is, if one-thousand UUIDs are generated for
    the same timestamp; there is sufficient logic for organizing the
    creation order of those one-thousand UUIDs.  For batch UUID creation
-   implements MAY utilize a monotonic counter which SHOULD increment for
-   each UUID created during a given timestamp.
+   implementions MAY utilize a monotonic counter which SHOULD increment
+   for each UUID created during a given timestamp.
 
    For single-node UUID implementations that do not need to create
    batches of UUIDs, the embedded timestamp within UUID version 1, 6,
@@ -725,7 +725,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 13]
+Peabody & Davis          Expires 1 October 2022                [Page 13]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -781,7 +781,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 14]
+Peabody & Davis          Expires 1 October 2022                [Page 14]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -837,7 +837,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 15]
+Peabody & Davis          Expires 1 October 2022                [Page 15]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -893,7 +893,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 16]
+Peabody & Davis          Expires 1 October 2022                [Page 16]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -919,7 +919,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
    Implementations SHOULD weigh the consequences of UUID collisions
    within their application and when deciding between UUID versions that
-   use entropy (random) versus the other components such asSection 6.1
+   use entropy (random) versus the other components such as Section 6.1
    and Section 6.2.  This is especially true for distributed node
    collision resistance as defined by Section 6.3.
 
@@ -949,7 +949,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 17]
+Peabody & Davis          Expires 1 October 2022                [Page 17]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -988,7 +988,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
    Time ordered monotonic UUIDs benefit from greater database index
    locality because the new values are near each other in the index.  As
-   a result objects are more easily be clustered together for better
+   a result objects are more easily clustered together for better
    performance.  The real-world differences in this approach of index
    locality vs random data inserts can be quite large.
 
@@ -1005,7 +1005,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 18]
+Peabody & Davis          Expires 1 October 2022                [Page 18]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1051,7 +1051,7 @@ Internet-Draft               new-uuid-format                  March 2022
 8.  Security Considerations
 
    MAC addresses pose inherent security risks and SHOULD not be used
-   within a UUID.  Instead CSPRNG data SHOULD selected from a source
+   within a UUID.  Instead CSPRNG data SHOULD be selected from a source
    with sufficient entropy to ensure guaranteed uniqueness among UUID
    generation.  See Section 6.6 for more information.
 
@@ -1061,7 +1061,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 19]
+Peabody & Davis          Expires 1 October 2022                [Page 19]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1117,7 +1117,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 20]
+Peabody & Davis          Expires 1 October 2022                [Page 20]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1173,7 +1173,7 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 21]
+Peabody & Davis          Expires 1 October 2022                [Page 21]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1229,7 +1229,7 @@ A.1.  Creating a UUIDv6 Value
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 22]
+Peabody & Davis          Expires 1 October 2022                [Page 22]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1285,7 +1285,7 @@ u[6] = 0x70 | (u[6] & 0x0F); // set version field, top four bits are 0, 1, 1, 1
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 23]
+Peabody & Davis          Expires 1 October 2022                [Page 23]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1341,7 +1341,7 @@ Appendix B.  Test Vectors
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 24]
+Peabody & Davis          Expires 1 October 2022                [Page 24]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1397,7 +1397,7 @@ B.1.  Example of a UUIDv6 Value
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 25]
+Peabody & Davis          Expires 1 October 2022                [Page 25]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1453,7 +1453,7 @@ B.3.  Example of a UUIDv8 Value
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 26]
+Peabody & Davis          Expires 1 October 2022                [Page 26]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1509,7 +1509,7 @@ C.1.  Variant 10xx Versions
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 27]
+Peabody & Davis          Expires 1 October 2022                [Page 27]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1565,7 +1565,7 @@ Authors' Addresses
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 28]
+Peabody & Davis          Expires 1 October 2022                [Page 28]
 
 Internet-Draft               new-uuid-format                  March 2022
 
@@ -1621,4 +1621,4 @@ Internet-Draft               new-uuid-format                  March 2022
 
 
 
-Peabody & Davis         Expires 30 September 2022              [Page 29]
+Peabody & Davis          Expires 1 October 2022                [Page 29]

@@ -444,7 +444,7 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 				</t>
 				<t>
 					Additionally, care MUST be taken to ensure UUIDs generated in batches are also monotonic. That is, if one-thousand UUIDs are generated for the same timestamp; there is sufficient logic for organizing the creation order of those one-thousand UUIDs.
-					For batch UUID creation implements MAY utilize a monotonic counter which SHOULD increment for each UUID created during a given timestamp. 
+					For batch UUID creation implementions MAY utilize a monotonic counter which SHOULD increment for each UUID created during a given timestamp. 
 				</t>
 				<t>
 					For single-node UUID implementations that do not need to create batches of UUIDs, the embedded timestamp within UUID version 1, 6, and 7 can provide sufficient monotonicity guarantees by simply ensuring that timestamp increments before creating a new UUID. For the topic of Distributed Nodes please refer to <xref target="distributed_shared_knowledge"/>
@@ -561,7 +561,7 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 			</section>
 			<section anchor="collision_resistance" title="Collision Resistance">
 				<t>
-					Implementations SHOULD weigh the consequences of UUID collisions within their application and when deciding between UUID versions that use entropy (random) versus the other components such as<xref target="timestamp_granularity"/> and <xref target="monotonicity_counters"/>. 
+					Implementations SHOULD weigh the consequences of UUID collisions within their application and when deciding between UUID versions that use entropy (random) versus the other components such as <xref target="timestamp_granularity"/> and <xref target="monotonicity_counters"/>. 
 					This is especially true for distributed node collision resistance as defined by <xref target="distributed_shared_knowledge"/>.
 				</t>
 				<t>
@@ -599,7 +599,7 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 				</t>
 				<t>
 					Time ordered monotonic UUIDs benefit from greater database index locality because the new values are near each other in the index. 
-					As a result objects are more easily be clustered together for better performance.  
+					As a result objects are more easily clustered together for better performance.  
 					The real-world differences in this approach of index locality vs random data inserts can be quite large.
 				</t>
 				<t>
@@ -642,7 +642,7 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 		<section anchor="Security" title="Security Considerations">
 			<t> 
 				MAC addresses pose inherent security risks and SHOULD not be used within a UUID. 
-				Instead CSPRNG data SHOULD selected from a source with sufficient entropy to ensure guaranteed
+				Instead CSPRNG data SHOULD be selected from a source with sufficient entropy to ensure guaranteed
 				uniqueness among UUID generation. See <xref target="unguessability"/> for more information. 
 			</t>
 			<t>
