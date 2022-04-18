@@ -59,10 +59,13 @@ For more information on any of these items refer to the XML, TXT, HTML draft, re
 
 ---
 
-### Out of Scope Topics (being rolled into a new Draft that can be found here: [New UUID Encoding Techniques](https://uuid6.github.io/uuid6-ietf-draft/new-encoding-techniques/))
+### Out of Scope Topics (Rolled into a new Draft that can be found here: [New UUID Encoding Techniques](https://github.com/uuid6/new-uuid-encoding-techniques-ietf-draft))
+- [URN Modifications](https://github.com/uuid6/new-uuid-encoding-techniques-ietf-draft/issues/4)
+- [Alternative text encoding techniques (Crockfords Base32, Base64, etc)](https://github.com/uuid6/new-uuid-encoding-techniques-ietf-draft/issues/3)
+- [Variable length UUIDs | UUID Long](https://github.com/uuid6/new-uuid-encoding-techniques-ietf-draft/issues/2)
+
+### Out of Scope Topics
 - [Variant Bit E Usage](https://github.com/uuid6/uuid6-ietf-draft/issues/26)
-- [Alternative text encoding techniques (Crockfords Base32, Base64, etc)](https://github.com/uuid6/uuid6-ietf-draft/issues/2)
-- [Variable length UUIDs](https://github.com/uuid6/uuid6-ietf-draft/issues/59)
 
 ---
 
