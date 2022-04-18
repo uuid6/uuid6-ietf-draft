@@ -152,6 +152,10 @@ please see http://xml.resource.org/authoring/README.html. -->
 				<ul spacing="compact" empty="true">
 					<li><t>- Fixed bad title in IEEE754 Normative Reference</t></li>
 					<li><t>- Fixed bad GMT offset in Test Vector Appendix</t></li>
+					<li><t>- Changed some MAY to SHOULD in Counters section</t></li>
+					<li><t>- Condensed Counter Type into Counter Methods to reduce text</t></li>
+					<li><t>- Removed option for random increment along with fixed-length counter</t></li>
+					<li><t>- Described how to handle scenario where New UUID less than Old UUID</t></li>
 				</ul>
 				<t>draft-03</t>
 				<ul spacing="compact" empty="true">
@@ -350,7 +354,7 @@ xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
 					UUIDv8's uniqueness will be implementation-specific and SHOULD NOT be assumed.
 				</t>
 				<t>
-				The only explicitly defined bits are the Version and Variant leaving 120 bits
+				The only explicitly defined bits are the Version and Variant leaving 122 bits
 				for implementation specific time-based UUIDs. To be clear:
 				UUIDv8 is not a replacement for UUIDv4 where all 122 extra bits are
 				filled with random data.
@@ -462,31 +466,16 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 						<dd>
 						This references the practice of allocating a specific number of bits in the UUID layout to the sole purpose of tallying the total number of UUIDs created during a given UUID timestamp tick.
 						Positioning of a fixed bit-length counter SHOULD be immediatly after the embedded timestamp. This promotes sortability and allows random data generation for each counter increment. 
-						With this method rand_a section of UUIDv7 MAY be utilized as fixed-length dedicated counter bits. In the event more counter bits are required the most significant, left-most, bits of rand_b MAY be leveraged as additional counter bits.
+						With this method rand_a section of UUIDv7 SHOULD be utilized as fixed-length dedicated counter bits that are incremented by one for every UUID generation.
+						The trailing random bits generated for each new UUID in rand_b can help produce unguessable UUIDs. In the event more counter bits are required the most significant, left-most, bits of rand_b MAY be leveraged as additional counter bits.
 						</dd>
 					<dt>Monotonic Random (Method 2):</dt> 
 						<dd>
 						With this method the random data is extended to also double as a counter. 
 						This monotonic random can be thought of as a "randomly seeded counter" which MUST be incremented in the least significant position for each UUID created on a given timestamp tick.
-						UUIDv7's rand_b section SHOULD be utilized with this method to handle batch UUID generation during a single timestamp tick. 
-						</dd>
-				</dl>
-				<t>
-					The following sub-topics cover methods behind incrementing either type of counter method:
-				</t>
-				<dl newline="true">
-					<dt>Plus One Increment (Type A):</dt> 
-						<dd>
-							With this increment logic the counter method is incremented by one for every UUID generation. 
-							When this increment method is utilized with Fixed-Length Dedicated Counter the trailing random generated for each new UUID can help produce unguessable UUIDs. 
-							When this increment method is utilized with Monotonic Random Counters the resulting values are easily guessable. 
-							Implementations that favor unguessiblity SHOULD NOT utilize this method with the monotonic random method.
-						</dd>
-					<dt>Random Increment (Type B):</dt>
-						<dd>
-							With this increment the actual increment of the counter MAY be a random integer of any desired length larger than zero.
-							When this increment method is utilized with Fixed-Length Dedicated Counters the random increments MAY deplete the counter bit space (including any rollover guards) faster than the desired if a counter of adequate length is not selected.
-							When this increment method is utilized with Monotonic Random Counters the counter ensures the UUIDs retain the required level of unguessability characters provided by the underlying entropy.
+						UUIDv7's rand_b section SHOULD be utilized with this method to handle batch UUID generation during a single timestamp tick.
+						The increment value for every UUID generation SHOULD be a random integer of any desired length larger than zero. It ensures the UUIDs retain the required level of unguessability characters provided by the underlying entropy.
+						The increment value MAY be one when the amount of UUIDs generated in a particular period of time is important and guessability is not an issue. However, it SHOULD NOT be used by implementations that favor unguessiblity, as the resulting values are easily guessable.
 						</dd>
 				</dl>
 				<t>
@@ -495,9 +484,9 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 				<dl newline="true">
 					<dt>Fixed-Length Dedicated Counter Seeding:</dt> 
 						<dd>
-							Implementations utilizing fixed-length counter method SHOULD randomly initialize the counter with each new timestamp tick. 
+							Implementations utilizing fixed-length counter method SHOULD randomly initialize the counter with each new timestamp tick.
 							However, when the timestamp has not incremented; the counter SHOULD be frozen and incremented via the desired increment logic.
-							When utilizing a randomly seeded counter alongside Method 1; the random MAY be regenerated with each counter increment without impacting sortability. 
+							When utilizing a randomly seeded counter alongside Method 1; the random MAY be regenerated with each counter increment without impacting sortability.
 							The downside is that Method 1 is prone to overflows if a counter of adequate length is not selected or the random data generated leaves little room for the required number of increments. 
 							Implementations utilizing fixed-length counter method MAY also choose to randomly initialize a portion counter rather than the entire counter. For example, a 24 bit counter could have the 23 bits in least-significant, right-most, position randomly initialized. The remaining most significant, left-most counter bits are initialized as zero for the sole purpose of guarding against counter rollovers.
 						</dd>
@@ -532,12 +521,13 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 				<ol spacing="compact">
 					<li><t>Compare the current timestamp against the previously stored timestamp.</t></li>
 					<li>
-						<t>If the current timestamp is equal to the previous timestamp; increment the counter according to the desired method and type.</t>
+						<t>If the current timestamp is equal to the previous timestamp; increment the counter according to the desired method.</t>
 					</li>
 					<li><t>If the current timestamp is greater than the previous timestamp; re-initialize the desired counter method to the new timestamp and generate new random bytes (if the bytes were frozen or being used as the seed for a monotonic counter).</t></li>
 				</ol>
 				<t>
-					Implementations SHOULD check if the the currently generated UUID is greater than the previously generated UUID. If this is not the case then any number of things could have occurred. Such as, but not limited to, clock rollbacks, leap second handling or counter rollovers. Applications SHOULD embed sufficient logic to catch these scenarios and correct the problem ensuring the next UUID generated is greater than the previous.
+					Implementations SHOULD check if the the currently generated UUID is greater than the previously generated UUID. If this is not the case then any number of things could have occurred. Such as, but not limited to, clock rollbacks, leap second handling or counter rollovers. Applications SHOULD embed sufficient logic to catch these scenarios and correct the problem ensuring the next UUID generated is greater than the previous. To handle this scenario, the general guidance is that application MAY reuse the previous timestamp and increment the previous counter method.
+					
 				</t>
 			</section>
 			<section anchor="distributed_shared_knowledge" title="Distributed UUID Generation">
