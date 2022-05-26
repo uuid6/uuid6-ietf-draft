@@ -156,6 +156,7 @@ please see http://xml.resource.org/authoring/README.html. -->
 					<li><t>- Condensed Counter Type into Counter Methods to reduce text</t></li>
 					<li><t>- Removed option for random increment along with fixed-length counter</t></li>
 					<li><t>- Described how to handle scenario where New UUID less than Old UUID</t></li>
+					<li><t>- Allow timestamp increment if counter overflows</t></li>
 				</ul>
 				<t>draft-03</t>
 				<ul spacing="compact" empty="true">
@@ -513,6 +514,7 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 						<dd>
 							Counter rollovers SHOULD be handled by the application to avoid sorting issues. 
 							The general guidance is that applications that care about absolute monotonicity and sortability SHOULD freeze the counter and wait for the timestamp to advance which ensures monotonicity is not broken.
+							Alternatively, implementations MAY increment the timestamp ahead of the actual time and reinitialize the counter.
 						</dd>
 				</dl>
 				<t>
