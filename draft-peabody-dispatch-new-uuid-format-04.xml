@@ -152,11 +152,12 @@ please see http://xml.resource.org/authoring/README.html. -->
 				<ul spacing="compact" empty="true">
 					<li><t>- Fixed bad title in IEEE754 Normative Reference</t></li>
 					<li><t>- Fixed bad GMT offset in Test Vector Appendix</t></li>
-					<li><t>- Changed some MAY to SHOULD in Counters section</t></li>
+					<li><t>- Removed MAY in Counters section</t></li>
 					<li><t>- Condensed Counter Type into Counter Methods to reduce text</t></li>
 					<li><t>- Removed option for random increment along with fixed-length counter</t></li>
 					<li><t>- Described how to handle scenario where New UUID less than Old UUID</t></li>
 					<li><t>- Allow timestamp increment if counter overflows</t></li>
+					<li><t>- Replaced UUIDv8 C code snippet with full generation example</t></li>
 				</ul>
 				<t>draft-03</t>
 				<ul spacing="compact" empty="true">
@@ -506,7 +507,7 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 				<dl newline="true">
 					<dt>Counter Rollover Guards:</dt>
 						<dd>
-							The technique from Fixed-Length Dedicated Counter Seeding which describes allocating a segment of the fixed-length counter as a rollover guard is also recommended and SHOULD be employed to help mitigate counter rollover issues.
+							The technique from Fixed-Length Dedicated Counter Seeding which describes allocating a segment of the fixed-length counter as a rollover guard is also helpful to mitigate counter rollover issues.
 							This same technique can be leveraged with Monotonic random counter methods by ensuring the total length of a possible increment in the least significant, right most position is less than the total length of the random being incremented.
 							As such the most significant, left-most, bits can be incremented as rollover guarding. 
 						</dd>
@@ -1002,23 +1003,55 @@ u[6] = 0x70 | (u[6] & 0x0F); // set version field, top four bits are 0, 1, 1, 1
 				</figure>
 			</section>
 			<section anchor="creating_a_uuidv8_value" title="Creating a UUIDv8 Value">
-				<t>UUIDv8 will vary greatly from implementation to implementation. A good candidate use case for UUIDv8 is to embed exotic timestamps like the one found in this example which employs approximately 0.25 milliseconds and approximately 5 microseconds per timestamp tick as a 48 bit value.</t>
+				<t>UUIDv8 will vary greatly from implementation to implementation.</t>
+				<t>The following example utilizes:</t>
+				<ul>
+					<li><t>32 bit custom-epoch timestamp (seconds elapsed since 2020-01-01 00:00:00 UTC)</t></li>
+					<li><t>16 bit exotic resolution (~15 microsecond) subsecond timestamp encoded using the fractional representation</t></li>
+					<li><t>58 bit random number</t></li>
+					<li><t>8 bit application-specific unique node ID</t></li>
+					<li><t>8 bit rolling sequence number</t></li>
+				</ul>
 				<figure>
 					<name>UUIDv8 Function in C</name>
 					<artwork><![CDATA[
 #include <stdint.h>
-#include <stdio.h>
 #include <time.h>
 
-int main() {
+int get_random_bytes(uint8_t *buffer, int count) {
+  // ...
+}
+
+int generate_uuidv8(uint8_t *uuid, uint8_t node_id) {
   struct timespec tp;
-  clock_gettime(CLOCK_REALTIME, &tp);
-  uint64_t timestamp = (uint64_t)tp.tv_sec << 12;
+  if (clock_gettime(CLOCK_REALTIME, &tp) != 0)
+    return -1; // real-time clock error
 
-  // compute 12 bit (~0.25 msec precision) fraction from nsecs
-  timestamp |= ((uint64_t)tp.tv_nsec << 12) / 1000000000;
+  // 32 bit biased timestamp (seconds elapsed since 2020-01-01 00:00:00 UTC)
+  uint32_t timestamp_sec = tp.tv_sec - 1577836800;
+  uuid[0] = timestamp_sec >> 24;
+  uuid[1] = timestamp_sec >> 16;
+  uuid[2] = timestamp_sec >> 8;
+  uuid[3] = timestamp_sec;
 
-  printf("%08llx-%04llx\n", timestamp >> 16, timestamp & 0xFFFF);
+  // 16 bit subsecond fraction (~15 microsecond resolution)
+  uint16_t timestamp_subsec = ((uint64_t)tp.tv_nsec << 16) / 1000000000;
+  uuid[4] = timestamp_subsec >> 8;
+  uuid[5] = timestamp_subsec;
+
+  // 58 bit random number and required ver and var fields
+  if (get_random_bytes(&uuid[6], 8) != 0)
+    return -1; // random number generator error
+  uuid[6] = 0x80 | (uuid[6] & 0x0f);
+  uuid[8] = 0x80 | (uuid[8] & 0x3f);
+
+  // 8 bit application-specific node ID to guarantee application-wide uniqueness
+  uuid[14] = node_id;
+
+  // 8 bit rolling sequence number to help ensure process-wide uniqueness
+  static uint8_t sequence = 0;
+  uuid[15] = sequence++; // NOTE: unprotected from race conditions
+
   return 0;
 }
 					]]></artwork>
