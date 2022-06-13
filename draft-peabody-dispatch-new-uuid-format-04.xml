@@ -158,6 +158,8 @@ please see http://xml.resource.org/authoring/README.html. -->
 					<li><t>- Described how to handle scenario where New UUID less than Old UUID</t></li>
 					<li><t>- Allow timestamp increment if counter overflows</t></li>
 					<li><t>- Replaced UUIDv8 C code snippet with full generation example</t></li>
+					<li><t>- Fixed RFC4086 Reference link</t></li>
+					<li><t>- Describe reseeding best practice for CSPRNG</t></li>
 				</ul>
 				<t>draft-03</t>
 				<ul spacing="compact" empty="true">
@@ -585,6 +587,7 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 			<section anchor="unguessability" title="Unguessability">
 				<t>
 					Implementations SHOULD utilize a cryptographically secure pseudo-random number generator (CSPRNG) to provide values that are both difficult to predict ("unguessable") and have a low likelihood of collision ("unique").
+					Care SHOULD be taken to ensure the CSPRNG state is properly reseeded upon state changes, such as process forks, to ensure proper CSPRNG operation.
 					CSPRNG ensures the best of <xref target="collision_resistance"/> and <xref target="Security"/> are present in modern UUIDs.
 				</t>
 				<t>
@@ -725,7 +728,7 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 				<seriesInfo name="RFC" value="4122"/>
 				<seriesInfo name="DOI" value="10.17487/RFC4122"/>
 			</reference>
-			<reference anchor="RFC4086" target="https://www.rfc-editor.org/info/rfc4122">
+			<reference anchor="RFC4086" target="https://www.rfc-editor.org/info/rfc4086">
 				<front>
 					<title>Randomness Requirements for Security</title>
 					<author initials="D." surname="Eastlake 3rd" fullname="D. Eastlake 3rd">
