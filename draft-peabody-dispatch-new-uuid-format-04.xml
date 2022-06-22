@@ -160,6 +160,7 @@ please see http://xml.resource.org/authoring/README.html. -->
 					<li><t>- Replaced UUIDv8 C code snippet with full generation example</t></li>
 					<li><t>- Fixed RFC4086 Reference link</t></li>
 					<li><t>- Describe reseeding best practice for CSPRNG</t></li>
+					<li><t>- Changed MUST to SHOULD removing requirement for absolute monotonicity</t></li>
 				</ul>
 				<t>draft-03</t>
 				<ul spacing="compact" empty="true">
@@ -456,7 +457,7 @@ FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF
 					Monotonicity is the backbone of time-based sortable UUIDs. Naturally time-based UUIDs from this document will be monotonic due to an embedded timestamp however implementations can guarantee additional monotonicity via the concepts covered in this section.
 				</t>
 				<t>
-					Additionally, care MUST be taken to ensure UUIDs generated in batches are also monotonic. That is, if one-thousand UUIDs are generated for the same timestamp; there is sufficient logic for organizing the creation order of those one-thousand UUIDs.
+					Additionally, care SHOULD be taken to ensure UUIDs generated in batches are also monotonic. That is, if one-thousand UUIDs are generated for the same timestamp; there is sufficient logic for organizing the creation order of those one-thousand UUIDs.
 					For batch UUID creation implementions MAY utilize a monotonic counter which SHOULD increment for each UUID created during a given timestamp. 
 				</t>
 				<t>
