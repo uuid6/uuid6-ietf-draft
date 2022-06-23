@@ -1,13 +1,10 @@
 # Updates
 
-#### Draft 04 Deadline 23 June 2022: 
-- [HTML Draft 04](https://uuid6.github.io/uuid6-ietf-draft/)
-- [Plaintext Draft 04](https://raw.githubusercontent.com/uuid6/uuid6-ietf-draft/master/draft-peabody-dispatch-new-uuid-format-04.txt)
-
-#### Draft 03 was submitted 31 March 2022: 
-- [HTML Draft 03](https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-03.html)
-- [Plaintext Draft 03](https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-03.txt)
-- [HTML Text](https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-03)
+#### Draft 04 was submitted 23 June 2022: 
+- [HTML Draft](https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.html)
+- [Plaintext Draft](https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.txt)
+- [HTML Text](https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-04)
+- [Draft 03 vs Draft 04 Diff](https://www.ietf.org/rfcdiff?url2=draft-peabody-dispatch-new-uuid-format-04)
 
 ---
 
