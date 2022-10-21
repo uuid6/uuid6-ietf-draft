@@ -1,10 +1,8 @@
 # Updates
 
-#### Draft 04 was submitted 23 June 2022: 
-- [HTML Draft](https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.html)
-- [Plaintext Draft](https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.txt)
-- [HTML Text](https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-04)
-- [Draft 03 vs Draft 04 Diff](https://www.ietf.org/rfcdiff?url2=draft-peabody-dispatch-new-uuid-format-04)
+- This work has been officially adopted by the IETF!
+- Work on the base document has been reset to Draft 00 and moved to https://github.com/ietf-wg-uuidrev/rfc4122bis
+- Full Details and further updates will be posted in [Post-IETF 114 and the future of this Draft](https://github.com/uuid6/uuid6-ietf-draft/issues/122)
 
 ---
 
