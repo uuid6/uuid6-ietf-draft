@@ -4,6 +4,20 @@
 - Work on the base document has been reset to Draft 00 and moved to https://github.com/ietf-wg-uuidrev/rfc4122bis
 - Full Details and further updates will be posted in [Post-IETF 114 and the future of this Draft](https://github.com/uuid6/uuid6-ietf-draft/issues/122)
 
+```
+Name:		draft-ietf-uuidrev-rfc4122bis
+Revision:	02
+Title:		A Universally Unique IDentifier (UUID) URN Namespace
+Document date:	2023-02-16
+Group:		uuidrev
+Pages:		47
+URL:            https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-02.txt
+Status:         https://datatracker.ietf.org/doc/draft-ietf-uuidrev-rfc4122bis/
+Html:           https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-02.html
+Htmlized:       https://datatracker.ietf.org/doc/html/draft-ietf-uuidrev-rfc4122bis
+Diff:           https://author-tools.ietf.org/iddiff?url2=draft-ietf-uuidrev-rfc4122bis-02
+```
+
 ---
 
 # New UUID Formats
