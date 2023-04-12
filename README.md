@@ -6,16 +6,16 @@
 
 ```
 Name:		draft-ietf-uuidrev-rfc4122bis
-Revision:	02
-Title:		A Universally Unique IDentifier (UUID) URN Namespace
-Document date:	2023-02-16
+Revision:	03
+Title:		Universally Unique IDentifiers (UUID)
+Document date:	2023-04-12
 Group:		uuidrev
-Pages:		47
-URL:            https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-02.txt
+Pages:		48
+URL:            https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-03.txt
 Status:         https://datatracker.ietf.org/doc/draft-ietf-uuidrev-rfc4122bis/
-Html:           https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-02.html
+Html:           https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-03.html
 Htmlized:       https://datatracker.ietf.org/doc/html/draft-ietf-uuidrev-rfc4122bis
-Diff:           https://author-tools.ietf.org/iddiff?url2=draft-ietf-uuidrev-rfc4122bis-02
+Diff:           https://author-tools.ietf.org/iddiff?url2=draft-ietf-uuidrev-rfc4122bis-03
 ```
 
 ---
