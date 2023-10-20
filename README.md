@@ -6,16 +6,16 @@
 
 ```
 Name:     draft-ietf-uuidrev-rfc4122bis
-Revision: 12
+Revision: 13
 Title:    Universally Unique IDentifiers (UUID)
-Date:     2023-10-05
+Date:     2023-10-20
 Group:    uuidrev
-Pages:    55
-URL:      https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-12.txt
+Pages:    58
+URL:      https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-13.txt
 Status:   https://datatracker.ietf.org/doc/draft-ietf-uuidrev-rfc4122bis/
-HTML:     https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-12.html
+HTML:     https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-13.html
 HTMLized: https://datatracker.ietf.org/doc/html/draft-ietf-uuidrev-rfc4122bis
-Diff:     https://author-tools.ietf.org/iddiff?url2=draft-ietf-uuidrev-rfc4122bis-12
+Diff:     https://author-tools.ietf.org/iddiff?url2=draft-ietf-uuidrev-rfc4122bis-13
 ```
 
 ---
