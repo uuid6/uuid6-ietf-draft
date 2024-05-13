@@ -1,3 +1,28 @@
+# Final
+```
+RFC 9562
+
+Title:      Universally Unique IDentifiers (UUIDs) 
+Author:     K. Davis,
+            B. Peabody,
+            P. Leach
+Status:     Standards Track
+Stream:     IETF
+Date:       May 2024
+Mailbox:    kydavis@cisco.com,
+            brad@peabody.io,
+            pjl7@uw.edu
+Pages:      46
+Obsoletes:  RFC 4122
+
+I-D Tag:    draft-ietf-uuidrev-rfc4122bis-14.txt
+
+URL:        https://www.rfc-editor.org/info/rfc9562
+
+DOI:        10.17487/RFC9562
+
+```
+
 # Updates
 
 - This work has been officially adopted by the IETF!
